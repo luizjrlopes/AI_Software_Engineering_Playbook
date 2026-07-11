@@ -4,8 +4,8 @@ Playbook editorial sobre desenvolvimento de software com agentes de IA, arquitet
 
 ## Visualizações
 
-- [Página visual]([index.html](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/))
-- [Índice completo dos 70 artigos]([Artigos_Principais/00_INDICE_GERAL.md](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/Artigos_Principais/index.html))
+- [Página visual](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/)
+- [Índice completo dos 70 artigos](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/Artigos_Principais/)
 
 
 ## Estrutura
