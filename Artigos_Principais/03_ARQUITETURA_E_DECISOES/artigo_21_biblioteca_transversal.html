@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Uma biblioteca deve orientar escolhas, não ser copiada integralmente para todo projeto. Como selecionar práticas relevantes por características do projeto."
+    />
+    <title>
+      21. Biblioteca transversal: como centralizar boas práticas sem contaminar os projetos — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  21. Biblioteca transversal: como centralizar boas práticas sem contaminar
+  os projetos
+</h1>
+
+<p>
+  A instrução parecia simples: "siga as diretrizes de engenharia da empresa"
+  ao construir uma pequena API interna de conciliação financeira. O agente
+  interpretou isso ao pé da letra e aplicou o conjunto inteiro de práticas
+  acumuladas na biblioteca transversal da organização — incluindo uma camada
+  de cache pensada para APIs de alto tráfego voltadas ao consumidor final. O
+  serviço, que processava um lote de dados por hora, ganhou uma
+  infraestrutura de cache que nunca teria uso real, enquanto as práticas que
+  realmente importavam para um sistema financeiro — log de auditoria e
+  garantia de idempotência em operações repetidas — ficaram diluídas no meio
+  de um volume de código que não tinha relação com o domínio daquele
+  serviço.
+</p>
+
+<p>
+  A biblioteca em si era boa. O problema foi tratá-la como um pacote a ser
+  importado por inteiro, em vez de um catálogo do qual selecionar o que
+  realmente se aplicava àquele contexto específico.
+</p>
+
+<h2>Biblioteca orienta escolha, não substitui julgamento</h2>
+
+<blockquote>
+  <p>
+    Uma biblioteca deve orientar escolhas, não ser copiada integralmente para
+    todo projeto.
+  </p>
+</blockquote>
+
+<p>
+  Uma biblioteca transversal — o repositório de padrões, convenções e
+  soluções já validadas em outros projetos, mencionado no artigo sobre o
+  AI Software Engineer Studio — existe para evitar que cada equipe reinvente
+  as mesmas soluções para os mesmos problemas recorrentes. Mas nem toda
+  prática documentada nessa biblioteca se aplica a todo projeto. Aplicar tudo
+  indiscriminadamente cria o problema oposto ao que a biblioteca deveria
+  resolver: complexidade desnecessária, importada por hábito, não por
+  necessidade real do domínio.
+</p>
+
+<h2>Selecionar em vez de importar por inteiro</h2>
+
+<p>
+  A pergunta correta não é "quais práticas da biblioteca existem", mas "quais
+  características deste projeto específico determinam quais práticas se
+  aplicam":
+</p>
+
+<section aria-labelledby="matriz" class="not-prose my-10">
+  <h2 id="matriz" class="mb-5 text-2xl font-semibold text-slate-900">
+    Selecionando práticas por características do projeto
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Característica do projeto</th>
+          <th class="px-4 py-3 font-semibold">Prática da biblioteca aplicável</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">
+            Lida com dados financeiros ou sensíveis
+          </td>
+          <td class="px-4 py-3 text-slate-700">
+            Log de auditoria, idempotência, criptografia em repouso
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">
+            Alto volume de requisições concorrentes de usuários finais
+          </td>
+          <td class="px-4 py-3 text-slate-700">
+            Cache, rate limiting, circuit breaker
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">
+            Processamento em lote, baixa concorrência
+          </td>
+          <td class="px-4 py-3 text-slate-700">
+            Idempotência e retomada de falha, cache dispensável
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Para a API de conciliação financeira do exemplo, a linha relevante é a
+  primeira — e parcialmente a terceira, pela natureza em lote do
+  processamento. A segunda linha, que motivou a camada de cache
+  desnecessária, simplesmente não se aplicava ao perfil daquele serviço.
+</p>
+
+<h2>Quem decide o que se aplica</h2>
+
+<p>
+  Delegar a um agente a leitura mecânica de "siga as diretrizes" sem
+  contextualizar as características do projeto específico transfere para ele
+  uma curadoria que deveria ser feita por quem entende o domínio. Um Context
+  Pack bem escrito para essa tarefa deveria declarar explicitamente quais
+  categorias de prática se aplicam — segurança e idempotência, por exemplo —
+  e quais não, evitando que o agente decida sozinho importar tudo por
+  precaução.
+</p>
+
+<h2>O limite: sem biblioteca nenhuma, o problema volta</h2>
+
+<p>
+  A crítica à aplicação indiscriminada não é argumento contra ter uma
+  biblioteca transversal. Sem ela, cada projeto volta a reinventar suas
+  próprias práticas de log, autenticação e tratamento de erro, muitas vezes
+  pior do que a versão já validada em outros lugares da organização. O
+  problema nunca foi centralizar conhecimento — foi aplicá-lo sem considerar
+  se ele realmente cabe no projeto em questão.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Uma biblioteca transversal é mais útil quando funciona como um catálogo
+  consultável, do qual se seleciona o que o domínio exige, do que como um
+  pacote a ser importado por inteiro em nome da consistência. Curadoria
+  continua sendo trabalho humano — a biblioteca informa a escolha, não a
+  substitui.
+</p>
+
+<p>
+  <strong
+    >O seu projeto atual usa a biblioteca de práticas da organização por
+    inteiro, ou alguém já parou para decidir o que dela realmente se aplica
+    a este contexto?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 21 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA
+    #BoasPraticas #Reuso
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

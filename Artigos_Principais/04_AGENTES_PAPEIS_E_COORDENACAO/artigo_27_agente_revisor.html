@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Autorrevisão não elimina vieses e pressupostos. Por que uma revisão independente, com achados estruturados por evidência e impacto, captura o que a autorrevisão não vê."
+    />
+    <title>
+      27. Agente revisor: por que quem implementa não deveria ser o único a validar — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Agentes, Papéis e Coordenação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 3 — Do agente isolado à equipe multiagente
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  27. Agente revisor: por que quem implementa não deveria ser o único a
+  validar
+</h1>
+
+<p>
+  O mesmo agente que implementou uma migração de dados também aprovou o
+  próprio pull request, depois de reler o código e concluir que "fazia
+  sentido". O que passou despercebido não foi um erro de sintaxe — foi um
+  pressuposto: a migração assumia que todo registro antigo tinha um campo de
+  data de criação preenchido, porque era assim na amostra de dados que o
+  agente tinha consultado. Registros mais antigos, criados antes desse campo
+  existir, tinham o valor nulo. A migração rodou em produção e falhou
+  silenciosamente para uma fração dos dados, sem lançar nenhum erro visível.
+</p>
+
+<p>
+  Ninguém pediu para o agente checar esse pressuposto porque, para quem
+  escreveu a migração, ele nunca pareceu um pressuposto — parecia apenas
+  "como os dados são". Um revisor independente, sem ter formado essa mesma
+  crença durante a implementação, teria mais chance de perguntar: "isso vale
+  para todos os registros, mesmo os mais antigos?"
+</p>
+
+<h2>Quem implementa já decidiu o que parece óbvio</h2>
+
+<blockquote>
+  <p>Autorrevisão não elimina vieses e pressupostos.</p>
+</blockquote>
+
+<p>
+  Durante a implementação, uma série de pequenas decisões vai se
+  cristalizando como "verdade assumida" — nem sempre por preguiça, mas
+  porque, depois de horas dentro do problema, certas suposições deixam de
+  parecer suposições e passam a parecer fatos. Revisar o próprio trabalho
+  exige desfazer esse processo mental, o que é estruturalmente mais difícil
+  do que avaliar um código pela primeira vez, sem o histórico de decisões que
+  levou até ele.
+</p>
+
+<h2>O que um achado de revisão de verdade contém</h2>
+
+<p>
+  Uma revisão independente é mais útil quando produz achados estruturados,
+  não apenas um "aprovado" ou "reprovado" genérico:
+</p>
+
+<ul>
+  <li>
+    <strong>Evidência:</strong> o trecho específico de código ou lógica que
+    motivou o achado.
+  </li>
+  <li>
+    <strong>Impacto:</strong> o que acontece na prática se esse ponto não for
+    corrigido.
+  </li>
+  <li>
+    <strong>Severidade:</strong> se é crítico, importante ou apenas uma
+    sugestão de melhoria.
+  </li>
+  <li>
+    <strong>Recomendação:</strong> o que fazer a respeito, de forma
+    acionável.
+  </li>
+</ul>
+
+<h2>O achado que a autorrevisão não fez</h2>
+
+<pre><code>## Achado de revisão — migração de usuários
+
+**Evidência:** linha 42 assume `created_at IS NOT NULL` para
+todos os registros da tabela `users`.
+
+**Impacto:** registros criados antes de 2019 têm esse campo
+nulo. A migração falhará silenciosamente para essa fração
+dos dados, sem lançar erro visível.
+
+**Severidade:** Alta — perda silenciosa de dados em produção.
+
+**Recomendação:** adicionar tratamento explícito para
+`created_at IS NULL`, com fallback documentado, antes de
+executar em produção.</code></pre>
+
+<p>
+  Esse achado só emerge quando alguém observa o código sem o mesmo histórico
+  de decisões de quem o escreveu — sem a crença já formada de que "os dados
+  são assim".
+</p>
+
+<h2>O limite: revisão independente não é infalível</h2>
+
+<p>
+  Um agente revisor também pode ter pontos cegos, especialmente se treinado
+  de forma semelhante ao agente implementador ou se receber o mesmo contexto
+  parcial. Independência de papel reduz vieses compartilhados por
+  familiaridade com a própria implementação, mas não elimina completamente a
+  possibilidade de ambos os agentes errarem na mesma direção — por isso
+  revisão independente complementa testes e validação, não os substitui.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Aprovar o próprio trabalho é, por natureza, uma validação enviesada: quem
+  implementou já decidiu, ao longo do processo, o que conta como normal. Um
+  agente revisor, sem esse histórico de decisões, está em posição
+  estruturalmente melhor para questionar pressupostos que o implementador
+  parou de enxergar como pressupostos.
+</p>
+
+<p>
+  <strong
+    >A última mudança crítica que você implementou foi revisada por alguém
+    — ou algo — sem o mesmo histórico de decisões que você tinha em mente ao
+    escrevê-la?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 27 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #CodeReview #QualidadeDeSoftware
+    #SegregacaoDeFuncoes
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

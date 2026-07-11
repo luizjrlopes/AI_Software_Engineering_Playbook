@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Deploy automatizado continua exigindo ambientes, gates, rollback e monitoramento. Como calibrar um pipeline com aprovação proporcional ao risco de cada mudança."
+    />
+    <title>
+      60. Deploy com agentes de IA: automação não elimina a necessidade de controle — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>60. Deploy com agentes de IA: automação não elimina a necessidade de controle</h1>
+
+<p>
+  O pipeline estava configurado para ser eficiente: qualquer mudança
+  aprovada em code review seguia automaticamente para produção, sem etapa
+  manual adicional. Funcionava bem para correções de texto na interface.
+  Funcionou exatamente do mesmo jeito para uma mudança no fluxo de cálculo
+  de pagamento — aprovada em revisão de código, mas sem qualquer gate
+  adicional de teste de carga ou período de observação em ambiente de
+  homologação, porque o pipeline tratava as duas mudanças com o mesmo nível
+  de automação. A mudança de pagamento continha um erro sutil que só
+  aparecia sob volume real de transações simultâneas, e chegou à produção
+  com a mesma velocidade que uma correção de texto teria levado.
+</p>
+
+<p>
+  A automação não causou o problema — ela apenas aplicou, de forma
+  consistente e rápida, a ausência de qualquer controle proporcional ao
+  risco real daquela mudança específica.
+</p>
+
+<h2>Automatizar a esteira não elimina a necessidade de controle</h2>
+
+<blockquote>
+  <p>
+    Deploy automatizado continua exigindo ambientes, gates, rollback e
+    monitoramento.
+  </p>
+</blockquote>
+
+<p>
+  Automação de deploy resolve um problema real — a lentidão e o erro humano
+  de processos manuais repetitivos. Mas automatizar o caminho não deveria
+  significar eliminar os pontos de controle que existiam por bons motivos;
+  significa apenas executá-los de forma mais rápida e consistente. Um
+  pipeline maduro não pergunta apenas "isso passou nos testes automatizados",
+  pergunta também "o nível de escrutínio aplicado é proporcional ao risco
+  desta mudança específica".
+</p>
+
+<h2>Quatro controles que a automação não deveria eliminar</h2>
+
+<ul>
+  <li>
+    <strong>Ambientes intermediários:</strong> homologação com dados
+    representativos antes de produção, especialmente para mudanças de alto
+    risco.
+  </li>
+  <li>
+    <strong>Gates proporcionais ao risco:</strong> mudanças em fluxos
+    críticos exigem verificações adicionais que ajustes cosméticos
+    dispensam.
+  </li>
+  <li>
+    <strong>Plano de rollback testado:</strong> saber, antes do deploy, como
+    reverter rapidamente se algo der errado.
+  </li>
+  <li>
+    <strong>Monitoramento pós-deploy:</strong> observar o comportamento real
+    em produção nos primeiros minutos após a liberação, não apenas confiar
+    que os testes prévios cobriram tudo.
+  </li>
+</ul>
+
+<h2>Um pipeline com aprovação proporcional ao risco</h2>
+
+<pre><code>## Pipeline de deploy — regras por categoria de risco
+
+categoria: baixo_risco
+  exemplos: ["ajuste de texto", "correção de estilo"]
+  fluxo: merge → deploy automático
+
+categoria: alto_risco
+  exemplos: ["fluxo de pagamento", "autenticação",
+             "migração de schema"]
+  fluxo: merge → homologação com teste de carga →
+         aprovação humana explícita → deploy →
+         monitoramento intensivo por 1h</code></pre>
+
+<p>
+  Com essa distinção, a mudança no cálculo de pagamento do exemplo inicial
+  teria passado por homologação com teste de carga e aprovação humana
+  explícita antes de chegar à produção — o mesmo nível de automação para
+  correções triviais permaneceria intacto.
+</p>
+
+<h2>O limite: controle demais para tudo recria a lentidão original</h2>
+
+<p>
+  Aplicar o fluxo de alto risco a toda mudança, incluindo as triviais,
+  reintroduz exatamente a lentidão que a automação deveria eliminar. A
+  categorização por risco só funciona se for aplicada com critério — a
+  maioria das mudanças, na prática, deveria seguir o caminho rápido; apenas
+  uma fração, de fato crítica, justifica o caminho mais controlado.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Automatizar deploy não significa remover julgamento do processo — significa
+  aplicar esse julgamento de forma consistente, através de categorias de
+  risco definidas com antecedência, em vez de depender de alguém lembrar de
+  adicionar cautela extra numa mudança específica antes de ser tarde demais.
+</p>
+
+<p>
+  <strong
+    >O pipeline de deploy do seu projeto trata uma correção de texto e uma
+    mudança em fluxo de pagamento com o mesmo nível de controle, ou
+    proporcional ao risco de cada uma?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 60 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #DevOps #Deploy #GestaoDeRisco
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

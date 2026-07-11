@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Stack é decisão de negócio, operação, equipe, custo e risco. Por que a escolha de tecnologia não deveria ser delegada inteiramente a um agente de IA."
+    />
+    <title>
+      16. A IA pode sugerir a stack, mas não deveria escolhê-la sozinha — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>16. A IA pode sugerir a stack, mas não deveria escolhê-la sozinha</h1>
+
+<p>
+  Um fundador de uma startup em fase inicial perguntou a um agente de IA:
+  "qual stack eu devo usar para o meu SaaS?". A resposta veio rápida e
+  competente: um framework moderno, com boa reputação na comunidade e
+  exemplos abundantes de tutorial. Seis meses depois, contratar
+  desenvolvedores para esse framework específico se mostrou mais difícil e
+  caro do que o esperado na região onde a empresa contratava, e a equipe
+  existente — que já dominava outra stack havia anos — precisou aprender do
+  zero uma tecnologia só porque ela parecia popular na hora da pergunta.
+</p>
+
+<p>
+  A sugestão da IA não estava tecnicamente errada. Estava incompleta, porque
+  respondeu a uma pergunta de arquitetura como se fosse uma pergunta de
+  popularidade, sem considerar informação que só existe fora do código: quem
+  é a equipe, quanto custa operar, e que restrição de negócio realmente
+  importa aqui.
+</p>
+
+<h2>Stack não é escolha técnica isolada</h2>
+
+<blockquote>
+  <p>Stack é decisão de negócio, operação, equipe, custo e risco.</p>
+</blockquote>
+
+<p>
+  Um agente de IA consegue comparar frameworks com base em benchmarks
+  públicos, popularidade e características técnicas documentadas. O que ele
+  não tem acesso, a menos que seja explicitamente informado, é ao contexto
+  que realmente decide uma escolha de stack em uma organização real: a
+  experiência prévia do time, o orçamento de infraestrutura, o prazo de
+  entrega e a tolerância a risco do produto.
+</p>
+
+<h2>Cinco eixos que uma sugestão de IA raramente enxerga sozinha</h2>
+
+<ul>
+  <li>
+    <strong>Negócio:</strong> prazo de lançamento, requisitos regulatórios e
+    expectativa de escala real, não hipotética.
+  </li>
+  <li>
+    <strong>Operação:</strong> como a aplicação será implantada, monitorada e
+    mantida no dia a dia.
+  </li>
+  <li>
+    <strong>Equipe:</strong> o que as pessoas disponíveis já sabem, e quanto
+    custa treiná-las numa tecnologia nova.
+  </li>
+  <li>
+    <strong>Custo:</strong> licenciamento, infraestrutura e o custo de
+    contratar para aquela stack no mercado local.
+  </li>
+  <li>
+    <strong>Risco:</strong> maturidade da tecnologia, tamanho da comunidade e
+    dependência de um único mantenedor ou fornecedor.
+  </li>
+</ul>
+
+<h2>Uma matriz de decisão aplicada</h2>
+
+<p>
+  Para o mesmo SaaS do início, comparando um Next.js fullstack contra
+  frontend e backend separados, a matriz fica assim:
+</p>
+
+<section aria-labelledby="matriz" class="not-prose my-10">
+  <h2 id="matriz" class="mb-5 text-2xl font-semibold text-slate-900">
+    Next.js fullstack vs. frontend e backend separados
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Eixo</th>
+          <th class="px-4 py-3 font-semibold">Next.js fullstack</th>
+          <th class="px-4 py-3 font-semibold">Frontend/backend separados</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Time-to-market</td>
+          <td class="px-4 py-3 text-slate-700">Mais rápido para um time pequeno</td>
+          <td class="px-4 py-3 text-slate-700">Mais lento no início, mais estável depois</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Equipe</td>
+          <td class="px-4 py-3 text-slate-700">Exige domínio de JavaScript/TypeScript full-stack</td>
+          <td class="px-4 py-3 text-slate-700">Permite especialização por linguagem já conhecida</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Operação</td>
+          <td class="px-4 py-3 text-slate-700">Um único deploy, mais simples de operar</td>
+          <td class="px-4 py-3 text-slate-700">Dois serviços, mais flexível para escalar cada um</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Risco de acoplamento</td>
+          <td class="px-4 py-3 text-slate-700">Frontend e backend evoluem juntos, mais difícil separar depois</td>
+          <td class="px-4 py-3 text-slate-700">Fronteira já existe desde o início</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Nenhuma das duas colunas é "a resposta certa" de forma universal. A escolha
+  depende de qual eixo pesa mais para aquela equipe específica — e essa
+  ponderação é uma decisão humana, não uma sugestão de modelo de linguagem.
+</p>
+
+<h2>O papel apropriado da IA nessa decisão</h2>
+
+<p>
+  Um agente pode, de forma útil, levantar as opções, montar a matriz
+  comparativa e apontar trade-offs técnicos conhecidos. O que ele não deveria
+  fazer sozinho é preencher os pesos de cada eixo — decidir que
+  time-to-market importa mais que risco de acoplamento, por exemplo — porque
+  essa ponderação depende de contexto de negócio que só existe do lado
+  humano da conversa.
+</p>
+
+<h2>O limite: buscar consenso perfeito também tem custo</h2>
+
+<p>
+  Para um projeto em estágio inicial, com poucas semanas de pista e um único
+  desenvolvedor, submeter a escolha de stack a uma análise extensa de cinco
+  eixos pode ser desproporcional. Nesses casos, uma escolha pragmática e
+  reversível — mesmo que não seja a "ótima" em todos os eixos — vale mais do
+  que paralisia de decisão.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Pedir a um agente de IA para sugerir uma stack é razoável. Aceitar essa
+  sugestão sem confrontá-la com a realidade da equipe, do orçamento e da
+  operação é transferir uma decisão de negócio para uma ferramenta que nunca
+  viu o orçamento, nunca entrevistou a equipe e não vai arcar com as
+  consequências da escolha.
+</p>
+
+<p>
+  <strong
+    >A stack que seu projeto usa hoje foi escolhida considerando quem viria a
+    mantê-la, ou apenas o que parecia mais moderno no momento da decisão?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 16 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA
+    #TomadaDeDecisao #StackTecnologica
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

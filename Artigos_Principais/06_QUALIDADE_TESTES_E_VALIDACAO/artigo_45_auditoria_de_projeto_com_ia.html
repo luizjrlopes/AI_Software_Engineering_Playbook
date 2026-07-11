@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Um bom achado informa evidência, localização, impacto, severidade e correção. Por que uma auditoria genérica de "melhorar segurança" não é um diagnóstico."
+    />
+    <title>
+      45. Auditoria de projeto com IA: como produzir diagnósticos úteis em vez de listas genéricas — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  45. Auditoria de projeto com IA: como produzir diagnósticos úteis em vez
+  de listas genéricas
+</h1>
+
+<p>
+  O pedido foi direto: "audite este projeto e diga o que precisa melhorar".
+  O relatório voltou com uma lista que poderia ter sido escrita sobre
+  praticamente qualquer sistema em produção: "melhorar segurança", "aumentar
+  cobertura de testes", "refatorar código legado", "atualizar dependências".
+  Tudo verdadeiro em algum grau. Nada específico o suficiente para virar uma
+  tarefa. Ninguém sabia por onde começar, porque nenhum item dizia onde
+  exatamente o problema estava, qual era o impacto real, ou o que fazer a
+  respeito.
+</p>
+
+<p>
+  Uma lista genérica de melhorias não é um diagnóstico — é uma forma
+  educada de dizer "todo software pode ser melhorado", o que não ajuda
+  ninguém a decidir o que fazer primeiro.
+</p>
+
+<h2>Um achado útil aponta um lugar, não uma categoria</h2>
+
+<blockquote>
+  <p>
+    Um bom achado informa evidência, localização, impacto, severidade e
+    correção.
+  </p>
+</blockquote>
+
+<p>
+  A diferença entre "melhorar segurança" e um achado de auditoria de verdade
+  não é o tema — é o nível de especificidade. Um achado útil aponta
+  exatamente onde o problema está, com que evidência, qual o impacto
+  concreto se não for corrigido, quão grave é em relação a outros achados, e
+  o que fazer especificamente para resolver.
+</p>
+
+<h2>Os cinco elementos de um achado de auditoria</h2>
+
+<ul>
+  <li>
+    <strong>Evidência:</strong> o que foi observado, de forma concreta e
+    verificável.
+  </li>
+  <li>
+    <strong>Localização:</strong> o arquivo, módulo ou componente exato onde
+    o achado se aplica.
+  </li>
+  <li>
+    <strong>Impacto:</strong> o que acontece na prática se isso não for
+    corrigido.
+  </li>
+  <li>
+    <strong>Severidade:</strong> quão crítico é, em relação aos demais
+    achados da auditoria.
+  </li>
+  <li>
+    <strong>Correção:</strong> o que fazer especificamente para resolver.
+  </li>
+</ul>
+
+<h2>"Melhorar segurança" vs. um achado real</h2>
+
+<pre><code>## Achado de auditoria #7
+
+**Evidência:** endpoint POST /api/users/import aceita upload
+de arquivo CSV sem limite de tamanho e sem validação de tipo
+MIME antes do processamento.
+
+**Localização:** src/routes/users/import.ts, linha 18.
+
+**Impacto:** um arquivo malicioso ou excessivamente grande
+pode causar indisponibilidade do serviço (negação de serviço)
+ou execução de conteúdo não esperado durante o parsing.
+
+**Severidade:** Alta.
+
+**Correção:** validar tipo MIME e limitar tamanho do arquivo
+antes do parsing; usar biblioteca de parsing com proteção
+contra entradas malformadas.</code></pre>
+
+<p>
+  Esse achado, sozinho, já é uma tarefa executável: alguém sabe exatamente
+  onde ir, o que verificar e o que corrigir. Uma lista genérica de
+  "melhorar segurança" nunca chega a esse nível — permanece verdadeira e
+  inútil ao mesmo tempo.
+</p>
+
+<h2>Priorizando entre achados específicos</h2>
+
+<p>
+  Com achados estruturados dessa forma, priorizar se torna uma questão de
+  comparar severidade e impacto entre itens concretos — não de adivinhar
+  qual categoria genérica é mais urgente. Uma auditoria com dez achados
+  específicos, ordenados por severidade, é mais acionável do que uma lista
+  de quatro categorias amplas sem nenhuma localização.
+</p>
+
+<h2>O limite: nem toda auditoria precisa desse nível de detalhe em tudo</h2>
+
+<p>
+  Detalhar cada achado com esse rigor completo, mesmo os de severidade
+  baixa e impacto irrelevante, consome tempo desproporcional ao retorno.
+  O nível de detalhe deveria ser maior nos achados de severidade alta e
+  crítica; achados menores podem ser agrupados de forma mais resumida.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Uma auditoria que devolve categorias genéricas transfere de volta para
+  quem pediu o trabalho de descobrir onde, exatamente, está o problema. Um
+  achado estruturado por evidência, localização, impacto, severidade e
+  correção já chega pronto para virar uma tarefa — o que é, afinal, o
+  motivo de pedir a auditoria.
+</p>
+
+<p>
+  <strong
+    >A última auditoria que você recebeu de um agente trouxe localização e
+    evidência específicas, ou apenas categorias amplas de melhoria?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 45 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Auditoria #QualidadeDeSoftware
+    #DiagnosticoTecnico
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Um bom handoff transmite estado, decisões, evidências, riscos e próximos passos. Como registrar a continuidade de um trabalho entre conversas e agentes de IA."
+    />
+    <title>
+      13. Handoff entre agentes: como continuar um projeto sem perder decisões e contexto — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  13. Handoff entre agentes: como continuar um projeto sem perder decisões e
+  contexto
+</h1>
+
+<p>
+  A conversa com o agente terminou no meio de uma refatoração: dois arquivos
+  já alterados, um terceiro pela metade, e uma decisão importante tomada
+  informalmente — "vamos manter o método antigo por compatibilidade, mas
+  marcá-lo como obsoleto" — que existia apenas naquela janela de chat. No dia
+  seguinte, uma nova conversa começou do zero. O agente seguinte não sabia
+  que aquele método deveria continuar existindo, "corrigiu" o que considerou
+  uma duplicação e removeu justamente o que a decisão anterior tinha
+  preservado de propósito.
+</p>
+
+<p>
+  Nada disso era culpa do segundo agente. Ele nunca recebeu a informação de
+  que essa decisão existia. O trabalho não foi perdido por um erro técnico —
+  foi perdido porque não houve handoff.
+</p>
+
+<h2>Handoff é protocolo, não recado informal</h2>
+
+<blockquote>
+  <p>
+    Um bom handoff transmite estado, decisões, evidências, riscos e próximos
+    passos.
+  </p>
+</blockquote>
+
+<p>
+  Times humanos já enfrentam esse problema em passagens de plantão ou troca
+  de turno, e resolvem isso com um protocolo mínimo de transferência, não com
+  a expectativa de que a pessoa nova vai "descobrir sozinha" o que estava em
+  andamento. Com agentes de IA, o problema é mais agudo: cada nova conversa
+  começa sem nenhuma memória da anterior, a menos que essa memória seja
+  explicitamente transportada para fora da janela de chat.
+</p>
+
+<h2>Os cinco elementos de um handoff completo</h2>
+
+<ul>
+  <li>
+    <strong>Estado atual:</strong> o que já foi alterado, testado e
+    confirmado até este ponto.
+  </li>
+  <li>
+    <strong>Decisões tomadas:</strong> escolhas feitas durante a execução que
+    não são óbvias a partir do código sozinho — como manter um método
+    obsoleto por compatibilidade.
+  </li>
+  <li>
+    <strong>Evidências:</strong> o que já foi comprovado — testes executados,
+    logs relevantes — para que o próximo agente não precise reverificar tudo
+    do zero.
+  </li>
+  <li>
+    <strong>Riscos conhecidos:</strong> o que exige cuidado especial ou já
+    causou problema durante a execução.
+  </li>
+  <li>
+    <strong>Próximos passos:</strong> o que falta, na ordem em que deveria
+    ser feito.
+  </li>
+</ul>
+
+<h2>Registrando o handoff da refatoração interrompida</h2>
+
+<pre><code># Handoff — refatoração do módulo de notificações
+
+## Estado atual
+- src/notifications/sender.ts: migrado para o novo formato.
+- src/notifications/templates.ts: migrado.
+- src/notifications/legacy-sender.ts: pendente.
+
+## Decisões tomadas
+- Método `sendLegacy()` mantido por compatibilidade com o
+  worker antigo. NÃO remover. Marcado como @deprecated.
+
+## Evidências
+- Testes unitários de sender.ts e templates.ts passando
+  (ver output em ci/run-482).
+
+## Riscos conhecidos
+- legacy-sender.ts ainda é chamado por um cron job externo
+  não documentado neste repositório.
+
+## Próximos passos
+1. Migrar legacy-sender.ts preservando sendLegacy().
+2. Atualizar teste de integração do worker antigo.</code></pre>
+
+<p>
+  Com esse documento, a próxima conversa — com o mesmo agente ou com outro —
+  começa sabendo exatamente o que preservar, o que falta e por quê. A decisão
+  sobre <code>sendLegacy()</code> deixa de existir apenas na memória de uma
+  janela de chat encerrada.
+</p>
+
+<h2>O limite: handoff também pode ficar desatualizado</h2>
+
+<p>
+  Um documento de handoff que não é atualizado à medida que o trabalho avança
+  se torna tão enganoso quanto a ausência completa dele — pior, porque passa
+  falsa sensação de que o contexto está coberto. Handoff é útil apenas quando
+  é tratado como parte da entrega, não como um artefato opcional escrito
+  depois que alguém já esqueceu os detalhes.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de IA não carrega memória entre conversas por padrão. Se uma
+  decisão importante existe apenas na transcrição de um chat encerrado, ela
+  deixou de existir para fins práticos assim que essa conversa foi fechada.
+  Handoff estruturado é o que transforma trabalho interrompido em trabalho
+  retomável — por qualquer agente, em qualquer momento.
+</p>
+
+<p>
+  <strong
+    >Se a sua tarefa atual com um agente fosse interrompida agora, existe um
+    registro de decisões e riscos que permitiria a qualquer outra pessoa —
+    ou agente — continuar de onde parou?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 13 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Handoff #Continuidade
+    #GestaoDeConhecimento
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

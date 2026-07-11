@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="O objetivo do teste é encontrar falhas, não confirmar o implementador. Como estruturar casos positivos, negativos e de borda com um agente de testes independente."
+    />
+    <title>
+      26. Agente de testes: como fazer a IA provar que o código funciona — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Agentes, Papéis e Coordenação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 3 — Do agente isolado à equipe multiagente
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>26. Agente de testes: como fazer a IA provar que o código funciona</h1>
+
+<p>
+  O mesmo agente que implementou o fluxo de login escreveu também os testes
+  automatizados para ele. Os testes passavam, todos verdes. Só cobriam,
+  porém, o cenário em que o e-mail e a senha estavam corretos — exatamente o
+  caminho que o próprio agente já tinha em mente quando escreveu o código.
+  Nenhum teste tentava uma senha errada três vezes seguidas, nenhum tentava
+  um e-mail inexistente, nenhum verificava o que acontecia se o banco de
+  dados demorasse para responder. Os testes não avaliaram o código: eles
+  confirmaram o que o autor já acreditava que tinha implementado certo.
+</p>
+
+<p>
+  Isso não é uma falha de honestidade do agente. É uma tendência natural de
+  quem escreve testes para o próprio código: testar aquilo que se sabe que
+  funciona é mais fácil — e mais confortável — do que procurar ativamente o
+  que pode estar quebrado.
+</p>
+
+<h2>Teste existe para encontrar falha, não para confirmar sucesso</h2>
+
+<blockquote>
+  <p>O objetivo do teste é encontrar falhas, não confirmar o implementador.</p>
+</blockquote>
+
+<p>
+  Um agente de testes, atuando com esse objetivo declarado, parte de uma
+  postura diferente da de quem implementou a funcionalidade: em vez de
+  perguntar "isso funciona?", pergunta "de que forma isso poderia falhar, e o
+  código já está preparado para essa falha?". Essa mudança de pergunta é o
+  que separa um teste que confirma da autora e um teste que investiga de
+  forma independente.
+</p>
+
+<h2>Três categorias de caso que um teste investigativo cobre</h2>
+
+<ul>
+  <li>
+    <strong>Casos positivos:</strong> o comportamento esperado quando tudo
+    está correto — a base mínima, não o teto do que testar.
+  </li>
+  <li>
+    <strong>Casos negativos:</strong> entradas inválidas, credenciais
+    erradas, permissões insuficientes — o que deveria ser rejeitado com uma
+    resposta clara, não com uma falha silenciosa.
+  </li>
+  <li>
+    <strong>Casos de borda:</strong> condições extremas ou raras — um campo
+    vazio, um valor máximo, uma resposta lenta do servidor, tentativas
+    repetidas em sequência.
+  </li>
+</ul>
+
+<h2>Aplicando as três categorias ao login</h2>
+
+<pre><code>describe("login", () => {
+  it("autentica com e-mail e senha corretos", () => { /* positivo */ });
+
+  it("rejeita senha incorreta sem revelar se o e-mail existe", () => {
+    /* negativo */
+  });
+
+  it("bloqueia após 5 tentativas falhas consecutivas", () => {
+    /* borda */
+  });
+
+  it("não trava a interface se o serviço de auth demorar
+      para responder", () => {
+    /* borda */
+  });
+});</code></pre>
+
+<p>
+  Nenhum desses quatro testes existia na versão original, porque nenhum deles
+  fazia parte do "caminho que já se sabia que funcionava". Um agente de
+  testes, com o mandato explícito de procurar falhas, é quem preenche essa
+  lacuna — de preferência, sem ser a mesma instância que escreveu a
+  implementação original.
+</p>
+
+<h2>O limite: nem todo código exige a mesma profundidade de teste</h2>
+
+<p>
+  Cobrir exaustivamente casos de borda para um script interno descartável,
+  usado uma única vez, é esforço sem retorno proporcional. A profundidade de
+  teste deveria acompanhar o risco: autenticação, pagamento e qualquer lógica
+  que manipula dados sensíveis justificam essa investigação completa;
+  ferramentas internas de uso pontual, normalmente não.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de testes que compartilha os mesmos pressupostos de quem
+  implementou o código tende a testar apenas o que já acredita estar certo.
+  Definir o teste como uma busca ativa por falhas — não como uma confirmação
+  de sucesso — é o que transforma uma suíte de testes verdes em evidência
+  real, e não em uma cerimônia que apenas repete a confiança do
+  implementador.
+</p>
+
+<p>
+  <strong
+    >Os testes do seu último recurso foram escritos para confirmar que o
+    código funciona, ou para tentar provar que ele falha?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 26 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Testes #QualidadeDeSoftware
+    #ValidacaoPorRisco
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

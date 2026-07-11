@@ -11,7 +11,7 @@ Playbook editorial sobre desenvolvimento de software com agentes de IA, arquitet
 ## Estrutura
 
 ```text
-Artigos_GenAi/
+AI_Software_Engineering_Playbook/
 ├── Artigos_Principais/    # plano editorial governante: 70 artigos
 ├── Artigos_Secundarios/   # biblioteca técnica complementar: 20 artigos HTML
 ├── legado/                # planos e documentos históricos

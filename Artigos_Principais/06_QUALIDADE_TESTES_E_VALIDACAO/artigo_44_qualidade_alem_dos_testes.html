@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Software pode funcionar e ainda ser inseguro, lento, inacessível ou confuso. Como avaliar uma feature em quatro dimensões que testes automatizados não cobrem."
+    />
+    <title>
+      44. Qualidade além dos testes: acessibilidade, desempenho, segurança e experiência do usuário — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  44. Qualidade além dos testes: acessibilidade, desempenho, segurança e
+  experiência do usuário
+</h1>
+
+<p>
+  A feature passou em todos os testes automatizados, com cobertura acima de
+  90%. No dia do lançamento, quatro problemas diferentes apareceram, nenhum
+  deles capturado por um único teste verde: a tela levava oito segundos para
+  carregar com o volume real de dados de produção, o contraste dos botões
+  não atendia aos critérios mínimos de acessibilidade, uma dependência com
+  vulnerabilidade conhecida estava em uso havia semanas, e usuários reais
+  simplesmente não entendiam o que um dos botões fazia. Nenhum teste
+  funcional falhou, porque nenhum deles tinha sido desenhado para verificar
+  essas quatro dimensões.
+</p>
+
+<p>
+  Testes funcionais provam que o código faz o que foi programado para
+  fazer. Não provam que fazer isso é suficiente para o software ser
+  considerado bom.
+</p>
+
+<h2>Funcionar é apenas uma das dimensões de qualidade</h2>
+
+<blockquote>
+  <p>
+    Software pode funcionar e ainda ser inseguro, lento, inacessível ou
+    confuso.
+  </p>
+</blockquote>
+
+<p>
+  Qualidade de software é multidimensional. Testes automatizados cobrem
+  principalmente a dimensão funcional — o sistema faz o que deveria fazer
+  no nível lógico. Mas desempenho, acessibilidade, segurança e experiência
+  do usuário são dimensões independentes, cada uma com seus próprios
+  critérios de avaliação, que raramente aparecem numa suíte de testes de
+  unidade convencional.
+</p>
+
+<h2>Quatro dimensões, quatro perguntas diferentes</h2>
+
+<ul>
+  <li>
+    <strong>Desempenho:</strong> o sistema responde dentro de um tempo
+    aceitável com volume de dados real, não apenas com os poucos registros
+    de um ambiente de teste?
+  </li>
+  <li>
+    <strong>Acessibilidade:</strong> pessoas que dependem de leitor de tela,
+    navegação por teclado ou alto contraste conseguem usar a
+    funcionalidade?
+  </li>
+  <li>
+    <strong>Segurança:</strong> as dependências utilizadas estão livres de
+    vulnerabilidades conhecidas, e os dados sensíveis estão protegidos?
+  </li>
+  <li>
+    <strong>Experiência do usuário:</strong> uma pessoa sem conhecimento
+    prévio do sistema entende o que cada elemento da interface faz?
+  </li>
+</ul>
+
+<h2>Avaliando a mesma feature nas quatro dimensões</h2>
+
+<pre><code>## Checklist multidimensional — feature de exportação de relatório
+
+- [ ] Desempenho: testado com volume real de produção
+      (10.000+ registros), resposta em menos de 3s
+- [ ] Acessibilidade: botão de exportação possui nome
+      acessível; contraste validado (WCAG AA)
+- [ ] Segurança: dependências verificadas contra
+      vulnerabilidades conhecidas (scan executado)
+- [ ] Experiência do usuário: testado com pelo menos um
+      usuário sem contexto prévio da funcionalidade</code></pre>
+
+<p>
+  Nenhum item desse checklist é substituível por um teste unitário verde —
+  cada um exige uma verificação própria, com ferramenta ou processo
+  específico para aquela dimensão.
+</p>
+
+<h2>O limite: nem toda feature exige as quatro dimensões completas</h2>
+
+<p>
+  Uma ferramenta interna, de uso esporádico por uma única pessoa da equipe
+  técnica, pode dispensar auditoria de acessibilidade completa. O
+  investimento em cada dimensão deveria ser proporcional ao alcance e à
+  criticidade da funcionalidade — recursos voltados a milhares de usuários
+  externos justificam rigor nas quatro dimensões; ferramentas internas de
+  nicho, normalmente não.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um teste automatizado verde é uma prova estreita: prova que a lógica
+  funciona, não que o software é seguro, rápido, acessível ou compreensível.
+  Tratar qualidade como sinônimo de "testes passando" deixa de fora
+  exatamente os problemas que mais afetam quem realmente usa o sistema.
+</p>
+
+<p>
+  <strong
+    >A última feature que passou em todos os testes no seu projeto já foi
+    avaliada em desempenho, acessibilidade, segurança e experiência do
+    usuário, ou só na dimensão funcional?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 44 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #QualidadeDeSoftware #AgentesDeIA #Acessibilidade #Desempenho
+    #ExperienciaDoUsuario
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

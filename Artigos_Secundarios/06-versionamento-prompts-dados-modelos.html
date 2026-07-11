@@ -3,24 +3,220 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Estratégia de versionamento e rastreabilidade para prompts, dados, modelos, ferramentas e avaliações de sistemas de IA." />
+    <meta
+      name="description"
+      content="Estratégia de versionamento e rastreabilidade para prompts, dados, modelos, ferramentas e avaliações de sistemas de IA."
+    />
     <title>Versionamento de sistemas de IA: da resposta à evidência</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
-    <script>tailwind.config={theme:{extend:{fontFamily:{sans:["Inter","sans-serif"],mono:["Fira Code","monospace"]},colors:{brand:{50:"#f0fdfa",100:"#ccfbf1",500:"#14b8a6",600:"#0d9488",700:"#0f766e",900:"#134e4a"}}}}};</script>
-    <style>body{font-family:"Inter",sans-serif}.copy p{margin-top:1rem;line-height:1.8}.copy ul,.copy ol{margin:1rem 0 0 1.25rem}.copy li{margin-top:.55rem;line-height:1.7}.copy ul{list-style:disc}.copy ol{list-style:decimal}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Fira Code", "monospace"],
+            },
+            colors: {
+              brand: {
+                50: "#f0fdfa",
+                100: "#ccfbf1",
+                500: "#14b8a6",
+                600: "#0d9488",
+                700: "#0f766e",
+                900: "#134e4a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .copy p {
+        margin-top: 1rem;
+        line-height: 1.8;
+      }
+      .copy ul,
+      .copy ol {
+        margin: 1rem 0 0 1.25rem;
+      }
+      .copy li {
+        margin-top: 0.55rem;
+        line-height: 1.7;
+      }
+      .copy ul {
+        list-style: disc;
+      }
+      .copy ol {
+        list-style: decimal;
+      }
+    </style>
   </head>
   <body class="bg-slate-50 text-slate-800 antialiased">
-    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"><div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><a href="index.html" class="font-bold text-brand-700 hover:text-brand-900">Artigos_GenAi</a><nav aria-label="Navegação do artigo" class="flex gap-4 text-sm font-medium"><a href="#unidade" class="hover:text-brand-700">Unidade</a><a href="#manifesto" class="hover:text-brand-700">Manifesto</a><a href="#rollback" class="hover:text-brand-700">Rollback</a></nav></div></header>
+    <header
+      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+    >
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a
+          href="index.html"
+          class="font-bold text-brand-700 hover:text-brand-900"
+          >AI_Software_Engineering_Playbook</a
+        >
+        <nav
+          aria-label="Navegação do artigo"
+          class="flex gap-4 text-sm font-medium"
+        >
+          <a href="#unidade" class="hover:text-brand-700">Unidade</a
+          ><a href="#manifesto" class="hover:text-brand-700">Manifesto</a
+          ><a href="#rollback" class="hover:text-brand-700">Rollback</a>
+        </nav>
+      </div>
+    </header>
     <main>
-      <section class="bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500 text-white"><div class="mx-auto max-w-5xl px-5 py-20 md:py-28"><div class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"><span class="rounded-full bg-white/15 px-3 py-1">Engenharia</span><span class="rounded-full bg-white/15 px-3 py-1">Artigo conceitual</span><span class="rounded-full bg-white/15 px-3 py-1">Nível intermediário</span></div><p class="mb-4 font-mono text-sm text-teal-100">Artigo 06 · Revisado em julho de 2026</p><h1 class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl">Versionamento de sistemas de IA</h1><p class="mt-6 max-w-3xl text-xl leading-relaxed text-teal-100">Reproduzir uma resposta exige conhecer muito mais que o commit do código.</p></div></section>
+      <section
+        class="bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500 text-white"
+      >
+        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
+          <div
+            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
+          >
+            <span class="rounded-full bg-white/15 px-3 py-1">Engenharia</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Artigo conceitual</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Nível intermediário</span
+            >
+          </div>
+          <p class="mb-4 font-mono text-sm text-teal-100">
+            Artigo 06 · Revisado em julho de 2026
+          </p>
+          <h1
+            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
+          >
+            Versionamento de sistemas de IA
+          </h1>
+          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-teal-100">
+            Reproduzir uma resposta exige conhecer muito mais que o commit do
+            código.
+          </p>
+        </div>
+      </section>
       <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Problema</p><h2 class="mt-3 text-3xl font-bold">Mesmo código, comportamento diferente</h2><p>Uma aplicação pode mudar sem alterar o repositório: o provedor atualiza um modelo, o índice recebe novos documentos, uma ferramenta muda contrato ou uma configuração é ajustada no ambiente.</p><p>Quando a equipe registra apenas código, não consegue explicar qual combinação produziu uma resposta, comparar versões com justiça nem executar rollback completo.</p><p><strong>Tese:</strong> a unidade versionável é a configuração executável do sistema e sua evidência de avaliação.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Problema
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Mesmo código, comportamento diferente
+          </h2>
+          <p>
+            Uma aplicação pode mudar sem alterar o repositório: o provedor
+            atualiza um modelo, o índice recebe novos documentos, uma ferramenta
+            muda contrato ou uma configuração é ajustada no ambiente.
+          </p>
+          <p>
+            Quando a equipe registra apenas código, não consegue explicar qual
+            combinação produziu uma resposta, comparar versões com justiça nem
+            executar rollback completo.
+          </p>
+          <p>
+            <strong>Tese:</strong> a unidade versionável é a configuração
+            executável do sistema e sua evidência de avaliação.
+          </p>
+        </section>
 
-        <section class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10" id="unidade"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-teal-300">Unidade reproduzível</p><h2 class="mt-3 text-3xl font-bold">Oito componentes precisam de identidade</h2><div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4"><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Código</h3><p class="mt-2 text-sm text-slate-300">commit, build e dependências</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Prompt</h3><p class="mt-2 text-sm text-slate-300">template, variáveis e políticas</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Modelo</h3><p class="mt-2 text-sm text-slate-300">provedor, identificador e parâmetros</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Dados</h3><p class="mt-2 text-sm text-slate-300">snapshot, origem e permissões</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Retrieval</h3><p class="mt-2 text-sm text-slate-300">chunking, índice, filtros e ranking</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Ferramentas</h3><p class="mt-2 text-sm text-slate-300">schemas, versões e autoridade</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Configuração</h3><p class="mt-2 text-sm text-slate-300">flags, limites e fallback</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Avaliação</h3><p class="mt-2 text-sm text-slate-300">dataset, critérios e resultados</p></article></div></section>
+        <section
+          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
+          id="unidade"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-teal-300"
+          >
+            Unidade reproduzível
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Oito componentes precisam de identidade
+          </h2>
+          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Código</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                commit, build e dependências
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Prompt</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                template, variáveis e políticas
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Modelo</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                provedor, identificador e parâmetros
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Dados</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                snapshot, origem e permissões
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Retrieval</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                chunking, índice, filtros e ranking
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Ferramentas</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                schemas, versões e autoridade
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Configuração</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                flags, limites e fallback
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Avaliação</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                dataset, critérios e resultados
+              </p>
+            </article>
+          </div>
+        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="manifesto"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Manifesto de execução</p><h2 class="mt-3 text-3xl font-bold">Ligue cada resposta à configuração que a produziu</h2><pre class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-teal-100"><code>release: ai-feature-2026-07-10.1
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="manifesto"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Manifesto de execução
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Ligue cada resposta à configuração que a produziu
+          </h2>
+          <pre
+            class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-teal-100"
+          ><code>release: ai-feature-2026-07-10.1
 code_commit: &lt;hash&gt;
 prompt_version: support-summary-v3
 model:
@@ -35,21 +231,171 @@ tools_schema: tools-v2
 feature_flags: &lt;snapshot-id&gt;
 evaluation:
   dataset: support-regression-v5
-  report: &lt;artifact-id&gt;</code></pre><p>O manifesto deve conter identificadores, não segredos ou dados pessoais. Artefatos grandes podem permanecer em armazenamento próprio, desde que sejam imutáveis ou verificáveis por hash.</p></section>
+  report: &lt;artifact-id&gt;</code></pre>
+          <p>
+            O manifesto deve conter identificadores, não segredos ou dados
+            pessoais. Artefatos grandes podem permanecer em armazenamento
+            próprio, desde que sejam imutáveis ou verificáveis por hash.
+          </p>
+        </section>
 
-        <section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700">Prompts como artefatos</p><h2 class="mt-3 text-3xl font-bold">Versione intenção, contrato e compatibilidade</h2><ul><li>separe template de valores fornecidos em execução;</li><li>registre variáveis obrigatórias e limites;</li><li>associe schemas de saída e ferramentas compatíveis;</li><li>documente objetivo, mudanças e riscos;</li><li>ligue a versão ao dataset de regressão;</li><li>não armazene segredos nem exemplos com dados pessoais;</li><li>trate mudanças de política como mudanças revisáveis.</li></ul></section>
+        <section
+          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
+          >
+            Prompts como artefatos
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Versione intenção, contrato e compatibilidade
+          </h2>
+          <ul>
+            <li>separe template de valores fornecidos em execução;</li>
+            <li>registre variáveis obrigatórias e limites;</li>
+            <li>associe schemas de saída e ferramentas compatíveis;</li>
+            <li>documente objetivo, mudanças e riscos;</li>
+            <li>ligue a versão ao dataset de regressão;</li>
+            <li>não armazene segredos nem exemplos com dados pessoais;</li>
+            <li>trate mudanças de política como mudanças revisáveis.</li>
+          </ul>
+        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Dados e retrieval</p><h2 class="mt-3 text-3xl font-bold">Corpus e índice não são a mesma coisa</h2><p>Reproduzir RAG exige registrar a fonte lógica e a transformação que gerou o índice:</p><ul><li>origem e versão do corpus;</li><li>regras de inclusão, exclusão e autorização;</li><li>normalização e deduplicação;</li><li>estratégia de chunking;</li><li>representação vetorial e configuração de busca;</li><li>filtros, reranking e parâmetros;</li><li>data, código e resultado do build;</li><li>processo de exclusão e reconstrução.</li></ul><p>Um backup do índice sem linhagem pode preservar dados, mas não necessariamente explica como foram produzidos.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Dados e retrieval
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Corpus e índice não são a mesma coisa
+          </h2>
+          <p>
+            Reproduzir RAG exige registrar a fonte lógica e a transformação que
+            gerou o índice:
+          </p>
+          <ul>
+            <li>origem e versão do corpus;</li>
+            <li>regras de inclusão, exclusão e autorização;</li>
+            <li>normalização e deduplicação;</li>
+            <li>estratégia de chunking;</li>
+            <li>representação vetorial e configuração de busca;</li>
+            <li>filtros, reranking e parâmetros;</li>
+            <li>data, código e resultado do build;</li>
+            <li>processo de exclusão e reconstrução.</li>
+          </ul>
+          <p>
+            Um backup do índice sem linhagem pode preservar dados, mas não
+            necessariamente explica como foram produzidos.
+          </p>
+        </section>
 
-        <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700">Segurança</p><h2 class="mt-3 text-3xl font-bold">Rastreabilidade não justifica registrar tudo</h2><ul><li>usar identificadores de correlação em vez de conteúdo bruto quando possível;</li><li>aplicar minimização, retenção e controle de acesso;</li><li>não versionar tokens, credenciais ou segredos;</li><li>separar metadados operacionais de dados sensíveis;</li><li>registrar quem alterou configurações críticas;</li><li>proteger datasets de avaliação contra vazamento e contaminação;</li><li>manter trilha de exclusão quando fontes forem removidas.</li></ul></section>
+        <section
+          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
+          >
+            Segurança
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Rastreabilidade não justifica registrar tudo
+          </h2>
+          <ul>
+            <li>
+              usar identificadores de correlação em vez de conteúdo bruto quando
+              possível;
+            </li>
+            <li>aplicar minimização, retenção e controle de acesso;</li>
+            <li>não versionar tokens, credenciais ou segredos;</li>
+            <li>separar metadados operacionais de dados sensíveis;</li>
+            <li>registrar quem alterou configurações críticas;</li>
+            <li>
+              proteger datasets de avaliação contra vazamento e contaminação;
+            </li>
+            <li>manter trilha de exclusão quando fontes forem removidas.</li>
+          </ul>
+        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="rollback"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Release e rollback</p><h2 class="mt-3 text-3xl font-bold">Rollback parcial pode manter o incidente</h2><p>Reverter apenas o código não resolve uma regressão causada por prompt, índice, configuração ou ferramenta. A unidade de release deve permitir restaurar uma combinação conhecida.</p><ol><li>criar release candidata com manifesto imutável;</li><li>executar avaliações e checks de segurança;</li><li>liberar por flag para escopo controlado;</li><li>monitorar qualidade, latência, custo e erros;</li><li>comparar com a linha de base;</li><li>promover ou restaurar o manifesto anterior;</li><li>registrar causa e decisão.</li></ol></section>
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="rollback"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Release e rollback
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Rollback parcial pode manter o incidente
+          </h2>
+          <p>
+            Reverter apenas o código não resolve uma regressão causada por
+            prompt, índice, configuração ou ferramenta. A unidade de release
+            deve permitir restaurar uma combinação conhecida.
+          </p>
+          <ol>
+            <li>criar release candidata com manifesto imutável;</li>
+            <li>executar avaliações e checks de segurança;</li>
+            <li>liberar por flag para escopo controlado;</li>
+            <li>monitorar qualidade, latência, custo e erros;</li>
+            <li>comparar com a linha de base;</li>
+            <li>promover ou restaurar o manifesto anterior;</li>
+            <li>registrar causa e decisão.</li>
+          </ol>
+        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Conclusão</p><h2 class="mt-3 text-3xl font-bold">Reprodutibilidade transforma comportamento em evidência</h2><p>Versionar sistemas de IA significa poder responder: qual configuração rodou, com quais dados, sob quais controles e contra qual avaliação?</p><p>O próximo artigo leva essa lógica aos contratos de API, onde latência variável, idempotência, execução assíncrona e validação de saída precisam ser explícitas.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Conclusão
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Reprodutibilidade transforma comportamento em evidência
+          </h2>
+          <p>
+            Versionar sistemas de IA significa poder responder: qual
+            configuração rodou, com quais dados, sob quais controles e contra
+            qual avaliação?
+          </p>
+          <p>
+            O próximo artigo leva essa lógica aos contratos de API, onde
+            latência variável, idempotência, execução assíncrona e validação de
+            saída precisam ser explícitas.
+          </p>
+        </section>
 
-        <nav aria-label="Artigos relacionados" class="grid gap-4 sm:grid-cols-2"><a href="05-llms-como-copilotos-para-devs.html" class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Anterior</span><strong class="mt-2 block text-lg text-brand-900">IA como copiloto de desenvolvimento</strong></a><a href="07-design-apis-genai.html" class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Próximo</span><strong class="mt-2 block text-lg text-brand-900">Design de APIs para IA</strong></a></nav>
+        <nav
+          aria-label="Artigos relacionados"
+          class="grid gap-4 sm:grid-cols-2"
+        >
+          <a
+            href="05-llms-como-copilotos-para-devs.html"
+            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Anterior</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >IA como copiloto de desenvolvimento</strong
+            ></a
+          ><a
+            href="07-design-apis-genai.html"
+            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Próximo</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >Design de APIs para IA</strong
+            ></a
+          >
+        </nav>
       </div>
     </main>
-    <footer class="border-t border-slate-200 bg-white py-8"><div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso</div></footer>
+    <footer class="border-t border-slate-200 bg-white py-8">
+      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
+        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Velocidade sem coerência acumula custo futuro. Como identificar duplicação, abstração prematura, dependência desnecessária e correção localizada em código gerado por IA."
+    />
+    <title>
+      37. Dívida técnica gerada por IA: como ela nasce e como impedir seu crescimento — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Execução e Desenvolvimento
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 4 — Da geração de código à implementação sustentável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>37. Dívida técnica gerada por IA: como ela nasce e como impedir seu crescimento</h1>
+
+<p>
+  Nenhuma das quatro tarefas da semana, isoladamente, parecia um problema. A
+  primeira duplicou uma validação de e-mail que já existia em outro arquivo,
+  porque o agente não encontrou a versão original. A segunda criou uma
+  camada de abstração genérica — um "gerenciador" configurável para um caso
+  de uso que, na prática, nunca teve uma segunda variação. A terceira
+  adicionou uma biblioteca externa inteira só para formatar uma data de um
+  jeito específico. A quarta corrigiu um bug tratando um ID específico como
+  exceção direto no código, em vez de investigar por que aquele ID se
+  comportava diferente dos demais. Individualmente, cada decisão era
+  defensável sob pressão de prazo. Juntas, formaram um código
+  progressivamente mais difícil de entender e de mudar.
+</p>
+
+<p>
+  Nenhuma dessas quatro tarefas gerou um incidente imediato. É exatamente
+  por isso que a dívida técnica cresce sem alarme: cada decisão parece
+  pequena demais para questionar sozinha.
+</p>
+
+<h2>Velocidade sem coerência é dívida disfarçada de produtividade</h2>
+
+<blockquote>
+  <p>Velocidade sem coerência acumula custo futuro.</p>
+</blockquote>
+
+<p>
+  Agentes de IA produzem código rápido, e rapidez tende a ser confundida com
+  produtividade real. Mas quando cada tarefa é resolvida isoladamente, sem
+  visibilidade do que já existe no restante do sistema, decisões locais
+  razoáveis se acumulam em inconsistência estrutural — o mesmo problema
+  discutido no artigo sobre arquitetura antes do código, agora manifestado ao
+  longo do tempo, não apenas entre tarefas simultâneas.
+</p>
+
+<h2>Quatro padrões recorrentes de dívida gerada por IA</h2>
+
+<ul>
+  <li>
+    <strong>Duplicação:</strong> reimplementar algo que já existe, porque o
+    agente não tinha visibilidade do código existente ou não foi instruído a
+    procurá-lo.
+  </li>
+  <li>
+    <strong>Abstração prematura:</strong> criar flexibilidade genérica para
+    um caso de uso que ainda não tem uma segunda variação real, aumentando
+    complexidade sem benefício atual.
+  </li>
+  <li>
+    <strong>Dependência desnecessária:</strong> adicionar uma biblioteca
+    externa inteira para resolver um problema que poucas linhas de código
+    próprio resolveriam.
+  </li>
+  <li>
+    <strong>Correção localizada:</strong> tratar o sintoma de um bug com uma
+    exceção específica, em vez de investigar e corrigir a causa raiz.
+  </li>
+</ul>
+
+<h2>Um checklist rápido para identificar os quatro padrões</h2>
+
+<pre><code>Antes de aprovar uma tarefa concluída por um agente, verificar:
+
+1. Existe função ou lógica equivalente em outro lugar do
+   código? (duplicação)
+2. Esta abstração resolve mais de um caso real hoje, ou
+   apenas um caso hipotético futuro? (abstração prematura)
+3. Esta dependência nova resolve um problema que não seria
+   trivial resolver sem ela? (dependência desnecessária)
+4. Esta correção resolve a causa, ou apenas um sintoma
+   específico? (correção localizada)</code></pre>
+
+<p>
+  Nenhuma dessas perguntas exige ferramentas sofisticadas — exige apenas que
+  alguém, na revisão, procure ativamente por esses quatro padrões, em vez de
+  avaliar cada tarefa isoladamente pelo critério de "funciona?".
+</p>
+
+<h2>O limite: nem toda dívida técnica precisa ser eliminada</h2>
+
+<p>
+  Dívida técnica não é, por si só, um erro — é, às vezes, uma troca
+  consciente de curto prazo por velocidade, desde que registrada e paga
+  depois. O problema não é a dívida técnica existir; é ela se acumular sem
+  ninguém perceber, porque cada instância individual parecia pequena demais
+  para registrar.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  A dívida técnica gerada por agentes de IA raramente aparece como um erro
+  óbvio — aparece como uma sequência de pequenas decisões razoáveis,
+  tomadas sem visibilidade do conjunto. Reconhecer os quatro padrões
+  recorrentes durante a revisão é o que permite pagar essa dívida enquanto
+  ainda é barata, em vez de descobri-la meses depois, consolidada em todo o
+  sistema.
+</p>
+
+<p>
+  <strong
+    >Nas últimas semanas de tarefas entregues por agentes no seu projeto,
+    quantas vezes apareceu duplicação, abstração prematura, dependência
+    desnecessária ou correção localizada — e quantas dessas foram
+    percebidas?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 37 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #DividaTecnica #QualidadeDeSoftware
+    #CodeReview
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

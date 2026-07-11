@@ -1,10 +1,222 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content="Fairness em sistemas de IA como requisito de produto, dados, avaliação e governança."/><title>Fairness em sistemas de IA: medir, decidir e governar</title><script src="https://cdn.tailwindcss.com"></script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Fira+Code&amp;display=swap" rel="stylesheet"/><script>tailwind.config={theme:{extend:{fontFamily:{sans:["Inter"],mono:["Fira Code"]},colors:{brand:{50:"#faf5ff",100:"#f3e8ff",600:"#9333ea",700:"#7e22ce",900:"#581c87"}}}}};</script><style>body{font-family:Inter,sans-serif}.copy p{margin-top:1rem;line-height:1.8}.copy ul,.copy ol{margin:1rem 0 0 1.25rem}.copy li{margin-top:.55rem;line-height:1.7}.copy ul{list-style:disc}.copy ol{list-style:decimal}</style></head><body class="bg-slate-50 text-slate-800"><header class="sticky top-0 z-40 border-b bg-white/95"><div class="mx-auto flex max-w-5xl justify-between px-5 py-4"><a href="index.html" class="font-bold text-brand-700">Artigos_GenAi</a><nav class="flex gap-4 text-sm"><a href="#processo">Processo</a><a href="#metricas">Métricas</a></nav></div></header><main><section class="bg-gradient-to-br from-brand-900 via-brand-700 to-purple-500 text-white"><div class="mx-auto max-w-5xl px-5 py-20"><p class="font-mono text-sm text-purple-100">Artigo 17 · Revisado em julho de 2026</p><h1 class="mt-4 text-4xl font-extrabold md:text-6xl">Fairness em sistemas de IA</h1><p class="mt-6 max-w-3xl text-xl text-purple-100">Métricas não escolhem valores. O produto precisa declarar quem pode ser afetado, qual dano importa e como contestar decisões.</p></div></section><div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-<aside class="rounded-2xl border border-amber-200 bg-amber-50 p-6"><strong>Escopo:</strong> este artigo oferece engenharia e governança gerais, não conclusão jurídica nem fórmula universal de fairness.</aside>
-<section class="copy rounded-2xl bg-white p-8 shadow-sm"><h2 class="text-3xl font-bold">Viés pode entrar em todo o sistema</h2><p>Dados históricos, definição do objetivo, labels, retrieval, prompt, interface e processo humano podem produzir diferenças de impacto. Avaliar apenas o modelo ignora parte importante do problema.</p><p><strong>Tese:</strong> fairness é requisito contextual que precisa de decisão explícita, medição segmentada e mecanismo de correção.</p></section>
-<section class="rounded-2xl bg-slate-900 p-8 text-white" id="processo"><h2 class="text-3xl font-bold">Processo em seis etapas</h2><ol class="mt-6 list-decimal space-y-3 pl-5 text-slate-300"><li>mapear decisão e pessoas afetadas;</li><li>identificar danos e benefícios possíveis;</li><li>examinar dados, proxies e ausências;</li><li>definir métricas e limites apropriados;</li><li>testar por grupos e interseções relevantes;</li><li>monitorar, contestar e corrigir.</li></ol></section>
-<section class="copy rounded-2xl bg-white p-8 shadow-sm"><h2 class="text-3xl font-bold">Dados merecem perguntas difíceis</h2><ul><li>quem está representado ou ausente?</li><li>como os labels foram produzidos?</li><li>o passado reflete uma prática injusta?</li><li>há proxies para atributos sensíveis?</li><li>erros de medição variam entre grupos?</li><li>consentimento e finalidade permitem esse uso?</li></ul></section>
-<section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-8" id="metricas"><h2 class="text-3xl font-bold">Métricas podem entrar em conflito</h2><div class="mt-6 overflow-x-auto"><table class="w-full min-w-[720px] text-left text-sm"><thead><tr class="bg-slate-900 text-white"><th class="p-4">Perspectiva</th><th class="p-4">Pergunta</th></tr></thead><tbody><tr><th class="p-4">Qualidade por grupo</th><td class="p-4">erro e cobertura são comparáveis?</td></tr><tr class="bg-white/60"><th class="p-4">Oportunidade</th><td class="p-4">casos positivos relevantes são reconhecidos?</td></tr><tr><th class="p-4">Falsos positivos</th><td class="p-4">quem recebe intervenção indevida?</td></tr><tr class="bg-white/60"><th class="p-4">Calibração</th><td class="p-4">o score possui significado semelhante?</td></tr><tr><th class="p-4">Experiência</th><td class="p-4">recusa, latência e escalonamento diferem?</td></tr></tbody></table></div><p>Escolher uma métrica é decisão de produto e risco. Otimizar uma pode piorar outra.</p></section>
-<section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-8"><h2 class="text-3xl font-bold">Cuidados com avaliação</h2><ul><li>amostras pequenas geram estimativas instáveis;</li><li>médias escondem interseções;</li><li>atributos inferidos podem estar errados;</li><li>coletar atributos sensíveis cria novos riscos;</li><li>benchmarks não substituem contexto local;</li><li>resultado estatístico não mede todo dano qualitativo.</li></ul></section>
-<section class="copy rounded-2xl bg-white p-8 shadow-sm"><h2 class="text-3xl font-bold">Mitigação ocorre em várias camadas</h2><ul><li>redefinir objetivo ou reduzir automação;</li><li>melhorar cobertura e qualidade dos dados;</li><li>ajustar retrieval, thresholds ou interface;</li><li>adicionar revisão humana com critérios;</li><li>oferecer explicação e contestação;</li><li>limitar uso em cenários de alto impacto;</li><li>monitorar recorrência após a mudança.</li></ul></section>
-<section class="copy rounded-2xl bg-white p-8 shadow-sm"><h2 class="text-3xl font-bold">Conclusão</h2><p>Fairness não é checklist concluído por uma métrica. É uma prática contínua que liga objetivos, dados, impacto, participação humana e governança.</p></section>
-<nav class="grid gap-4 sm:grid-cols-2" aria-label="Artigos relacionados"><a href="16-alucinacoes-llm-mitigacao.html" class="rounded-xl bg-brand-50 p-5">← Respostas não sustentadas</a><a href="18-interfaces-conversacionais-honestas.html" class="rounded-xl bg-brand-50 p-5 text-right">Interfaces honestas →</a></nav></div></main><footer class="border-t bg-white py-8 text-center text-sm text-slate-500">AI Software Engineering</footer></body></html>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Fairness em sistemas de IA como requisito de produto, dados, avaliação e governança."
+    />
+    <title>Fairness em sistemas de IA: medir, decidir e governar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Fira+Code&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter"], mono: ["Fira Code"] },
+            colors: {
+              brand: {
+                50: "#faf5ff",
+                100: "#f3e8ff",
+                600: "#9333ea",
+                700: "#7e22ce",
+                900: "#581c87",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: Inter, sans-serif;
+      }
+      .copy p {
+        margin-top: 1rem;
+        line-height: 1.8;
+      }
+      .copy ul,
+      .copy ol {
+        margin: 1rem 0 0 1.25rem;
+      }
+      .copy li {
+        margin-top: 0.55rem;
+        line-height: 1.7;
+      }
+      .copy ul {
+        list-style: disc;
+      }
+      .copy ol {
+        list-style: decimal;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <header class="sticky top-0 z-40 border-b bg-white/95">
+      <div class="mx-auto flex max-w-5xl justify-between px-5 py-4">
+        <a href="index.html" class="font-bold text-brand-700"
+          >AI_Software_Engineering_Playbook</a
+        >
+        <nav class="flex gap-4 text-sm">
+          <a href="#processo">Processo</a><a href="#metricas">Métricas</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section
+        class="bg-gradient-to-br from-brand-900 via-brand-700 to-purple-500 text-white"
+      >
+        <div class="mx-auto max-w-5xl px-5 py-20">
+          <p class="font-mono text-sm text-purple-100">
+            Artigo 17 · Revisado em julho de 2026
+          </p>
+          <h1 class="mt-4 text-4xl font-extrabold md:text-6xl">
+            Fairness em sistemas de IA
+          </h1>
+          <p class="mt-6 max-w-3xl text-xl text-purple-100">
+            Métricas não escolhem valores. O produto precisa declarar quem pode
+            ser afetado, qual dano importa e como contestar decisões.
+          </p>
+        </div>
+      </section>
+      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
+        <aside class="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+          <strong>Escopo:</strong> este artigo oferece engenharia e governança
+          gerais, não conclusão jurídica nem fórmula universal de fairness.
+        </aside>
+        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
+          <h2 class="text-3xl font-bold">Viés pode entrar em todo o sistema</h2>
+          <p>
+            Dados históricos, definição do objetivo, labels, retrieval, prompt,
+            interface e processo humano podem produzir diferenças de impacto.
+            Avaliar apenas o modelo ignora parte importante do problema.
+          </p>
+          <p>
+            <strong>Tese:</strong> fairness é requisito contextual que precisa
+            de decisão explícita, medição segmentada e mecanismo de correção.
+          </p>
+        </section>
+        <section class="rounded-2xl bg-slate-900 p-8 text-white" id="processo">
+          <h2 class="text-3xl font-bold">Processo em seis etapas</h2>
+          <ol class="mt-6 list-decimal space-y-3 pl-5 text-slate-300">
+            <li>mapear decisão e pessoas afetadas;</li>
+            <li>identificar danos e benefícios possíveis;</li>
+            <li>examinar dados, proxies e ausências;</li>
+            <li>definir métricas e limites apropriados;</li>
+            <li>testar por grupos e interseções relevantes;</li>
+            <li>monitorar, contestar e corrigir.</li>
+          </ol>
+        </section>
+        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
+          <h2 class="text-3xl font-bold">Dados merecem perguntas difíceis</h2>
+          <ul>
+            <li>quem está representado ou ausente?</li>
+            <li>como os labels foram produzidos?</li>
+            <li>o passado reflete uma prática injusta?</li>
+            <li>há proxies para atributos sensíveis?</li>
+            <li>erros de medição variam entre grupos?</li>
+            <li>consentimento e finalidade permitem esse uso?</li>
+          </ul>
+        </section>
+        <section
+          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-8"
+          id="metricas"
+        >
+          <h2 class="text-3xl font-bold">Métricas podem entrar em conflito</h2>
+          <div class="mt-6 overflow-x-auto">
+            <table class="w-full min-w-[720px] text-left text-sm">
+              <thead>
+                <tr class="bg-slate-900 text-white">
+                  <th class="p-4">Perspectiva</th>
+                  <th class="p-4">Pergunta</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th class="p-4">Qualidade por grupo</th>
+                  <td class="p-4">erro e cobertura são comparáveis?</td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Oportunidade</th>
+                  <td class="p-4">
+                    casos positivos relevantes são reconhecidos?
+                  </td>
+                </tr>
+                <tr>
+                  <th class="p-4">Falsos positivos</th>
+                  <td class="p-4">quem recebe intervenção indevida?</td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Calibração</th>
+                  <td class="p-4">o score possui significado semelhante?</td>
+                </tr>
+                <tr>
+                  <th class="p-4">Experiência</th>
+                  <td class="p-4">recusa, latência e escalonamento diferem?</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Escolher uma métrica é decisão de produto e risco. Otimizar uma pode
+            piorar outra.
+          </p>
+        </section>
+        <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-8">
+          <h2 class="text-3xl font-bold">Cuidados com avaliação</h2>
+          <ul>
+            <li>amostras pequenas geram estimativas instáveis;</li>
+            <li>médias escondem interseções;</li>
+            <li>atributos inferidos podem estar errados;</li>
+            <li>coletar atributos sensíveis cria novos riscos;</li>
+            <li>benchmarks não substituem contexto local;</li>
+            <li>resultado estatístico não mede todo dano qualitativo.</li>
+          </ul>
+        </section>
+        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
+          <h2 class="text-3xl font-bold">Mitigação ocorre em várias camadas</h2>
+          <ul>
+            <li>redefinir objetivo ou reduzir automação;</li>
+            <li>melhorar cobertura e qualidade dos dados;</li>
+            <li>ajustar retrieval, thresholds ou interface;</li>
+            <li>adicionar revisão humana com critérios;</li>
+            <li>oferecer explicação e contestação;</li>
+            <li>limitar uso em cenários de alto impacto;</li>
+            <li>monitorar recorrência após a mudança.</li>
+          </ul>
+        </section>
+        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
+          <h2 class="text-3xl font-bold">Conclusão</h2>
+          <p>
+            Fairness não é checklist concluído por uma métrica. É uma prática
+            contínua que liga objetivos, dados, impacto, participação humana e
+            governança.
+          </p>
+        </section>
+        <nav
+          class="grid gap-4 sm:grid-cols-2"
+          aria-label="Artigos relacionados"
+        >
+          <a
+            href="16-alucinacoes-llm-mitigacao.html"
+            class="rounded-xl bg-brand-50 p-5"
+            >← Respostas não sustentadas</a
+          ><a
+            href="18-interfaces-conversacionais-honestas.html"
+            class="rounded-xl bg-brand-50 p-5 text-right"
+            >Interfaces honestas →</a
+          >
+        </nav>
+      </div>
+    </main>
+    <footer class="border-t bg-white py-8 text-center text-sm text-slate-500">
+      AI Software Engineering
+    </footer>
+  </body>
+</html>

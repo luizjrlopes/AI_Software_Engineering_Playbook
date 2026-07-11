@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Custo diminui com seleção, índices, resumos, cache e tarefas menores. Como reduzir o gasto com tokens sem perder qualidade de contexto para agentes de IA."
+    />
+    <title>
+      57. Tokens também são arquitetura: como reduzir custo sem empobrecer o contexto — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>57. Tokens também são arquitetura: como reduzir custo sem empobrecer o contexto</h1>
+
+<p>
+  Para garantir que o agente "tivesse todo o contexto necessário", alguém
+  configurou a tarefa para colar a biblioteca de componentes inteira — mais
+  de quarenta mil linhas — em toda chamada, mesmo quando a tarefa envolvia
+  apenas um único botão. O custo por chamada disparou, o tempo de resposta
+  cresceu, e a maior parte daquele contexto era irrelevante para o problema
+  específico sendo resolvido. Ninguém tinha decidido isso conscientemente;
+  simplesmente pareceu mais seguro enviar tudo do que se preocupar em
+  selecionar o que realmente importava.
+</p>
+
+<p>
+  Custo de tokens não é apenas uma linha de fatura no fim do mês — é um
+  sintoma direto de como o contexto foi arquitetado. Enviar mais dados nem
+  sempre significa dar mais informação útil; frequentemente significa apenas
+  pagar mais para diluir o sinal relevante em ruído.
+</p>
+
+<h2>Custo é uma consequência de decisões estruturais</h2>
+
+<blockquote>
+  <p>
+    Custo diminui com seleção, índices, resumos, cache e tarefas menores.
+  </p>
+</blockquote>
+
+<p>
+  Reduzir o custo de tokens não significa necessariamente cortar
+  informação relevante — significa parar de tratar "contexto" como sinônimo
+  de "tudo que existe" e passar a tratá-lo como algo arquitetado, seguindo a
+  mesma lógica de camadas discutida no artigo sobre engenharia de contexto.
+  Um agente que recebe exatamente o que precisa, e nada além disso, tende a
+  custar menos e a responder com mais precisão — o volume de informação
+  irrelevante não é apenas caro, é também uma fonte de ruído que compete com
+  o sinal relevante.
+</p>
+
+<h2>Cinco alavancas de redução estrutural de custo</h2>
+
+<ul>
+  <li>
+    <strong>Seleção:</strong> enviar apenas os componentes ou arquivos
+    relevantes para a tarefa específica, não a biblioteca inteira.
+  </li>
+  <li>
+    <strong>Índices:</strong> manter um índice pesquisável do que existe, em
+    vez de reenviar tudo a cada chamada, permitindo buscar sob demanda.
+  </li>
+  <li>
+    <strong>Resumos:</strong> substituir documentação extensa por versões
+    resumidas quando o detalhe completo não é necessário para a tarefa.
+  </li>
+  <li>
+    <strong>Cache:</strong> reaproveitar contexto que não muda entre
+    chamadas, em vez de reprocessá-lo do zero a cada vez.
+  </li>
+  <li>
+    <strong>Tarefas menores:</strong> a mesma prática de lotes pequenos
+    discutida anteriormente nesta série também reduz o volume de contexto
+    necessário por chamada.
+  </li>
+</ul>
+
+<h2>Biblioteca inteira vs. recuperação contextual</h2>
+
+<section aria-labelledby="comparacao" class="not-prose my-10">
+  <h2 id="comparacao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Envio integral vs. recuperação sob demanda
+  </h2>
+  <div class="grid gap-5 md:grid-cols-2">
+    <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-red-900">
+        Biblioteca inteira em toda chamada
+      </h3>
+      <p class="leading-7 text-red-950">
+        Quarenta mil linhas enviadas para editar um único botão. Custo alto,
+        sinal diluído, latência maior — sem ganho real de qualidade na
+        resposta.
+      </p>
+    </div>
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+        Recuperação contextual sob demanda
+      </h3>
+      <p class="leading-7 text-emerald-950">
+        Um índice aponta para os três componentes relevantes; apenas eles são
+        enviados. Custo proporcional à tarefa, sinal concentrado no que
+        importa.
+      </p>
+    </div>
+  </div>
+</section>
+
+<h2>O limite: cortar contexto demais também tem custo</h2>
+
+<p>
+  Otimizar agressivamente para reduzir tokens, a ponto de remover
+  informação que o agente realmente precisaria para tomar uma decisão
+  correta, transforma economia em uma nova fonte de erro — a mesma
+  discussão do artigo sobre Context Pack: contexto insuficiente gera
+  retrabalho, que custa mais, em tokens e em tempo humano, do que o
+  contexto que foi economizado.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Tokens são, na prática, uma decisão de arquitetura de contexto, não
+  apenas um item de custo operacional a ser cortado genericamente. Reduzir
+  gasto sem empobrecer a qualidade da resposta exige selecionar,
+  indexar, resumir e reaproveitar informação de forma deliberada — não
+  apenas enviar menos texto ao acaso.
+</p>
+
+<p>
+  <strong
+    >Alguma tarefa do seu projeto hoje envia contexto muito maior do que o
+    necessário, só porque parecia mais seguro enviar tudo?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 57 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #ContextEngineering #CustoDeIA
+    #Arquitetura
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

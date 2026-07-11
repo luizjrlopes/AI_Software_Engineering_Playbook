@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Documentação confiável precisa de dono, gatilhos e validação. Como conectar mudanças de contrato às atualizações obrigatórias de documentação."
+    />
+    <title>
+      49. Documentação viva: como impedir que a IA atualize o código e abandone os documentos — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  49. Documentação viva: como impedir que a IA atualize o código e abandone
+  os documentos
+</h1>
+
+<p>
+  Um agente adicionou um campo obrigatório novo ao contrato de uma API —
+  <code>document_id</code>, exigido a partir daquela versão. O código
+  mudou, os testes passaram, o pull request foi aprovado. A página de
+  documentação da API, consultada por um time parceiro que integrava com
+  esse endpoint, continuou descrevendo o contrato antigo, sem menção ao
+  campo novo. Três semanas depois, a integração desse time parceiro começou
+  a falhar silenciosamente, porque eles seguiram fielmente uma documentação
+  que já não correspondia ao comportamento real do sistema.
+</p>
+
+<p>
+  Ninguém decidiu conscientemente deixar a documentação desatualizada.
+  Simplesmente não havia nenhum mecanismo que conectasse a mudança de
+  contrato à obrigação de atualizar aquela página específica.
+</p>
+
+<h2>Documentação confiável precisa de responsável e gatilho</h2>
+
+<blockquote>
+  <p>Documentação confiável precisa de dono, gatilhos e validação.</p>
+</blockquote>
+
+<p>
+  Documentação que depende de alguém lembrar espontaneamente de atualizá-la
+  tende a divergir do código com o tempo — não por negligência, mas porque
+  atualizar documentação raramente parece urgente no momento em que o código
+  já está funcionando. Documentação viva é aquela que tem um dono
+  responsável por sua precisão, gatilhos explícitos que indicam quando ela
+  precisa mudar, e alguma forma de validação que impede a divergência de
+  passar despercebida.
+</p>
+
+<h2>Três elementos que mantêm a documentação sincronizada</h2>
+
+<ul>
+  <li>
+    <strong>Dono:</strong> uma pessoa ou time responsável por manter aquela
+    documentação específica precisa — não "todo mundo", que na prática
+    significa ninguém.
+  </li>
+  <li>
+    <strong>Gatilhos:</strong> uma lista explícita de que tipos de mudança
+    exigem atualização de qual documento.
+  </li>
+  <li>
+    <strong>Validação:</strong> um mecanismo — humano ou automatizado — que
+    verifica se o gatilho foi realmente atendido antes do merge.
+  </li>
+</ul>
+
+<h2>Conectando mudança de contrato à atualização obrigatória</h2>
+
+<pre><code>## Gatilhos de documentação — API de pedidos
+
+| Tipo de mudança                     | Documento a atualizar         |
+|--------------------------------------|--------------------------------|
+| Novo campo obrigatório na resposta   | docs/api/orders.md             |
+| Novo código de erro                  | docs/api/orders.md (seção erros) |
+| Mudança de regra de negócio visível  | docs/domain/orders-rules.md    |
+
+## Gate de PR
+- [ ] Este PR altera o contrato da API de pedidos?
+      Se sim, docs/api/orders.md foi atualizado?</code></pre>
+
+<p>
+  Com esse gatilho explícito e um item de checklist correspondente no
+  template de pull request — o mesmo tipo de gate discutido anteriormente
+  neste bloco — a adição do campo <code>document_id</code> não passaria pela
+  revisão sem a atualização correspondente da documentação.
+</p>
+
+<h2>O limite: nem toda documentação precisa de gatilho automatizado</h2>
+
+<p>
+  Criar um gatilho formal para cada página de documentação interna, incluindo
+  anotações de baixo impacto, é esforço desproporcional. Gatilhos explícitos
+  compensam para documentação consultada por outras equipes ou sistemas
+  externos — onde a divergência custa caro e é descoberta tarde — não para
+  notas internas de uso pessoal.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de IA atualiza exatamente o que foi instruído a atualizar. Se a
+  instrução cobre apenas o código, a documentação fica para trás — não por
+  falha do agente, mas porque ninguém conectou a mudança de contrato à
+  obrigação de manter a documentação correspondente em dia. Documentação
+  viva exige esse vínculo explícito, não apenas boa vontade.
+</p>
+
+<p>
+  <strong
+    >A última mudança de contrato no seu sistema atualizou a documentação
+    correspondente automaticamente, ou dependeu de alguém lembrar por conta
+    própria?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 49 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #DocumentacaoViva #GestaoDeConhecimento
+    #Rastreabilidade
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

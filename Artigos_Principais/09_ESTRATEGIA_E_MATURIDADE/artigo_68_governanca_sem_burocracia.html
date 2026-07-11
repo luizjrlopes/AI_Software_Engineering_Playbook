@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Boa governança automatiza o repetível e concentra aprovação no que importa. Como calibrar controles por categoria de risco em vez de aprovar tudo igualmente."
+    />
+    <title>
+      68. Governança sem burocracia: como controlar agentes sem tornar o processo lento — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>68. Governança sem burocracia: como controlar agentes sem tornar o processo lento</h1>
+
+<p>
+  Depois de um incidente causado por uma alteração fora de escopo, a
+  reação institucional foi rigorosa: toda e qualquer mudança feita por um
+  agente, sem exceção, passaria a exigir aprovação humana explícita antes do
+  merge — incluindo correções triviais de formatação e ajustes de lint. Em
+  poucas semanas, a fila de aprovações cresceu tanto que revisores
+  começaram a aprovar em lote, sem ler de verdade, só para dar conta do
+  volume. A governança criada para proteger contra risco real acabou
+  produzindo aprovações de fachada — pior, em certo sentido, do que não ter
+  aprovação nenhuma, porque agora existia uma falsa sensação de controle.
+</p>
+
+<p>
+  Governança que trata toda mudança com o mesmo rigor não elimina risco —
+  apenas dilui a atenção humana até que ela deixe de significar alguma
+  coisa.
+</p>
+
+<h2>Boa governança escolhe onde concentrar atenção</h2>
+
+<blockquote>
+  <p>
+    Boa governança automatiza o repetível e concentra aprovação no que
+    importa.
+  </p>
+</blockquote>
+
+<p>
+  Governança eficaz não significa controlar mais — significa controlar de
+  forma seletiva, automatizando verificações repetíveis e de baixo risco
+  para que a atenção humana, um recurso finito, seja reservada para as
+  decisões que realmente exigem julgamento.
+</p>
+
+<h2>Automatizável vs. o que merece julgamento humano</h2>
+
+<section aria-labelledby="comparacao" class="not-prose my-10">
+  <h2 id="comparacao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Gate automático vs. aprovação humana
+  </h2>
+  <div class="grid gap-5 md:grid-cols-2">
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-slate-900">
+        Gate automático de lint
+      </h3>
+      <p class="leading-7 text-slate-700">
+        Critério objetivo e binário: passa ou não passa. Não exige
+        julgamento — apenas verificação mecânica de regra já definida.
+        Automatizável sem perda de qualidade de decisão.
+      </p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-slate-900">
+        Aprovação de migração crítica de dados
+      </h3>
+      <p class="leading-7 text-slate-700">
+        Exige avaliar contexto de negócio, janela de manutenção aceitável e
+        plano de rollback específico. Nenhum critério binário substitui o
+        julgamento de alguém que entende as implicações.
+      </p>
+    </div>
+  </div>
+</section>
+
+<h2>Recalibrando a governança depois do incidente</h2>
+
+<pre><code>## Governança recalibrada por categoria de mudança
+
+categoria: baixo_risco (lint, formatação, docs)
+  controle: gate automatizado, sem aprovação manual
+
+categoria: risco_moderado (lógica de negócio isolada)
+  controle: revisão humana assíncrona, sem bloqueio de
+            merge imediato
+
+categoria: alto_risco (dados, autenticação, pagamento,
+                        migrações irreversíveis)
+  controle: aprovação humana explícita e obrigatória
+            antes do merge</code></pre>
+
+<p>
+  Com essa recalibração, a atenção humana deixa de ser diluída em centenas
+  de aprovações triviais e passa a se concentrar exatamente nas mudanças
+  que, se erradas, causariam o tipo de incidente que motivou a reação
+  original.
+</p>
+
+<h2>O limite: categorizar risco também exige manutenção</h2>
+
+<p>
+  Uma categorização de risco desatualizada — que classifica como "baixo
+  risco" algo que deixou de ser trivial depois de mudanças no sistema — é
+  tão perigosa quanto a ausência de categorização. As categorias precisam
+  ser revisadas periodicamente, à medida que o sistema evolui.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  A resposta a um incidente não deveria ser exigir aprovação humana para
+  tudo — deveria ser identificar exatamente que tipo de mudança precisava de
+  mais escrutínio, e reservar esse escrutínio para ela, automatizando o
+  resto. Governança que trata tudo como igualmente arriscado acaba, na
+  prática, protegendo contra nada.
+</p>
+
+<p>
+  <strong
+    >A governança aplicada às mudanças do seu projeto hoje distingue risco
+    real, ou trata tudo com o mesmo nível de aprovação?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 68 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Governanca #GestaoDeRisco
+    #QualityGates
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

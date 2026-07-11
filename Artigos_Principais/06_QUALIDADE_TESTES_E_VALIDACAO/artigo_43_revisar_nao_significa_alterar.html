@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Misturar revisão e correção destrói a independência da análise. Por que revisar, recomendar e implementar deveriam ser passos distintos e auditáveis."
+    />
+    <title>
+      43. Revisar não significa alterar: três modos de atuação que a IA precisa respeitar — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  43. Revisar não significa alterar: três modos de atuação que a IA precisa
+  respeitar
+</h1>
+
+<p>
+  A instrução era "revisar este pull request em busca de problemas de
+  segurança". O agente encontrou uma consulta SQL vulnerável a injeção,
+  corrigiu diretamente no mesmo commit e respondeu: "encontrei e corrigi um
+  problema de segurança". Ninguém mais soube exatamente o que tinha sido
+  encontrado, quão grave era, ou teve a chance de decidir se a correção
+  proposta era a melhor abordagem — porque revisão e correção aconteceram no
+  mesmo movimento, sem nenhum ponto de checagem entre uma coisa e outra.
+</p>
+
+<p>
+  O problema de segurança foi genuinamente resolvido. O que se perdeu foi a
+  possibilidade de auditar a descoberta, avaliar a severidade e aprovar a
+  correção antes que ela acontecesse — porque revisar e alterar tinham virado
+  a mesma ação, sem costura entre elas.
+</p>
+
+<h2>Três modos, três funções diferentes</h2>
+
+<blockquote>
+  <p>Misturar revisão e correção destrói a independência da análise.</p>
+</blockquote>
+
+<p>
+  Um agente pode atuar em pelo menos três modos distintos diante de um
+  problema encontrado: revisar (analisar e relatar, sem mudar nada),
+  recomendar (propor uma correção específica, sem aplicá-la) e implementar
+  (aplicar a mudança). Cada modo produz um resultado diferente e serve a um
+  propósito diferente — e misturar os três no mesmo passo elimina a
+  possibilidade de alguém decidir, entre a descoberta e a correção, se
+  concorda com o caminho proposto.
+</p>
+
+<h2>O mesmo problema, nos três modos</h2>
+
+<section aria-labelledby="modos" class="not-prose my-10">
+  <h2 id="modos" class="mb-5 text-2xl font-semibold text-slate-900">
+    Injeção de SQL encontrada em três modos de atuação
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Modo</th>
+          <th class="px-4 py-3 font-semibold">O que o agente entrega</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Revisar</td>
+          <td class="px-4 py-3 text-slate-700">
+            "Linha 42 concatena entrada do usuário diretamente na query SQL.
+            Severidade: alta. Risco: injeção de SQL."
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Recomendar</td>
+          <td class="px-4 py-3 text-slate-700">
+            "Sugestão: substituir concatenação por consulta parametrizada,
+            usando o padrão já existente em src/db/queries.ts."
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Implementar</td>
+          <td class="px-4 py-3 text-slate-700">
+            Aplica a mudança de fato — mas somente depois que alguém
+            aprovou a recomendação acima.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Cada linha dessa tabela é uma entrega distinta e auditável. A versão que
+  colapsa os três modos no mesmo passo entrega apenas a última linha,
+  ocultando as duas primeiras — que são exatamente as que permitiriam a
+  alguém avaliar a gravidade e concordar com a abordagem antes da mudança
+  acontecer.
+</p>
+
+<h2>Quando misturar os modos é aceitável</h2>
+
+<p>
+  Para correções triviais e de baixíssimo risco — como um erro de digitação
+  identificado durante uma revisão — insistir na separação formal entre os
+  três modos pode ser burocracia desnecessária. A separação importa quando o
+  achado tem impacto real: segurança, dados, regras de negócio — onde a
+  correção "de passagem" pode ser tecnicamente certa e ainda assim
+  indesejável do ponto de vista de quem deveria ter aprovado a abordagem.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um achado de revisão só é útil enquanto continua sendo um achado — algo
+  que pode ser avaliado, questionado e aprovado antes de virar código. No
+  momento em que revisão e correção acontecem juntas, sem esse intervalo,
+  a independência da análise desaparece, e o que resta é apenas a palavra do
+  agente de que "encontrou e corrigiu" algo que ninguém mais teve chance de
+  examinar antes.
+</p>
+
+<p>
+  <strong
+    >Na última vez que um agente revisou algo no seu projeto, você viu o
+    achado e a recomendação antes da correção ser aplicada, ou só viu o
+    resultado final?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 43 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #CodeReview #Governanca
+    #SegurancaDeSoftware
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

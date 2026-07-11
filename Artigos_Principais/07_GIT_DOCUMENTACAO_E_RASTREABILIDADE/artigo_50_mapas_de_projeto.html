@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Navegação rápida reduz leituras desnecessárias e erros de contexto. Como mapear pontos de entrada, camadas e fontes de verdade num repositório complexo."
+    />
+    <title>
+      50. Mapas de projeto: como ajudar humanos e agentes a navegar em repositórios complexos — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  50. Mapas de projeto: como ajudar humanos e agentes a navegar em
+  repositórios complexos
+</h1>
+
+<p>
+  A tarefa era simples: corrigir o cálculo de imposto no checkout. O agente
+  passou a maior parte do tempo alocado não corrigindo o cálculo, mas
+  procurando onde ele realmente acontecia — existiam três arquivos com nomes
+  parecidos, <code>tax-calculator.ts</code>,
+  <code>tax-service.ts</code> e <code>legacy-tax.ts</code>, e apenas um
+  deles estava de fato em uso em produção. O agente editou o arquivo errado
+  primeiro, um teste local passou porque aquele código também tecnicamente
+  funcionava, e só na revisão alguém percebeu que a mudança não afetaria o
+  comportamento real do sistema.
+</p>
+
+<p>
+  O tempo perdido não foi por incompetência técnica. Foi por navegação:
+  nada no repositório indicava, de forma explícita, qual dos três arquivos
+  parecidos era a fonte de verdade.
+</p>
+
+<h2>Navegação lenta custa tempo e produz erros de contexto</h2>
+
+<blockquote>
+  <p>Navegação rápida reduz leituras desnecessárias e erros de contexto.</p>
+</blockquote>
+
+<p>
+  Em repositórios grandes ou com histórico acumulado, encontrar o lugar
+  certo para fazer uma mudança pode consumir mais tempo do que a mudança em
+  si — e cada leitura desnecessária de código irrelevante é uma chance a
+  mais de o agente formar um entendimento equivocado do sistema. Um mapa de
+  projeto existe para resolver exatamente esse problema: uma referência
+  rápida que aponta onde cada tipo de lógica realmente vive.
+</p>
+
+<h2>O que um mapa de projeto precisa cobrir</h2>
+
+<ul>
+  <li>
+    <strong>Pontos de entrada:</strong> onde uma requisição ou processo
+    começa a ser tratado.
+  </li>
+  <li>
+    <strong>Camadas principais:</strong> onde vivem transporte, domínio e
+    persistência, seguindo a separação discutida no artigo sobre backend
+    orientado por contratos.
+  </li>
+  <li>
+    <strong>Fontes de verdade:</strong> quando existe mais de um arquivo com
+    nome parecido, qual deles está realmente em uso.
+  </li>
+  <li>
+    <strong>Documentos principais:</strong> onde encontrar ADRs, contratos
+    de API e regras de negócio documentadas.
+  </li>
+</ul>
+
+<h2>O mapa que teria evitado o erro</h2>
+
+<pre><code>## Mapa do módulo de checkout
+
+### Ponto de entrada
+POST /api/checkout → src/routes/checkout.ts
+
+### Fonte de verdade — cálculo de impostos
+src/domain/tax-service.ts é o ATIVO em produção.
+
+src/domain/tax-calculator.ts é uma versão anterior,
+mantida apenas para referência histórica em
+docs/adr/003-tax-calculation.md. NÃO EDITAR.
+
+legacy-tax.ts pertence ao sistema descontinuado de
+faturamento manual (ver ADR-003). NÃO EDITAR.
+
+### Documentos relacionados
+- Regras de negócio: docs/domain/tax-rules.md
+- Decisão arquitetural: docs/adr/003-tax-calculation.md</code></pre>
+
+<p>
+  Com esse mapa disponível, a tarefa de corrigir o cálculo de imposto levaria
+  o agente diretamente ao arquivo correto, sem gastar tempo — e sem risco de
+  editar um arquivo obsoleto que parecia, à primeira vista, igualmente
+  válido.
+</p>
+
+<h2>O limite: mapas desatualizados são piores que a ausência deles</h2>
+
+<p>
+  Um mapa que não é atualizado quando a estrutura do projeto muda passa
+  confiança falsa — pior do que não ter mapa nenhum, porque orienta
+  ativamente para o lugar errado. Manter o mapa preciso exige o mesmo
+  cuidado de manutenção contínua que qualquer outro artefato de
+  documentação viva discutido neste bloco.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Em repositórios complexos, a maior parte do tempo de uma tarefa
+  frequentemente não é gasta implementando, é gasta descobrindo onde
+  implementar. Um mapa de projeto atualizado transforma essa descoberta de
+  uma investigação demorada e propensa a erro numa consulta rápida — para
+  qualquer pessoa, ou qualquer agente, que precise trabalhar naquele
+  código.
+</p>
+
+<p>
+  <strong
+    >Se um agente novo recebesse a próxima tarefa no seu repositório hoje,
+    ele saberia de imediato qual arquivo é a fonte de verdade, ou
+    precisaria descobrir por tentativa e erro?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 50 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Documentacao #ArquiteturaDeSoftware
+    #Produtividade
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Checklists aumentam consistência sem substituir julgamento, testes ou revisão. Como transformar incidentes já vividos em checklists úteis para agentes de IA."
+    />
+    <title>
+      14. Checklists não são burocracia: são memória operacional para agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  14. Checklists não são burocracia: são memória operacional para agentes de
+  IA
+</h1>
+
+<p>
+  O pull request parecia impecável: código limpo, nomes claros, funcionava no
+  ambiente local. Foi só em produção que alguém percebeu que a variável de
+  ambiente nova, necessária para o recurso funcionar, nunca tinha sido
+  adicionada ao arquivo de configuração do ambiente de homologação. Não era a
+  primeira vez que isso acontecia — era, na verdade, o terceiro incidente do
+  trimestre causado pelo mesmo tipo de esquecimento, cada vez em um projeto
+  diferente, cada vez tratado como um evento isolado.
+</p>
+
+<p>
+  O padrão era óbvio depois do fato, mas ninguém tinha registrado esse
+  aprendizado em lugar nenhum que um agente — ou um humano novo no time —
+  pudesse consultar antes de repetir o mesmo erro pela quarta vez.
+</p>
+
+<h2>Checklist é memória, não desconfiança</h2>
+
+<blockquote>
+  <p>
+    Checklists aumentam consistência sem substituir julgamento, testes ou
+    revisão.
+  </p>
+</blockquote>
+
+<p>
+  Um checklist bem escrito não existe para provar que alguém não confia na
+  competência de quem executa a tarefa. Existe porque certos erros são
+  previsíveis e recorrentes o suficiente para merecer uma verificação
+  explícita, em vez de depender da memória de cada pessoa — ou de cada
+  agente — lembrar sozinho de todos os detalhes acumulados ao longo de
+  meses de incidentes.
+</p>
+
+<p>
+  A aviação e a medicina adotaram checklists décadas atrás pelo mesmo motivo:
+  não porque piloto e cirurgião fossem incompetentes, mas porque certos
+  passos críticos são fáceis de esquecer sob pressão, e um checklist externo
+  captura esse conhecimento de forma que não depende de memória individual.
+</p>
+
+<h2>O que torna um checklist útil, e não burocrático</h2>
+
+<p>
+  Um checklist que vira burocracia costuma ter três problemas: itens vagos
+  demais para verificar objetivamente, itens que não guardam relação com
+  falhas reais já ocorridas, e uma lista tão longa que ninguém a lê de
+  verdade. Um checklist útil evita os três:
+</p>
+
+<ul>
+  <li>
+    <strong>Binário:</strong> cada item pode ser respondido com sim ou não,
+    sem margem para interpretação subjetiva.
+  </li>
+  <li>
+    <strong>Evidenciável:</strong> a resposta pode ser comprovada — um log,
+    uma variável presente no arquivo de configuração, um teste que passou.
+  </li>
+  <li>
+    <strong>Derivado de falha real:</strong> cada item existe porque um
+    problema específico já aconteceu antes, não porque parecia uma boa
+    prática genérica.
+  </li>
+</ul>
+
+<h2>Um checklist de pull request nascido de incidentes reais</h2>
+
+<pre><code>## Checklist de PR — variáveis de ambiente e configuração
+
+- [ ] Toda variável de ambiente nova está no .env.example
+- [ ] Toda variável de ambiente nova está documentada no README
+      de configuração do serviço
+- [ ] O pipeline de homologação foi executado com a nova
+      variável presente (anexar link do log)
+- [ ] Não há valor de produção hardcoded no código</code></pre>
+
+<p>
+  Cada item desse checklist existe porque algum incidente específico já
+  aconteceu por causa da ausência dele. Isso é o que diferencia um checklist
+  operacional de uma lista genérica copiada de um artigo qualquer: ele
+  carrega a memória de falhas que a organização já pagou para aprender.
+</p>
+
+<h2>O limite: checklist não substitui julgamento</h2>
+
+<p>
+  Um checklist marcado inteiramente como "sim" não é garantia de qualidade —
+  é garantia de que os erros já conhecidos foram verificados. Problemas
+  novos, ainda não catalogados, continuam exigindo julgamento humano, teste
+  exploratório e revisão atenta. Tratar o checklist como prova completa de
+  qualidade é tão arriscado quanto não ter checklist nenhum.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um checklist não é uma barreira burocrática imposta a quem executa a
+  tarefa. É a forma mais barata de transformar um incidente já vivido em
+  prevenção reutilizável — para o próximo humano, e para o próximo agente que
+  passar pela mesma tarefa.
+</p>
+
+<p>
+  <strong
+    >O seu time tem algum incidente recorrente que já aconteceu mais de uma
+    vez, mas que ainda não virou um item de checklist?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 14 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #QualidadeDeSoftware #EngenhariaDeSoftware #AgentesDeIA #Checklists
+    #MelhoriaContinua
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

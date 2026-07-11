@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Contexto útil não é o maior contexto possível, é o contexto correto, atual, hierarquizado e verificável. Como montar um Context Pack que entrega isso a um agente de IA."
+    />
+    <title>
+      04. Context Pack: como entregar à IA exatamente o contexto de que ela
+      precisa — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>
+          04. Context Pack: como entregar à IA exatamente o contexto de que
+          ela precisa
+        </h1>
+
+        <p>
+          Para corrigir um bug na recuperação de senha, um desenvolvedor cola
+          no chat o README inteiro do repositório, três trechos de conversa
+          no Slack e meia página de uma documentação interna desatualizada. O
+          agente responde com uma solução plausível, mas que ignora a regra
+          mais importante do time: tokens de redefinição de senha expiram em
+          quinze minutos. Essa regra estava lá, em algum lugar dos milhares de
+          tokens colados, mas soterrada por informação irrelevante para a
+          tarefa específica.
+        </p>
+
+        <p>
+          No dia seguinte, uma colega enfrenta o mesmo bug. Em vez de colar
+          tudo o que tinha à mão, ela escreve quatro linhas: qual é o
+          objetivo, qual arquivo deve mudar, qual restrição de expiração se
+          aplica e qual o critério que prova que a correção funcionou. O
+          agente acerta de primeira. A diferença não foi o volume de
+          informação. Foi a curadoria.
+        </p>
+
+        <h2>Contexto útil não é contexto grande</h2>
+
+        <blockquote>
+          <p>
+            Contexto útil não é o maior contexto, mas o contexto correto,
+            atual, hierarquizado e verificável.
+          </p>
+        </blockquote>
+
+        <p>
+          Agentes de IA baseados em modelos de linguagem processam tudo o que
+          está na janela de contexto com o mesmo peso estatístico. Uma
+          restrição crítica escrita na linha 3 compete, na prática, com um
+          comentário desatualizado da linha 300. Quando a proporção de
+          informação irrelevante cresce, a chance de o modelo priorizar o
+          sinal certo diminui — não porque ele seja incapaz de ler, mas
+          porque não existe hierarquia explícita entre o que importa e o que
+          é ruído.
+        </p>
+
+        <p>
+          Um <strong>Context Pack</strong> é a resposta estrutural a esse
+          problema: um pacote pequeno e deliberado de informação, organizado
+          para eliminar ambiguidade antes que a tarefa comece, em vez de
+          confiar que o agente vai garimpar a regra certa em meio a texto
+          solto.
+        </p>
+
+        <h2>O que compõe um Context Pack</h2>
+
+        <p>
+          Um Context Pack não precisa ser extenso. Precisa ser completo nos
+          pontos que importam:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Objetivo:</strong> o resultado esperado, descrito como
+            comportamento observável, não como implementação.
+          </li>
+          <li>
+            <strong>Escopo:</strong> quais arquivos, módulos ou camadas podem
+            ser tocados para atingir esse objetivo.
+          </li>
+          <li>
+            <strong>Restrições:</strong> regras de negócio, segurança ou
+            arquitetura que não podem ser violadas, mesmo que o padrão comum
+            do mercado sugira outra coisa.
+          </li>
+          <li>
+            <strong>Critérios de aceite:</strong> como comprovar, de forma
+            verificável, que a tarefa foi concluída corretamente.
+          </li>
+        </ul>
+
+        <h2>Montando um Context Pack: recuperação de senha</h2>
+
+        <p>
+          Aplicando essa estrutura ao mesmo bug de recuperação de senha, o
+          pacote de contexto fica assim:
+        </p>
+
+        <pre><code>context_pack:
+  objetivo: >
+    Corrigir o fluxo de redefinição de senha para que o token
+    seja invalidado após o primeiro uso ou após 15 minutos,
+    o que ocorrer primeiro.
+  escopo:
+    - src/auth/password-reset/*
+  fora_do_escopo:
+    - src/auth/login/*
+    - src/users/profile/*
+  restricoes:
+    - "Token de reset é de uso único (não pode ser reaproveitado)."
+    - "Expiração máxima de 15 minutos, validada no servidor."
+    - "Nunca registrar o token em log, mesmo em ambiente de debug."
+  criterios_de_aceite:
+    - "Teste automatizado cobrindo reuso de token expirado."
+    - "Teste automatizado cobrindo reuso de token já consumido."</code></pre>
+
+        <p>
+          Nenhuma dessas linhas exige que o desenvolvedor descreva a
+          arquitetura inteira do sistema de autenticação. Exige apenas que as
+          quatro perguntas centrais — objetivo, escopo, restrição e critério
+          de aceite — estejam respondidas antes de o agente escrever a
+          primeira linha de código.
+        </p>
+
+        <h2>O custo de manter o pacote atualizado</h2>
+
+        <p>
+          Um Context Pack desatualizado é, em certos aspectos, pior do que
+          nenhum: ele passa a sensação de que a tarefa está bem delimitada
+          quando na verdade descreve restrições que já mudaram. Se a regra de
+          expiração do token virou 30 minutos depois de uma decisão recente e
+          o pacote ainda diz 15, o agente vai aplicar fielmente uma regra
+          errada. Manter esses pacotes exige o mesmo cuidado de manutenção que
+          qualquer outro ativo de engenharia: alguém revisa, alguém atualiza
+          quando a regra de negócio muda.
+        </p>
+
+        <p>
+          Também vale reconhecer o limite oposto: para uma tarefa trivial e
+          isolada, montar um Context Pack formal pode ser desproporcional ao
+          risco envolvido. A prática compensa quando a tarefa toca em
+          segurança, dados sensíveis ou regras de negócio que não podem ser
+          reinterpretadas — não necessariamente em todo ajuste cosmético de
+          interface.
+        </p>
+
+        <h2>Conclusão</h2>
+
+        <p>
+          Selecionar contexto é, em si, uma decisão de engenharia. Colar mais
+          texto na esperança de que o agente encontre sozinho a regra certa
+          transfere para o modelo uma responsabilidade que é do time: decidir
+          o que importa. Um Context Pack pequeno e correto reduz interpretação
+          livre exatamente no ponto em que ela custa mais caro.
+        </p>
+
+        <p>
+          <strong
+            >Da próxima vez que um agente errar uma restrição óbvia, vale
+            perguntar: a regra estava ausente, ou estava apenas perdida no
+            meio de um contexto grande demais para ser útil?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 04 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 font-semibold text-linkedin-blue">
+            #ContextEngineering #EngenhariaDeSoftware #AgentesDeIA
+            #ContextPack #Especificacao
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

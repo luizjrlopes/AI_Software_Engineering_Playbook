@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Falhas de agentes devem gerar aprendizado no sistema, não apenas correção pontual. Como estruturar linha do tempo, causa raiz, contenção e ações preventivas."
+    />
+    <title>
+      61. Incidentes causados por IA: como investigar, corrigir e aprender — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>61. Incidentes causados por IA: como investigar, corrigir e aprender</h1>
+
+<p>
+  O incidente foi resolvido em quarenta minutos: um agente tinha alterado um
+  arquivo fora do escopo da tarefa que recebera, quebrando uma função usada
+  por outro módulo. A correção foi rápida — reverter o commit específico — e
+  o serviço voltou ao normal. Ninguém escreveu nada sobre o que tinha
+  acontecido. Três meses depois, um incidente quase idêntico aconteceu em
+  outra parte do sistema: outro agente, outra tarefa, o mesmo padrão de
+  causa raiz — ausência de um limite explícito de escopo, o mesmo problema
+  já discutido no início desta série. A correção rápida do primeiro
+  incidente resolveu o sintoma daquela vez específica, mas não impediu que
+  a mesma classe de problema se repetisse.
+</p>
+
+<p>
+  Resolver um incidente rapidamente é necessário. Não é suficiente, se
+  ninguém investiga por que ele foi possível em primeiro lugar.
+</p>
+
+<h2>Corrigir o sintoma não é o mesmo que aprender com a falha</h2>
+
+<blockquote>
+  <p>
+    Falhas de agentes devem gerar aprendizado no sistema, não apenas
+    correção pontual.
+  </p>
+</blockquote>
+
+<p>
+  Incidentes causados por agentes de IA compartilham a mesma estrutura de
+  qualquer outro incidente de engenharia: têm uma linha do tempo, uma causa
+  raiz, uma contenção imediata e, se o processo funcionar bem, ações
+  preventivas que impedem a recorrência. Pular direto da contenção para o
+  encerramento, sem passar pelas duas últimas etapas, é o que permite que a
+  mesma classe de falha reapareça meses depois, em outro lugar do sistema.
+</p>
+
+<h2>Os quatro elementos de uma investigação completa</h2>
+
+<ul>
+  <li>
+    <strong>Linha do tempo:</strong> o que aconteceu, em que ordem, desde a
+    ação do agente até a detecção do problema.
+  </li>
+  <li>
+    <strong>Causa raiz:</strong> não o que quebrou, mas por que era possível
+    quebrar daquela forma — a ausência de qual controle permitiu isso.
+  </li>
+  <li>
+    <strong>Contenção:</strong> a ação imediata que resolveu o sintoma —
+    reverter, isolar, corrigir pontualmente.
+  </li>
+  <li>
+    <strong>Ações preventivas:</strong> a mudança estrutural que impede a
+    mesma classe de falha de se repetir em outro contexto.
+  </li>
+</ul>
+
+<h2>Aplicando as quatro etapas ao incidente do início</h2>
+
+<pre><code>## Postmortem — alteração fora de escopo (sem culpa)
+
+### Linha do tempo
+14:02 - Agente recebe tarefa de corrigir bug em módulo A.
+14:15 - Agente altera arquivo compartilhado do módulo B,
+        sem instrução para isso.
+16:40 - Módulo B apresenta erro em produção.
+17:20 - Causa identificada; commit revertido.
+
+### Causa raiz
+A tarefa não definia um escopo explícito de arquivos
+permitidos — ausência de allow-list, não uma falha de
+capacidade do agente.
+
+### Contenção
+Reversão do commit específico. Serviço normalizado
+às 17:25.
+
+### Ações preventivas
+1. Todo Context Pack passa a exigir escopo explícito
+   (allow-list) antes da execução.
+2. Gate automatizado bloqueia alteração em arquivos
+   fora da allow-list declarada.</code></pre>
+
+<p>
+  A diferença entre esse postmortem e o incidente original não está na
+  contenção — as duas resolveram o sintoma na mesma velocidade. A diferença
+  está nas ações preventivas, que atacam a causa estrutural e reduzem a
+  chance de a mesma classe de incidente se repetir em outro módulo, com
+  outro agente, meses depois.
+</p>
+
+<h2>O limite: nem todo incidente precisa de um postmortem formal completo</h2>
+
+<p>
+  Um incidente trivial, de baixíssimo impacto e causa óbvia, não precisa do
+  mesmo rigor de investigação que um incidente que afetou produção de forma
+  significativa. O investimento em investigação deveria ser proporcional ao
+  impacto e à probabilidade de recorrência — não aplicado uniformemente a
+  qualquer contratempo.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um incidente causado por um agente de IA, investigado apenas até a
+  contenção, ensina exatamente nada ao sistema — apenas resolve aquele
+  problema específico daquela vez. Investigar até a causa raiz e registrar
+  ações preventivas é o que transforma uma falha isolada em conhecimento
+  reutilizável, capaz de proteger outras partes do sistema contra o mesmo
+  tipo de erro.
+</p>
+
+<p>
+  <strong
+    >O último incidente causado por um agente no seu projeto gerou apenas
+    uma correção pontual, ou também uma mudança estrutural que reduz a
+    chance de o mesmo padrão se repetir?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 61 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #GestaoDeIncidentes #Postmortem
+    #MelhoriaContinua
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

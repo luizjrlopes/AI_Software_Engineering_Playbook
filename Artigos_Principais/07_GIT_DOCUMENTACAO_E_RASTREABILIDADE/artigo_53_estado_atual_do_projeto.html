@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Estado atual inclui decisões vigentes, versão, pendências, riscos e evidências. Como manter um snapshot confiável do projeto para qualquer humano ou agente."
+    />
+    <title>
+      53. Como registrar o estado atual de um projeto para que qualquer agente possa continuar — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  53. Como registrar o estado atual de um projeto para que qualquer agente
+  possa continuar
+</h1>
+
+<p>
+  Um novo colaborador — e, na mesma semana, um agente configurado para
+  ajudar num projeto que já rodava havia oito meses — fizeram a mesma
+  pergunta: "qual é o estado atual disso tudo?". Não havia uma resposta
+  única em lugar nenhum. Parte da resposta estava em pull requests fechados,
+  parte numa thread de Slack de três meses atrás, parte apenas na memória de
+  quem tinha decidido, na semana anterior, adiar uma migração de banco de
+  dados por causa de um risco identificado tarde demais para aquele
+  sprint. Juntar essa resposta consumiu dias — dias que poderiam ter sido
+  investidos em trabalho real, se existisse um único documento atualizado
+  com o estado real do projeto.
+</p>
+
+<p>
+  Nenhuma dessas fontes de informação estava errada. Só estavam espalhadas,
+  e ninguém tinha consolidado isso num lugar único e confiável.
+</p>
+
+<h2>Estado atual é uma baseline, não uma reconstrução</h2>
+
+<blockquote>
+  <p>
+    Estado atual inclui decisões vigentes, versão, pendências, riscos e
+    evidências.
+  </p>
+</blockquote>
+
+<p>
+  Diferente de um handoff — que documenta a continuidade de uma tarefa
+  específica interrompida, como discutido anteriormente nesta série — um
+  registro de estado atual é uma fotografia do projeto inteiro, num
+  determinado momento: o que está decidido, o que está pendente, o que é
+  arriscado e o que já foi comprovado. Qualquer pessoa, ou qualquer agente,
+  deveria conseguir ler esse documento e responder "onde estamos" sem
+  precisar reconstruir a resposta a partir de fragmentos espalhados.
+</p>
+
+<h2>Os cinco elementos de um snapshot de estado</h2>
+
+<ul>
+  <li>
+    <strong>Decisões vigentes:</strong> as escolhas arquiteturais e de
+    processo que estão em vigor agora, com referência aos ADRs
+    correspondentes.
+  </li>
+  <li>
+    <strong>Versão:</strong> em que estado o sistema está — que versão está
+    em produção, que branch está ativo.
+  </li>
+  <li>
+    <strong>Pendências:</strong> o que está em andamento e o que está
+    explicitamente adiado, com o motivo.
+  </li>
+  <li>
+    <strong>Riscos:</strong> o que preocupa no momento, mesmo que ainda não
+    tenha se materializado em problema.
+  </li>
+  <li>
+    <strong>Evidências:</strong> o que já foi validado — testes, auditorias,
+    métricas — que sustentam a confiança no estado atual.
+  </li>
+</ul>
+
+<h2>Um snapshot aplicado ao projeto do início</h2>
+
+<pre><code>## Estado do projeto — Checkout, atualizado em 2026-07-10
+
+### Decisões vigentes
+- Integrações externas passam por adaptador dedicado
+  (ver ADR-012).
+- Banco de dados permanece PostgreSQL (ver ADR-004).
+
+### Versão
+Produção: v2.4.1. Branch ativo: main.
+
+### Pendências
+- Migração para nova versão do gateway de pagamento:
+  ADIADA para o próximo trimestre — risco de
+  incompatibilidade identificado tarde demais para
+  este sprint (ver Issue #501).
+
+### Riscos
+- Dependência de biblioteca de cálculo de frete sem
+  atualização há 14 meses; sem vulnerabilidade
+  conhecida até o momento, mas sem suporte ativo.
+
+### Evidências
+- Auditoria de segurança realizada em 2026-06-01,
+  sem achados críticos abertos (ver relatório #45).</code></pre>
+
+<p>
+  Com esse documento mantido atualizado, tanto o novo colaborador quanto o
+  agente do início deste artigo teriam a resposta em minutos, não em dias —
+  e, mais importante, uma resposta consistente, a mesma para qualquer pessoa
+  que perguntasse.
+</p>
+
+<h2>O limite: manter esse documento também exige disciplina</h2>
+
+<p>
+  Um snapshot de estado só é confiável enquanto alguém o atualiza com
+  regularidade. Sem um dono responsável — o mesmo princípio discutido no
+  artigo sobre documentação viva — esse documento envelhece e volta a ser
+  tão enganoso quanto os fragmentos espalhados que ele deveria substituir.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  A pergunta "qual é o estado atual do projeto" não deveria exigir uma
+  investigação de dias toda vez que alguém novo — humano ou agente —
+  precisa dessa resposta. Um snapshot de estado, mantido atualizado e
+  cobrindo decisões, versão, pendências, riscos e evidências, transforma
+  essa pergunta numa consulta rápida a um único documento confiável.
+</p>
+
+<p>
+  <strong
+    >Se alguém perguntasse hoje qual é o estado atual do seu projeto mais
+    importante, você teria uma resposta pronta num único lugar, ou
+    precisaria reconstruí-la na hora?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 53 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #GestaoDeConhecimento #Continuidade
+    #Documentacao
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

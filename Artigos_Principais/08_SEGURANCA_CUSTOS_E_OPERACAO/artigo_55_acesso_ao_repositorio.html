@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Permissão deve ser proporcional à tarefa e ao risco. Como definir perfis de acesso para auditor, implementador e deploy em vez de conceder acesso total."
+    />
+    <title>
+      55. Agentes de IA e acesso ao repositório: quais permissões realmente são necessárias? — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  55. Agentes de IA e acesso ao repositório: quais permissões realmente são
+  necessárias?
+</h1>
+
+<p>
+  "Para não ficar pedindo permissão toda hora, dá acesso total ao monorepo"
+  — foi a decisão prática tomada para agilizar o trabalho de um agente numa
+  tarefa pequena de frontend. Meses depois, durante uma tarefa completamente
+  diferente, uma chamada de ferramenta mal direcionada expôs, num log de
+  depuração, credenciais de produção que estavam armazenadas no mesmo
+  repositório, em uma pasta de infraestrutura que aquele agente nunca
+  precisaria tocar para realizar a tarefa de frontend original. O problema
+  não estava na tarefa em si — estava na permissão concedida muito antes, "só
+  para garantir", sem relação com o que realmente seria necessário.
+</p>
+
+<p>
+  Acesso amplo concedido por conveniência não desaparece quando a tarefa
+  termina. Ele permanece disponível para a próxima tarefa, e para a
+  próxima depois dessa — cada uma delas herdando um risco que nunca foi
+  avaliado para o que estava realmente sendo feito.
+</p>
+
+<h2>Permissão proporcional à tarefa, não ao conforto</h2>
+
+<blockquote>
+  <p>Permissão deve ser proporcional à tarefa e ao risco.</p>
+</blockquote>
+
+<p>
+  Assim como o escopo de arquivos discutido no início desta série define o
+  que um agente pode alterar, o acesso ao repositório define o que ele pode
+  sequer enxergar ou executar. Um agente com acesso de leitura e escrita ao
+  repositório inteiro, incluindo segredos de infraestrutura e configuração
+  de deploy, carrega esse risco em toda tarefa que executa — mesmo nas que
+  não têm nenhuma relação com infraestrutura.
+</p>
+
+<h2>Perfis de acesso por tipo de tarefa</h2>
+
+<section aria-labelledby="perfis" class="not-prose my-10">
+  <h2 id="perfis" class="mb-5 text-2xl font-semibold text-slate-900">
+    Perfis de acesso proporcionais à tarefa
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Perfil</th>
+          <th class="px-4 py-3 font-semibold">Acesso necessário</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Auditor</td>
+          <td class="px-4 py-3 text-slate-700">
+            Leitura em todo o repositório; sem escrita, sem execução,
+            sem acesso a segredos.
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Implementador</td>
+          <td class="px-4 py-3 text-slate-700">
+            Leitura e escrita restritas ao módulo da tarefa; sem acesso a
+            pastas de infraestrutura ou segredos.
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Deploy</td>
+          <td class="px-4 py-3 text-slate-700">
+            Execução do pipeline de deploy; sem escrita direta no código;
+            acesso a segredos apenas em tempo de execução, não em leitura
+            de arquivo.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Um agente atuando como implementador de frontend, seguindo esse modelo,
+  nunca teria acesso de leitura à pasta de infraestrutura onde as
+  credenciais de produção estavam armazenadas — o incidente do início deste
+  artigo simplesmente não teria como acontecer daquela forma.
+</p>
+
+<h2>Cinco tipos de privilégio a considerar</h2>
+
+<ul>
+  <li><strong>Leitura:</strong> quais arquivos e pastas o agente pode ver.</li>
+  <li><strong>Escrita:</strong> quais arquivos e pastas ele pode alterar.</li>
+  <li><strong>Execução:</strong> que comandos ou scripts ele pode rodar.</li>
+  <li><strong>Rede:</strong> quais endpoints externos ele pode acessar.</li>
+  <li><strong>Segredos:</strong> quais credenciais ele pode consumir, e sob
+  que condição.</li>
+</ul>
+
+<h2>O limite: perfis demais viram burocracia de acesso</h2>
+
+<p>
+  Criar um perfil de permissão distinto para cada variação minúscula de
+  tarefa transforma a gestão de acesso num problema em si. Um punhado de
+  perfis bem definidos, cobrindo os tipos de tarefa mais recorrentes, tende a
+  ser mais sustentável do que uma matriz de permissões granular demais para
+  ser mantida.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Conceder acesso amplo "para não incomodar" transfere o risco de uma tarefa
+  pequena para todas as tarefas futuras que herdarem essa mesma permissão.
+  Definir perfis de acesso proporcionais ao que cada tipo de tarefa
+  realmente exige é o que impede que um agente de frontend tenha, sem
+  necessidade nenhuma, a capacidade de ler credenciais de produção.
+</p>
+
+<p>
+  <strong
+    >O agente que trabalha no seu projeto hoje tem acesso proporcional à
+    tarefa que está executando, ou tem acesso amplo concedido "só para
+    garantir"?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 55 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #Seguranca #AgentesDeIA #EngenhariaDeSoftware #MenorPrivilegio
+    #GestaoDeAcesso
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

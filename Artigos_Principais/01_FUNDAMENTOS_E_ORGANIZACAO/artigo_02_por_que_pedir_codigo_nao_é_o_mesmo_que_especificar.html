@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Um prompt comunica uma intenção; uma especificação reduz interpretações, fecha lacunas arquiteturais e torna o código gerado por IA verificável."
+    />
+    <title>
+      02. Por que pedir código não é o mesmo que especificar software — Série
+      Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>02. Por que pedir código não é o mesmo que especificar software</h1>
+
+        <p>
+          Você abre o seu chat de IA favorito e digita:
+          <em
+            >"Crie um componente de login moderno em React integrado ao
+            Firebase"</em
+          >. Em instantes, um código estruturado, com botões bem alinhados e
+          estados básicos, surge no ecrã. Você copia para a sua base de código
+          e, surpreendentemente, funciona. Parece que metade do trabalho do
+          sprint acabou de ser resolvido em trinta segundos.
+        </p>
+
+        <p>
+          Porém, o problema começa quando este código vai para o ambiente de
+          *staging*. O que acontece se a API responder com lentidão? A interface
+          fica bloqueada ou exibe um *loading state*? O que ocorre se o
+          utilizador falhar a palavra-passe cinco vezes seguidas? O código
+          bloqueia a conta ou permite força bruta contínua? A IA não perguntou
+          sobre nada disso, e você também não especificou. O código entregue
+          serve apenas para o famoso "caminho feliz" (happy path).
+        </p>
+
+        <h2>A diferença entre intenção e contrato</h2>
+
+        <blockquote>
+          <p>
+            Um prompt comunica uma intenção genérica; uma especificação de
+            software reduz interpretações subjetivas, mapeia exceções e torna o
+            resultado final tecnicamente verificável.
+          </p>
+        </blockquote>
+
+        <p>
+          Modelos de linguagem operam com base na probabilidade estatística do
+          que é mais comum. Quando você entrega apenas uma "intenção" (pedir
+          código), a IA é forçada a preencher as lacunas do que você omitiu com
+          suposições genéricas. E em engenharia de software corporativa, as
+          suposições de um agente raramente coincidem com a arquitetura real,
+          com as restrições de segurança ou com os requisitos de negócio da sua
+          empresa.
+        </p>
+
+        <h2>O custo da ambiguidade</h2>
+
+        <p>
+          A engenharia tradicional já nos ensinou uma lição dura: ambiguidades
+          nos requisitos transformam-se invariavelmente em *bugs* em produção.
+          Trabalhar com agentes de IA não altera essa regra fundamental da
+          física do software, apenas acelera a velocidade com que geramos esses
+          bugs.
+        </p>
+
+        <p>
+          Passar de "ditador de prompts" para Engenheiro de Software assistido
+          por IA significa mudar o foco: em vez de gastar tempo a tentar
+          otimizar as palavras do seu comando no chat (a ilusória engenharia de
+          prompt), o engenheiro sénior foca o seu tempo em desenhar um contrato
+          claro. Esse contrato é o que chamamos de especificação de software,
+          que inclui requisitos funcionais, estados de falha, restrições e
+          critérios de aceitação rigorosos.
+        </p>
+
+        <section aria-labelledby="comparacao" class="not-prose my-10">
+          <h2
+            id="comparacao"
+            class="mb-5 text-2xl font-semibold text-slate-900"
+          >
+            A Anatomia de um Pedido vs. Uma Especificação
+          </h2>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-red-900">
+                O Pedido Solto (A Intenção)
+              </h3>
+              <p class="leading-7 text-red-950">
+                "Escreve uma função para autenticar utilizadores e devolve os
+                dados deles". A IA assume o formato do payload, não prevê o
+                tratamento de rede, ignora políticas de CORS e pressupõe que as
+                credenciais viajarão de forma segura sem ser explicitly
+                instruída para tal.
+              </p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+                O Fluxo de Engenharia (A Especificação)
+              </h3>
+              <p class="leading-7 text-emerald-950">
+                Uma estrutura que declara entradas obrigatórias, saídas
+                formatadas, tratamento para códigos HTTP 401 e 429, estado de
+                submissão desabilitada enquanto pendente e o mapeamento claro do
+                que deve ser logado (nunca passwords em texto puro).
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <h2>Artefato Prático: A Especificação Mínima Viável (MVP Spec)</h2>
+        <p>
+          Como garantir que o seu agente não está a alucinar requisitos
+          técnicos? Antes de pedir para gerar código, elabore o contrato.
+          Abaixo, apresento um formato de <em>Issue</em> simples e estruturado,
+          que retira a liberdade de invenção da IA e a foca estritamente na
+          execução correta:
+        </p>
+
+        <pre><code># Feature: Tela de Login
+
+## 1. Contrato de Interface (Entrada/Saída)
+- Requer: email (validação RFC 5322) e password (string, > 8 caracteres).
+- Retorno de sucesso: Token JWT (via HTTP Only Cookie).
+- Retorno de falha: JSON contendo { "error_code", "message" }.
+
+## 2. Estados da Interface Obrigatórios
+- Idle: Formulário visível.
+- Loading: Botão de submissão desativado + spinner interno.
+- Error: Borda vermelha nos inputs + mensagem legível recuperada do error_code.
+
+## 3. Restrições Arquiteturais
+- Não instancie bibliotecas externas de UI. Use exclusivamente o Design System `/components/ui`.
+- Senhas não podem, sob hipótese alguma, ser incluídas nos logs do lado do cliente (console.log proibido para payloads).
+
+## 4. Critérios de Aceitação
+- [ ] Teste unitário para submissão com email inválido bloqueado no frontend.
+- [ ] Teste de integração do estado de 'Loading' ao disparar a submissão.
+</code></pre>
+
+        <h2>O limite da agilidade: velocidade não substitui clareza</h2>
+
+        <p>
+          O maior <em>trade-off</em> desta prática é evidente: escrever
+          especificações dá trabalho e consome tempo de pensamento sistémico
+          humano. Para um script isolado e descartável que não irá para
+          produção, fazer um prompt rápido é perfeitamente válido.
+        </p>
+
+        <p>
+          Mas, em projetos corporativos e arquiteturas de longa duração, a
+          ausência de especificação transfere o custo da construção para o custo
+          de manutenção. É o velho ditado do desenvolvimento: "em tecnologia,
+          não existe almoço grátis". O tempo que você julga poupar ao não
+          especificar um estado de erro, pagará com juros na próxima semana,
+          quando estiver a debugar por que a interface não reagiu a uma falha de
+          rede intermitente em produção.
+        </p>
+
+        <h2>Construa o mapa, não apenas o trajeto</h2>
+
+        <p>
+          Delegar tarefas a um agente de IA sem fornecer as regras de contorno é
+          tratar um motor estatístico avançado como se fosse um engenheiro
+          sénior que conhece o contexto oculto da sua empresa. Não conhece.
+        </p>
+
+        <p>
+          O papel da IA no ciclo moderno de desenvolvimento é gerar volume de
+          código estruturado de forma veloz. O seu papel, como engenheiro
+          humano, é desenhar os limites incontornáveis, as restrições e os
+          contratos sob os quais esse código irá operar de forma segura.
+        </p>
+
+        <p>
+          <strong
+            >Reflita na sua última iteração de código com IA: quantas vezes a
+            ferramenta "alucinou" uma funcionalidade que você não pediu, ou
+            ignorou um estado de erro crítico simplesmente porque você lhe
+            enviou uma intenção em vez de uma especificação clara?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 02 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 text-linkedin-blue font-semibold">
+            #AISoftwareEngineering #EngenhariaDeSoftware #Especificacao
+            #Requisitos #AgentesDeIA #DesenvolvimentoSustentavel
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

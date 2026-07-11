@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interfaces robustas tratam loading, vazio, erro, sucesso, permissão e sessão. Como mapear todos os estados de uma tela antes de implementá-la com um agente de IA."
+    />
+    <title>
+      34. Frontend orientado por estados: como evitar interfaces incompletas geradas por IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Execução e Desenvolvimento
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 4 — Da geração de código à implementação sustentável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  34. Frontend orientado por estados: como evitar interfaces incompletas
+  geradas por IA
+</h1>
+
+<p>
+  A listagem de pedidos funcionava bem sempre que havia pedidos para
+  mostrar. No dia em que um cliente novo, sem nenhum pedido ainda, acessou a
+  tela pela primeira vez, viu apenas um espaço em branco — sem mensagem, sem
+  indicação de que aquilo era normal. Ele reportou como bug. Semanas depois,
+  outro cliente teve a sessão expirada no meio de uma rolagem da lista, e a
+  tela ficou girando um indicador de carregamento indefinidamente, porque
+  ninguém tinha previsto o que fazer quando a chamada à API retornasse 401.
+</p>
+
+<p>
+  Nenhum desses casos era uma falha de lógica de programação. Eram estados
+  da mesma tela que simplesmente nunca tinham sido pensados como estados —
+  só o cenário em que tudo corria bem tinha sido implementado de verdade.
+</p>
+
+<h2>Uma tela é um conjunto de estados, não um cenário único</h2>
+
+<blockquote>
+  <p>
+    Interfaces robustas tratam loading, vazio, erro, sucesso, permissão e
+    sessão.
+  </p>
+</blockquote>
+
+<p>
+  Um agente instruído a "implementar a listagem de pedidos" tende a produzir
+  o estado mais provável estatisticamente — a lista populada, exibida com
+  sucesso. Os demais estados só existem se alguém os enumerar explicitamente
+  como parte da especificação, porque eles não decorrem naturalmente da
+  descrição do "caminho feliz".
+</p>
+
+<h2>Os seis estados de qualquer listagem</h2>
+
+<ul>
+  <li>
+    <strong>Carregando:</strong> enquanto os dados ainda não chegaram.
+  </li>
+  <li>
+    <strong>Vazio:</strong> quando a resposta é bem-sucedida, mas não há
+    itens para mostrar.
+  </li>
+  <li>
+    <strong>Erro:</strong> quando a requisição falha, com mensagem
+    específica o suficiente para orientar o usuário.
+  </li>
+  <li>
+    <strong>Sucesso:</strong> quando os dados chegam e são exibidos
+    normalmente.
+  </li>
+  <li>
+    <strong>Permissão insuficiente:</strong> quando o usuário está
+    autenticado, mas não autorizado a ver aquele conteúdo.
+  </li>
+  <li>
+    <strong>Sessão expirada:</strong> quando a autenticação do usuário não é
+    mais válida durante o uso da tela.
+  </li>
+</ul>
+
+<h2>Mapeando os seis estados antes de implementar</h2>
+
+<pre><code>Tela: Listagem de pedidos
+
+| Estado                | Comportamento esperado                          |
+|-----------------------|--------------------------------------------------|
+| Carregando            | Skeleton de lista, sem conteúdo travado           |
+| Vazio                 | "Você ainda não tem pedidos" + botão de ação       |
+| Erro                  | "Não foi possível carregar seus pedidos. Tentar novamente" |
+| Sucesso               | Lista renderizada normalmente                     |
+| Permissão insuficiente| Redireciona com mensagem explicativa               |
+| Sessão expirada        | Redireciona para login, preservando a URL de retorno |</code></pre>
+
+<p>
+  Esse mapa não exige nenhuma tecnologia especial — exige apenas tratar a
+  enumeração dos estados como parte da especificação da tela, antes da
+  implementação começar, em vez de descobri-los um por um conforme usuários
+  reais tropeçam neles em produção.
+</p>
+
+<h2>O limite: nem toda tela precisa dos seis estados completos</h2>
+
+<p>
+  Uma tela interna, acessada apenas por administradores autenticados de
+  forma persistente, pode dispensar o tratamento detalhado de sessão
+  expirada. A robustez de estados deveria ser proporcional ao alcance da
+  tela: quanto mais usuários externos e imprevisíveis, mais completo precisa
+  ser o mapeamento.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  O caminho feliz de uma tela é apenas um entre pelo menos seis estados
+  possíveis. Implementar apenas ele não é implementar "quase tudo" — é
+  implementar uma fração da especificação real, deixando o restante para ser
+  descoberto por usuários reais, no pior momento possível para descobrir.
+</p>
+
+<p>
+  <strong
+    >A última tela que você considerou pronta já foi verificada nos estados
+    de vazio, erro e sessão expirada, ou apenas no cenário em que tudo dá
+    certo?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 34 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Frontend #QualidadeDeSoftware
+    #ExperienciaDoUsuario
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

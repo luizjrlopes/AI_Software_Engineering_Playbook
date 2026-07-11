@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Contratos estáveis desacoplam equipes e agentes. Como schemas, tipos e APIs versionadas evitam que mudanças silenciosas quebrem consumidores desconhecidos."
+    />
+    <title>
+      18. Contratos técnicos: o que permite que vários agentes trabalhem no mesmo sistema — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  18. Contratos técnicos: o que permite que vários agentes trabalhem no
+  mesmo sistema
+</h1>
+
+<p>
+  Um agente recebeu a tarefa de "deixar o schema de usuário mais claro" e,
+  como parte disso, renomeou o campo <code>full_name</code> para
+  <code>name</code> diretamente na resposta da API, sem tocar em nenhum outro
+  serviço. A mudança fazia sentido isolada. O problema é que um aplicativo
+  mobile, um job de exportação de relatórios e a interface web dependiam
+  todos do nome antigo do campo. Nenhum deles quebrou no momento do deploy —
+  o campo simplesmente parou de existir, e cada consumidor passou a exibir
+  dados vazios silenciosamente, até alguém notar dias depois.
+</p>
+
+<p>
+  A tarefa não previa esse impacto porque ninguém tratou aquele campo como
+  parte de um contrato compartilhado. Para quem escreveu a tarefa, era só um
+  nome de propriedade num JSON. Para os outros três sistemas, era uma
+  promessa que deixou de ser cumprida sem aviso.
+</p>
+
+<h2>Contrato é o que permite trabalho independente e seguro</h2>
+
+<blockquote>
+  <p>Contratos estáveis desacoplam equipes e agentes.</p>
+</blockquote>
+
+<p>
+  Um contrato técnico — uma API, um schema de dados, uma definição de tipos
+  ou um formato de evento — é o que permite que duas partes de um sistema
+  evoluam de forma independente, desde que ambas continuem respeitando o que
+  foi combinado. Quando múltiplos agentes trabalham no mesmo sistema, sem se
+  coordenarem em tempo real, o contrato é o único ponto de verdade
+  compartilhado entre eles. Alterá-lo sem aviso equivale a mudar as regras do
+  jogo para quem já está jogando.
+</p>
+
+<h2>O mesmo schema, implementado por dois lados</h2>
+
+<p>
+  A prática mais simples e mais eficaz é declarar o contrato antes da
+  implementação, num formato que ambos os lados possam consultar — não
+  descobrir por tentativa e erro:
+</p>
+
+<pre><code>// contracts/user.schema.ts
+export interface UserResponse {
+  id: string;
+  full_name: string;   // nome de exibição completo
+  email: string;
+  created_at: string;  // ISO 8601
+}</code></pre>
+
+<p>
+  Um agente de frontend e um agente de backend implementando contra essa
+  mesma definição — versionada no repositório, não inventada de memória por
+  cada um — produzem peças que se encaixam sem precisar de coordenação
+  informal a cada mudança.
+</p>
+
+<h2>Evoluir contrato sem quebrar quem já depende dele</h2>
+
+<p>
+  A forma correta de "deixar o schema mais claro" não é renomear o campo
+  existente, e sim adicionar o novo nome ao lado do antigo, com um período de
+  transição documentado:
+</p>
+
+<pre><code>export interface UserResponse {
+  id: string;
+  full_name: string;   // @deprecated use `name` — remover em v3
+  name: string;         // novo campo, substitui full_name
+  email: string;
+  created_at: string;
+}</code></pre>
+
+<p>
+  Essa abordagem custa mais no curto prazo — dois campos temporariamente
+  redundantes — mas evita que consumidores desconhecidos do contrato quebrem
+  silenciosamente. A remoção do campo antigo se torna uma etapa deliberada e
+  comunicada, não um efeito colateral de uma tarefa de "limpeza".
+</p>
+
+<h2>O limite: nem toda interface interna precisa desse rigor</h2>
+
+<p>
+  Aplicar esse nível de disciplina a uma função auxiliar usada apenas dentro
+  de um único módulo, por um único agente, numa única tarefa, é rigor
+  desnecessário. Contratos formais e versionamento cuidadoso valem a pena nas
+  fronteiras realmente cruzadas por múltiplos consumidores — outros serviços,
+  outros times, outros agentes trabalhando em paralelo — não em cada função
+  privada do sistema.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um contrato técnico não é apenas uma formalidade de documentação. É o
+  mecanismo que permite que agentes e equipes diferentes construam partes
+  distintas do mesmo sistema sem precisar reconfirmar, a cada tarefa, o que
+  o outro lado espera receber. Tratar um schema compartilhado como detalhe
+  de implementação é o que transforma uma limpeza de código em um incidente
+  silencioso em produção.
+</p>
+
+<p>
+  <strong
+    >Antes da última mudança de schema no seu sistema, alguém verificou quem
+    mais dependia daquele campo além de quem escreveu a tarefa?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 18 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA
+    #ContratosTecnicos #APIDesign
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

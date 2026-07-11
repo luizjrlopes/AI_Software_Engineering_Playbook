@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Lotes menores reduzem risco, revisão, conflito e custo de rollback. Por que dividir mudanças em incrementos controlados em vez de um pull request gigante."
+    />
+    <title>
+      32. Implementação em pequenos lotes: por que agentes de IA devem alterar menos por vez — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Execução e Desenvolvimento
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 4 — Da geração de código à implementação sustentável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  32. Implementação em pequenos lotes: por que agentes de IA devem alterar
+  menos por vez
+</h1>
+
+<p>
+  Um agente entregou, numa única tarefa, um pull request tocando quarenta
+  arquivos: a feature pedida, mais duas correções "de passagem" que ele
+  identificou no caminho, mais um ajuste de formatação em arquivos vizinhos.
+  Dias depois, um bug em produção foi rastreado até esse pull request — mas
+  reverter significava desfazer também as duas correções úteis que tinham
+  vindo junto, misturadas no mesmo commit. A equipe passou mais tempo
+  cirurgicamente separando o que precisava ser revertido do que levaria para
+  implementar a feature em pedaços menores desde o início.
+</p>
+
+<p>
+  O agente não fez nada tecnicamente incorreto em nenhuma das quarenta
+  alterações. O problema foi empacotar tudo junto, tornando impossível
+  reverter uma parte sem reverter todas.
+</p>
+
+<h2>Lote pequeno é a unidade que se pode reverter sozinha</h2>
+
+<blockquote>
+  <p>
+    Lotes menores reduzem risco, revisão, conflito e custo de rollback.
+  </p>
+</blockquote>
+
+<p>
+  O tamanho de um lote de mudança determina, na prática, o tamanho do
+  problema que uma falha pode causar. Um lote pequeno, quando dá errado,
+  afeta uma fatia isolada e conhecida do sistema, revertida em minutos. Um
+  lote grande, quando dá errado, obriga a decidir entre reverter tudo —
+  perdendo o que funcionava — ou investigar sob pressão qual parte específica
+  causou o problema, dentro de uma mudança grande demais para ser entendida
+  rapidamente.
+</p>
+
+<h2>Quarenta arquivos vs. três incrementos controlados</h2>
+
+<section aria-labelledby="comparacao" class="not-prose my-10">
+  <h2 id="comparacao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Um lote grande vs. três incrementos
+  </h2>
+  <div class="grid gap-5 md:grid-cols-2">
+    <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-red-900">
+        Um pull request, quarenta arquivos
+      </h3>
+      <p class="leading-7 text-red-950">
+        Feature nova, duas correções não relacionadas e ajustes de
+        formatação, tudo no mesmo commit. Revisão superficial por volume;
+        rollback exige desfazer tudo junto.
+      </p>
+    </div>
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+        Três incrementos controlados
+      </h3>
+      <p class="leading-7 text-emerald-950">
+        (1) Endpoint novo isolado. (2) Integração com o frontend. (3)
+        Correções identificadas à parte, em pull requests próprios. Cada um
+        revisável e revertível de forma independente.
+      </p>
+    </div>
+  </div>
+</section>
+
+<h2>O que torna um lote "pequeno o suficiente"</h2>
+
+<ul>
+  <li>
+    <strong>Revisável em uma sentada:</strong> um revisor consegue avaliar o
+    diff completo sem perder o fio da tarefa.
+  </li>
+  <li>
+    <strong>Revertível sem colateral:</strong> desfazer o lote não exige
+    desfazer nenhuma outra melhoria não relacionada.
+  </li>
+  <li>
+    <strong>Testável isoladamente:</strong> o lote tem critério de aceite
+    próprio, verificável sem depender de outras mudanças pendentes.
+  </li>
+</ul>
+
+<h2>O limite: fragmentar demais também tem custo</h2>
+
+<p>
+  Dividir uma mudança em lotes tão pequenos que cada um, sozinho, deixa o
+  sistema num estado intermediário inconsistente — sem uma feature flag ou
+  estratégia de convivência entre versões — cria uma nova forma de risco. O
+  tamanho ideal do lote é o menor que ainda deixa o sistema num estado
+  coerente e testável ao final de cada entrega, não o menor tecnicamente
+  possível.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de IA consegue gerar quarenta arquivos de mudança com a mesma
+  facilidade que gera quatro. A decisão de empacotar tudo junto ou dividir em
+  incrementos revertíveis continua sendo uma escolha de engenharia — e essa
+  escolha determina se um problema em produção custa minutos ou horas para
+  ser resolvido.
+</p>
+
+<p>
+  <strong
+    >O último pull request grande que passou pelo seu time poderia ter sido
+    revertido em partes, ou só por inteiro?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 32 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #EntregaIncremental #GestaoDeRisco
+    #DevOps
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

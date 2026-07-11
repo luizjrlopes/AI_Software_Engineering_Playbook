@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Código rápido pode aumentar integração, revisão e manutenção. Por que acelerar a escrita de código não acelera proporcionalmente a entrega de software."
+    />
+    <title>
+      64. Velocidade de geração não é velocidade de entrega — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>64. Velocidade de geração não é velocidade de entrega</h1>
+
+<p>
+  Com agentes de IA gerando código cinco vezes mais rápido do que antes, a
+  expectativa era de que a equipe entregaria features cinco vezes mais
+  rápido também. Não entregou. O gargalo simplesmente se moveu: a fila de
+  revisão de pull requests, que antes conseguia absorver o ritmo da equipe,
+  agora recebia código a uma velocidade que os revisores humanos não
+  conseguiam acompanhar. O tempo entre "código escrito" e "código em
+  produção" mal mudou — só que agora a maior parte desse tempo era gasta
+  esperando revisão, não escrevendo.
+</p>
+
+<p>
+  Gerar código mais rápido resolveu apenas uma etapa de um processo com
+  várias etapas. As demais — revisão, integração, teste, deploy, manutenção
+  — continuaram no mesmo ritmo de antes, e a etapa mais lenta de todas
+  determina a velocidade real de entrega, não a mais rápida.
+</p>
+
+<h2>Uma etapa acelerada não acelera o processo inteiro</h2>
+
+<blockquote>
+  <p>Código rápido pode aumentar integração, revisão e manutenção.</p>
+</blockquote>
+
+<p>
+  Entrega de software é uma cadeia de etapas — especificação, escrita,
+  revisão, integração, teste, deploy, operação — e a velocidade final da
+  cadeia é limitada pela etapa mais lenta, não pela mais rápida. Acelerar
+  apenas a geração de código, sem acelerar proporcionalmente a capacidade de
+  revisar e integrar esse código com segurança, não move a agulha da
+  entrega — apenas acumula trabalho na etapa seguinte, que agora vira o novo
+  gargalo.
+</p>
+
+<h2>O lead time completo de uma feature</h2>
+
+<pre><code>Antes (sem agentes):
+Especificação: 1 dia | Escrita: 3 dias | Revisão: 1 dia |
+Integração: 0.5 dia | Deploy: 0.5 dia
+Lead time total: ~6 dias
+
+Depois (com agentes, só a escrita acelerada):
+Especificação: 1 dia | Escrita: 0.5 dia | Revisão: 2 dias
+(fila maior, revisores sobrecarregados) | Integração: 1 dia
+(mais conflitos por volume) | Deploy: 0.5 dia
+Lead time total: ~5 dias
+
+Ganho real: ~17%, não os 500% que a aceleração da escrita
+sozinha sugeriria.</code></pre>
+
+<p>
+  O ganho real de 17% ainda é positivo, mas está muito distante da
+  expectativa criada por "a IA escreve código cinco vezes mais rápido". A
+  diferença entre essas duas percepções é exatamente o que gera frustração
+  quando lideranças esperam ganhos de velocidade proporcionais à velocidade
+  de geração de código, isoladamente.
+</p>
+
+<h2>Onde investir para que o ganho se propague</h2>
+
+<p>
+  Para que a velocidade de geração se traduza em velocidade de entrega real,
+  as etapas seguintes da cadeia — os mesmos temas discutidos em blocos
+  anteriores desta série, como pull requests orientados por evidências e
+  gates proporcionais ao risco — também precisam evoluir. Acelerar apenas
+  uma etapa e ignorar as demais é otimizar uma parte do sistema às custas do
+  sistema inteiro.
+</p>
+
+<h2>O limite: nem todo gargalo é resolvido investindo em processo</h2>
+
+<p>
+  Algumas etapas, como revisão humana criteriosa de mudanças de alto risco,
+  têm um limite de velocidade que não deveria ser forçado além de um certo
+  ponto, sob risco de comprometer a qualidade da revisão em nome de
+  velocidade. Nem todo gargalo é um problema a resolver — alguns são um
+  limite de segurança que deveria permanecer.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Medir sucesso apenas pela velocidade com que código é gerado ignora que
+  entrega de software é um processo com múltiplas etapas, e a etapa mais
+  lenta determina o resultado final. Investir exclusivamente em gerar
+  código mais rápido, sem investir proporcionalmente nas etapas seguintes,
+  produz a sensação de velocidade sem a realidade de entrega mais rápida.
+</p>
+
+<p>
+  <strong
+    >No seu processo, a etapa que mais consome tempo hoje é a escrita de
+    código, ou já se moveu para revisão, integração ou deploy?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 64 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #LeadTime #Produtividade
+    #GestaoDeFluxo
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

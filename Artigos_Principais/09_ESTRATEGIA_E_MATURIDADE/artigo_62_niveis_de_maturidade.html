@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Há diferença entre usar IA, integrar IA ao processo e operar engenharia multiagente governada. Um modelo de três níveis para diagnosticar a maturidade real."
+    />
+    <title>
+      62. Os níveis de maturidade do desenvolvimento de software com agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  62. Os níveis de maturidade do desenvolvimento de software com agentes de
+  IA
+</h1>
+
+<p>
+  Duas empresas, na mesma reunião de fornecedores, afirmaram a mesma frase:
+  "nós usamos IA para programar". Na primeira, isso significava que alguns
+  desenvolvedores colavam trechos de código num chatbot, de vez em quando,
+  sem nenhuma mudança no processo de trabalho ao redor disso. Na segunda,
+  significava um conjunto de agentes especializados operando sob Context
+  Packs, escopo explícito, gates automatizados e matriz de autoridade — todo
+  o arcabouço discutido ao longo desta série. Um executivo, ouvindo as duas
+  descrições como se fossem equivalentes, presumiu que contratar qualquer
+  uma delas entregaria o mesmo resultado.
+</p>
+
+<p>
+  "Usar IA para programar" descreve um espectro tão amplo que, sozinha, a
+  frase não diz quase nada sobre a capacidade real de uma organização.
+</p>
+
+<h2>Três níveis, não um interruptor ligado ou desligado</h2>
+
+<blockquote>
+  <p>
+    Há diferença entre usar IA, integrar IA ao processo e operar engenharia
+    multiagente governada.
+  </p>
+</blockquote>
+
+<p>
+  Maturidade no uso de agentes de IA não é uma característica binária —
+  existe um espectro observável, com marcos que distinguem organizações que
+  apenas experimentam a tecnologia daquelas que a incorporaram como parte
+  estrutural da engenharia.
+</p>
+
+<h2>Os três níveis</h2>
+
+<ul>
+  <li>
+    <strong>Nível 1 — Uso individual e casual:</strong> desenvolvedores usam
+    agentes de forma pessoal e não padronizada, sem Context Packs, sem
+    escopo definido, sem gates. Produtividade individual pode aumentar; o
+    processo organizacional permanece inalterado.
+  </li>
+  <li>
+    <strong>Nível 2 — Integração ao processo:</strong> Issues bem escritas,
+    Context Packs, critérios de aceite executáveis e gates de qualidade
+    tornam o uso de agentes previsível e rastreável, mas ainda concentrado em
+    tarefas individuais.
+  </li>
+  <li>
+    <strong>Nível 3 — Engenharia multiagente governada:</strong> papéis
+    especializados (arquitetura, testes, segurança, revisão), matriz de
+    autoridade explícita, observabilidade e Definition of Done aplicados de
+    forma consistente entre projetos — o AI Software Engineer Studio
+    discutido no início desta série, operando na prática.
+  </li>
+</ul>
+
+<h2>Reconhecendo o nível real de uma organização</h2>
+
+<pre><code>Perguntas de diagnóstico:
+
+1. Existe um Context Pack padrão, ou cada tarefa começa
+   do zero? (distingue Nível 1 de Nível 2)
+2. Existem papéis diferenciados de agente com autoridade
+   definida, ou um único agente faz tudo? (distingue
+   Nível 2 de Nível 3)
+3. Um incidente causado por um agente gera aprendizado
+   estrutural, ou apenas correção pontual? (indicador de
+   maturidade no Nível 3)</code></pre>
+
+<p>
+  As duas empresas do início deste artigo, submetidas a esse diagnóstico,
+  revelariam rapidamente que estavam em níveis completamente diferentes,
+  apesar de descreverem sua adoção com a mesma frase genérica.
+</p>
+
+<h2>O limite: nem toda organização precisa chegar ao Nível 3</h2>
+
+<p>
+  Uma equipe pequena, com poucos projetos de baixo risco, pode operar de
+  forma perfeitamente razoável no Nível 2, sem nunca precisar da estrutura
+  completa de papéis especializados e governança do Nível 3. Maturidade
+  deveria ser buscada proporcionalmente ao risco e à escala dos projetos —
+  não perseguida como um troféu abstrato.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  "Usar IA para programar" é uma frase que esconde mais do que revela. Os
+  artigos desta série, do primeiro ao último, descrevem justamente a
+  transição entre esses níveis — de um uso casual e imprevisível para uma
+  prática de engenharia estruturada, rastreável e governada. Os próximos
+  artigos deste bloco final tratam de como sustentar essa transição de forma
+  estratégica.
+</p>
+
+<p>
+  <strong
+    >Se você aplicasse as três perguntas de diagnóstico deste artigo à sua
+    organização hoje, em que nível ela realmente estaria?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 62 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #MaturidadeOrganizacional
+    #TransformacaoDigital #Estrategia
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

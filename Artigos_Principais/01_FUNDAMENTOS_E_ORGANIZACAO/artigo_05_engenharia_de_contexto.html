@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A qualidade das decisões de um agente de IA depende de como o contexto é selecionado, priorizado, atualizado e limitado — em camadas, não em um único bloco de texto."
+    />
+    <title>
+      05. Engenharia de contexto: o novo fundamento do desenvolvimento
+      orientado por IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>
+          05. Engenharia de contexto: o novo fundamento do desenvolvimento
+          orientado por IA
+        </h1>
+
+        <p>
+          Dois desenvolvedores do mesmo time pedem ao mesmo agente para
+          implementar duas tarefas parecidas, na mesma semana, no mesmo
+          repositório. Um recebe um código alinhado com a política de
+          segurança da empresa. O outro recebe um código que funciona, mas
+          ignora essa mesma política. Nenhum dos dois fez nada de
+          tecnicamente errado no prompt. A diferença é que um deles, sem
+          perceber, incluiu na conversa um trecho do documento de segurança;
+          o outro não.
+        </p>
+
+        <p>
+          Esse tipo de inconsistência é sintoma de um problema maior do que
+          "esquecer de colar uma regra". É a ausência de um sistema que
+          garanta, de forma previsível, quais informações chegam ao agente em
+          cada situação — o que a área vem chamando de <strong>engenharia de
+          contexto</strong>.
+        </p>
+
+        <h2>Contexto não é um bloco, é um sistema de camadas</h2>
+
+        <blockquote>
+          <p>
+            A qualidade das decisões de um agente depende de como o contexto
+            é selecionado, priorizado, atualizado e limitado.
+          </p>
+        </blockquote>
+
+        <p>
+          O artigo anterior desta série tratou do Context Pack: o pacote de
+          contexto específico de uma tarefa. Mas um Context Pack não nasce
+          isolado — ele herda informação de camadas mais amplas, que existem
+          antes e independentemente daquela tarefa específica. Tratar contexto
+          como um problema apenas de "o que colar no prompt de hoje" ignora
+          que a maior parte da informação relevante já deveria estar
+          organizada em níveis anteriores.
+        </p>
+
+        <h2>As cinco camadas do contexto</h2>
+
+        <p>
+          Um sistema de contexto maduro normalmente se organiza em cinco
+          camadas, cada uma com uma pergunta que ela responde:
+        </p>
+
+        <section aria-labelledby="camadas" class="not-prose my-10">
+          <h2
+            id="camadas"
+            class="mb-5 text-2xl font-semibold text-slate-900"
+          >
+            As cinco camadas do contexto
+          </h2>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full border-collapse text-left text-sm">
+              <thead class="bg-slate-100 text-slate-700">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Camada</th>
+                  <th class="px-4 py-3 font-semibold">Responde a</th>
+                  <th class="px-4 py-3 font-semibold">Frequência de mudança</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Global</td>
+                  <td class="px-4 py-3 text-slate-700">
+                    Que regras valem para qualquer projeto da organização?
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">Rara</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">
+                    Organizacional
+                  </td>
+                  <td class="px-4 py-3 text-slate-700">
+                    Que padrões valem para esta área ou domínio de negócio?
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">Ocasional</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Projeto</td>
+                  <td class="px-4 py-3 text-slate-700">
+                    Que arquitetura e decisões já foram tomadas neste
+                    repositório?
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">Regular, via ADR</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Tarefa</td>
+                  <td class="px-4 py-3 text-slate-700">
+                    O que esta unidade específica de trabalho exige? (o
+                    Context Pack)
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">A cada tarefa</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Execução</td>
+                  <td class="px-4 py-3 text-slate-700">
+                    O que de fato chegou à janela do agente neste momento?
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">A cada chamada</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <p>
+          A inconsistência do exemplo inicial acontece quando a camada
+          organizacional — a política de segurança — depende de alguém lembrar
+          de colá-la manualmente na camada de execução, em vez de estar
+          conectada de forma automática ou obrigatória ao fluxo de trabalho.
+          Quando cada camada depende da memória individual de quem está no
+          teclado, o sistema de contexto não existe: existe apenas sorte.
+        </p>
+
+        <h2>Aplicando as camadas na prática</h2>
+
+        <p>
+          Na prática, isso significa que uma organização madura mantém a
+          camada global e a organizacional em documentos versionados e
+          referenciados automaticamente — não republicados a cada prompt. A
+          camada de projeto vive nos ADRs e na documentação de arquitetura. Só
+          a camada de tarefa muda a cada Context Pack, e a camada de execução
+          é, idealmente, gerada automaticamente a partir das anteriores, não
+          escrita à mão do zero.
+        </p>
+
+        <h2>O risco: camadas que se contradizem</h2>
+
+        <p>
+          Um sistema de camadas introduz um risco novo: o que acontece quando
+          a regra da camada de projeto contradiz a regra global? Um projeto
+          pode ter uma razão legítima para divergir — um serviço com
+          requisitos regulatórios específicos, por exemplo — mas essa
+          divergência precisa ser uma decisão explícita e registrada, não uma
+          contradição silenciosa que o agente resolve por conta própria,
+          escolhendo arbitrariamente qual camada obedecer. Sem uma ordem de
+          precedência clara entre camadas, o agente vira árbitro de um
+          conflito que deveria ter sido resolvido por humanos antes da tarefa
+          começar.
+        </p>
+
+        <h2>Conclusão</h2>
+
+        <p>
+          Engenharia de contexto não é uma técnica de escrever prompts
+          melhores. É a disciplina de decidir, antes da tarefa começar, onde
+          cada tipo de regra deve viver, com que frequência ela muda e como
+          ela chega até o agente de forma confiável. Um Context Pack bem
+          escrito ainda falha se as camadas que deveriam alimentá-lo não
+          existem ou não são consultadas.
+        </p>
+
+        <p>
+          <strong
+            >Se dois membros do seu time pedissem a mesma tarefa ao mesmo
+            agente hoje, você tem confiança de que receberiam o mesmo nível de
+            regra de segurança e arquitetura, ou isso depende de quem lembrou
+            de colar o quê?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 05 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 font-semibold text-linkedin-blue">
+            #ContextEngineering #EngenhariaDeSoftware #AgentesDeIA
+            #ArquiteturaDeSoftware #Governanca
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

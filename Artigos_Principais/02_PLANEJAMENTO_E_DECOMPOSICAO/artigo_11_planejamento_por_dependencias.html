@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Executar rápido na ordem errada continua sendo lento. Como identificar dependências bloqueantes, contratos prévios e tarefas realmente paralelizáveis para agentes de IA."
+    />
+    <title>
+      11. Planejamento orientado por dependências: em que ordem os agentes devem trabalhar? — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  11. Planejamento orientado por dependências: em que ordem os agentes devem
+  trabalhar?
+</h1>
+
+<p>
+  Dois agentes começaram a trabalhar no mesmo recurso ao mesmo tempo, para
+  ganhar velocidade: um implementando a tela de checkout no frontend, outro
+  implementando o endpoint de pagamento no backend. Três dias depois, os dois
+  entregaram exatamente o que foi pedido — só que o frontend esperava um
+  campo <code>total_amount</code> em centavos e o backend devolvia
+  <code>totalAmount</code> em reais, com formatos de erro completamente
+  diferentes dos que a tela sabia interpretar. A integração consumiu mais
+  tempo corrigindo essa divergência do que teria levado implementar os dois
+  lados em sequência.
+</p>
+
+<p>
+  A paralelização pareceu, no papel, a decisão mais rápida. Na prática, foi
+  mais lenta, porque nenhum dos dois times — humano ou agente — tinha um
+  contrato comum antes de começar. Rodar duas tarefas ao mesmo tempo não
+  economiza tempo quando elas dependem de uma decisão que ainda não foi
+  tomada.
+</p>
+
+<h2>Velocidade sem ordem não é velocidade</h2>
+
+<blockquote>
+  <p>Executar rápido na ordem errada continua sendo lento.</p>
+</blockquote>
+
+<p>
+  Todo plano de trabalho tem uma estrutura de dependências, mesmo quando
+  ninguém a desenha explicitamente. Ignorá-la não faz as dependências
+  desaparecerem — apenas adia a colisão para o momento da integração, quando
+  o custo de corrigir já é maior. Planejar orientado por dependências
+  significa identificar, antes de distribuir tarefas a agentes, o que
+  realmente pode andar em paralelo e o que precisa de uma decisão prévia
+  compartilhada.
+</p>
+
+<h2>Três tipos de relação entre tarefas</h2>
+
+<ul>
+  <li>
+    <strong>Bloqueante:</strong> a tarefa B não pode começar de forma
+    confiável antes de uma decisão da tarefa A estar fechada — como o
+    contrato de API do exemplo do checkout.
+  </li>
+  <li>
+    <strong>Paralelizável com contrato prévio:</strong> A e B podem avançar
+    ao mesmo tempo, desde que compartilhem, desde o início, uma definição
+    comum e estável — o mesmo contrato de dados, por exemplo.
+  </li>
+  <li>
+    <strong>Independente:</strong> A e B não compartilham nenhum dado,
+    arquivo ou decisão relevante, e podem correr sem nenhuma coordenação
+    prévia.
+  </li>
+</ul>
+
+<p>
+  O erro do exemplo inicial foi tratar uma relação bloqueante como se fosse
+  independente. O contrato da API — nomes de campo, unidades, formato de
+  erro — deveria ter sido fechado antes de qualquer um dos dois agentes
+  escrever a primeira linha, ainda que a implementação de cada lado corresse
+  em paralelo depois disso.
+</p>
+
+<h2>Fechando o contrato antes de paralelizar</h2>
+
+<pre><code>contrato_checkout_v1:
+  POST /api/checkout
+  request:
+    total_amount_cents: integer
+    currency: string  # ISO 4217, ex: "BRL"
+  response_sucesso:
+    status: 200
+    body: { order_id: string, status: "confirmed" }
+  response_erro:
+    status: 422
+    body: { error_code: string, message: string }</code></pre>
+
+<p>
+  Com esse contrato fechado e compartilhado antes da divisão de tarefas, o
+  agente de frontend e o agente de backend podem trabalhar ao mesmo tempo com
+  segurança: ambos implementam contra a mesma definição, e a integração deixa
+  de ser um ponto de descoberta de divergências.
+</p>
+
+<h2>O limite: mapear dependências também consome tempo</h2>
+
+<p>
+  Desenhar a árvore completa de dependências de um projeto grande, com
+  precisão excessiva, pode consumir mais tempo de planejamento do que o
+  paralelismo economizaria. A prática compensa quando duas ou mais tarefas
+  compartilham uma interface, um dado ou um recurso; para tarefas realmente
+  isoladas, esse mapeamento é esforço sem retorno.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Distribuir tarefas a múltiplos agentes ao mesmo tempo cria a sensação de
+  progresso simultâneo, mas essa sensação é enganosa quando as tarefas
+  dependem de uma decisão ainda não tomada. Identificar o que é
+  verdadeiramente bloqueante, o que precisa de um contrato prévio e o que é
+  de fato independente é o que transforma paralelismo em velocidade real, em
+  vez de retrabalho adiado.
+</p>
+
+<p>
+  <strong
+    >Da próxima vez que duas tarefas rodarem em paralelo no seu projeto, elas
+    compartilham algum contrato que ainda não foi fechado?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 11 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #GestaoDeProjetos #EngenhariaDeSoftware #AgentesDeIA #Planejamento
+    #ArquiteturaDeSoftware
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

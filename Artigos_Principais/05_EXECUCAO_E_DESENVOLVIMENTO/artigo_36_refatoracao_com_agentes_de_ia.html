@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Refatorar exige caracterizar o comportamento antes de alterar a estrutura. Como usar testes de caracterização para proteger refatorações feitas por agentes de IA."
+    />
+    <title>
+      36. Refatoração com agentes de IA: como melhorar o código sem mudar seu comportamento — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Execução e Desenvolvimento
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 4 — Da geração de código à implementação sustentável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  36. Refatoração com agentes de IA: como melhorar o código sem mudar seu
+  comportamento
+</h1>
+
+<p>
+  A tarefa parecia inofensiva: "limpar a função de cálculo de preços, está
+  difícil de ler". O agente reorganizou a lógica, extraiu variáveis com
+  nomes melhores e simplificou uma cadeia de condicionais aninhadas. O código
+  ficou, de fato, mais legível. Também mudou, de forma sutil, a ordem em que
+  um arredondamento era aplicado num caso específico de desconto combinado —
+  suficiente para alterar o resultado em centavos, num cenário raro que os
+  poucos testes existentes não cobriam. A mudança só foi percebida semanas
+  depois, quando alguém notou uma pequena divergência em faturas específicas.
+</p>
+
+<p>
+  O agente cumpriu literalmente o que foi pedido — "limpar" o código — mas
+  ninguém tinha definido, antes da tarefa começar, o que exatamente deveria
+  permanecer idêntico depois da limpeza.
+</p>
+
+<h2>Refatorar exige saber o que não pode mudar</h2>
+
+<blockquote>
+  <p>
+    Refatorar exige caracterizar o comportamento antes de alterar a
+    estrutura.
+  </p>
+</blockquote>
+
+<p>
+  Refatoração, por definição, é mudar a estrutura interna de um código sem
+  alterar seu comportamento observável. Essa definição só é verificável se
+  alguém souber, de antemão, qual é o comportamento observável completo —
+  incluindo os casos raros que ninguém tem em mente no momento de "limpar o
+  código". Sem essa caracterização prévia, refatoração e mudança de
+  comportamento ficam indistinguíveis até alguém notar a diferença em
+  produção.
+</p>
+
+<h2>Testes de caracterização: fotografar o comportamento antes de mexer</h2>
+
+<p>
+  Um teste de caracterização não verifica se o comportamento está "correto"
+  — verifica exatamente o que o código faz hoje, incluindo casos que
+  ninguém documentou formalmente, para servir de referência depois da
+  mudança estrutural:
+</p>
+
+<pre><code>// Antes de refatorar, capturar o comportamento atual
+describe("calcularPreco - caracterização", () => {
+  it("preço base sem desconto", () => {
+    expect(calcularPreco(10000, [])).toBe(10000);
+  });
+
+  it("desconto percentual isolado", () => {
+    expect(calcularPreco(10000, [{ tipo: "percentual", valor: 10 }]))
+      .toBe(9000);
+  });
+
+  it("desconto combinado com frete grátis (caso raro)", () => {
+    // Este resultado é o comportamento ATUAL, correto ou não —
+    // serve de referência para a refatoração.
+    expect(
+      calcularPreco(10000, [
+        { tipo: "percentual", valor: 10 },
+        { tipo: "frete_gratis" },
+      ])
+    ).toBe(9000);
+  });
+});</code></pre>
+
+<p>
+  Com esses testes rodando antes e depois da refatoração, qualquer mudança
+  de resultado — mesmo em centavos, mesmo num caso raro — aparece
+  imediatamente como uma falha de teste, em vez de ser descoberta semanas
+  depois numa fatura de cliente.
+</p>
+
+<h2>O fluxo correto de uma refatoração protegida</h2>
+
+<ol>
+  <li>Escrever testes de caracterização cobrindo o comportamento atual,
+  incluindo casos raros.</li>
+  <li>Confirmar que os testes passam antes de qualquer mudança estrutural.</li>
+  <li>Refatorar a estrutura interna.</li>
+  <li>Rodar os mesmos testes novamente — qualquer falha indica mudança de
+  comportamento, intencional ou não.</li>
+</ol>
+
+<h2>O limite: nem toda refatoração precisa desse rigor completo</h2>
+
+<p>
+  Para uma função pequena, isolada, sem histórico de bugs e sem uso em
+  cenários financeiros ou críticos, escrever testes de caracterização
+  formais antes de uma limpeza simples pode ser desproporcional. O rigor
+  compensa quando a função lida com dinheiro, dados sensíveis ou lógica cujo
+  comportamento exato já causou problema antes.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  "Deixar o código mais limpo" e "mudar o que o sistema calcula" são coisas
+  diferentes, mas fáceis de confundir sem uma referência explícita do
+  comportamento anterior. Testes de caracterização são essa referência — não
+  provam que o código estava certo antes, apenas garantem que a refatoração
+  não mudou nada além da estrutura.
+</p>
+
+<p>
+  <strong
+    >A última "limpeza de código" que um agente fez no seu projeto tinha
+    algum teste capturando o comportamento anterior, ou dependeu de alguém
+    perceber a diferença depois?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 36 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Refatoracao #Testes
+    #QualidadeDeSoftware
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

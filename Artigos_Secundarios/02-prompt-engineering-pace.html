@@ -3,22 +3,80 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Método prático para especificar, testar, versionar e operar prompts em aplicações de IA." />
+    <meta
+      name="description"
+      content="Método prático para especificar, testar, versionar e operar prompts em aplicações de IA."
+    />
     <title>Prompt engineering como especificação testável</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
     <script>
-      tailwind.config={theme:{extend:{fontFamily:{sans:["Inter","sans-serif"],mono:["Fira Code","monospace"]},colors:{brand:{50:"#faf5ff",100:"#f3e8ff",500:"#a855f7",600:"#9333ea",700:"#7e22ce",900:"#581c87"}}}}};
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Fira Code", "monospace"],
+            },
+            colors: {
+              brand: {
+                50: "#faf5ff",
+                100: "#f3e8ff",
+                500: "#a855f7",
+                600: "#9333ea",
+                700: "#7e22ce",
+                900: "#581c87",
+              },
+            },
+          },
+        },
+      };
     </script>
-    <style>body{font-family:"Inter",sans-serif}.copy p{margin-top:1rem;line-height:1.8}.copy ul,.copy ol{margin:1rem 0 0 1.25rem}.copy li{margin-top:.55rem;line-height:1.7}.copy ul{list-style:disc}.copy ol{list-style:decimal}</style>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .copy p {
+        margin-top: 1rem;
+        line-height: 1.8;
+      }
+      .copy ul,
+      .copy ol {
+        margin: 1rem 0 0 1.25rem;
+      }
+      .copy li {
+        margin-top: 0.55rem;
+        line-height: 1.7;
+      }
+      .copy ul {
+        list-style: disc;
+      }
+      .copy ol {
+        list-style: decimal;
+      }
+    </style>
   </head>
   <body class="bg-slate-50 text-slate-800 antialiased">
-    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <a href="index.html" class="font-bold text-brand-700 hover:text-brand-900">Artigos_GenAi</a>
-        <nav aria-label="Navegação do artigo" class="flex gap-4 text-sm font-medium">
+    <header
+      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+    >
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a
+          href="index.html"
+          class="font-bold text-brand-700 hover:text-brand-900"
+          >AI_Software_Engineering_Playbook</a
+        >
+        <nav
+          aria-label="Navegação do artigo"
+          class="flex gap-4 text-sm font-medium"
+        >
           <a href="#pace" class="hover:text-brand-700">PACE</a>
           <a href="#avaliacao" class="hover:text-brand-700">Avaliação</a>
           <a href="#producao" class="hover:text-brand-700">Produção</a>
@@ -27,62 +85,149 @@
     </header>
 
     <main>
-      <section class="bg-gradient-to-br from-brand-900 via-brand-700 to-fuchsia-500 text-white">
+      <section
+        class="bg-gradient-to-br from-brand-900 via-brand-700 to-fuchsia-500 text-white"
+      >
         <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider">
+          <div
+            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
+          >
             <span class="rounded-full bg-white/15 px-3 py-1">IA aplicada</span>
-            <span class="rounded-full bg-white/15 px-3 py-1">Artigo conceitual</span>
-            <span class="rounded-full bg-white/15 px-3 py-1">Nível intermediário</span>
+            <span class="rounded-full bg-white/15 px-3 py-1"
+              >Artigo conceitual</span
+            >
+            <span class="rounded-full bg-white/15 px-3 py-1"
+              >Nível intermediário</span
+            >
           </div>
-          <p class="mb-4 font-mono text-sm text-purple-100">Artigo 02 · Revisado em julho de 2026</p>
-          <h1 class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl">Prompt engineering como especificação testável</h1>
+          <p class="mb-4 font-mono text-sm text-purple-100">
+            Artigo 02 · Revisado em julho de 2026
+          </p>
+          <h1
+            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
+          >
+            Prompt engineering como especificação testável
+          </h1>
           <p class="mt-6 max-w-3xl text-xl leading-relaxed text-purple-100">
-            Um prompt de produção não é uma frase criativa. É parte de um contrato versionado,
-            avaliado e protegido por controles que existem fora do modelo.
+            Um prompt de produção não é uma frase criativa. É parte de um
+            contrato versionado, avaliado e protegido por controles que existem
+            fora do modelo.
           </p>
         </div>
       </section>
 
       <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <aside class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950">
+        <aside
+          class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
+        >
           <h2 class="font-bold">Sobre o nome PACE</h2>
           <p class="mt-2 leading-relaxed">
-            Neste artigo, PACE é um framework operacional adotado pela série: <strong>Purpose,
-            Audience, Context e Examples</strong>. Ele organiza a especificação, mas não é apresentado
-            como norma universal nem substitui avaliação empírica.
+            Neste artigo, PACE é um framework operacional adotado pela série:
+            <strong>Purpose, Audience, Context e Examples</strong>. Ele organiza
+            a especificação, mas não é apresentado como norma universal nem
+            substitui avaliação empírica.
           </p>
         </aside>
 
         <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Problema</p>
-          <h2 class="mt-3 text-3xl font-bold">Prompts falham quando carregam responsabilidades demais</h2>
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Problema
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Prompts falham quando carregam responsabilidades demais
+          </h2>
           <p>
-            Instruções ambíguas produzem saídas inconsistentes. Porém, aumentar indefinidamente o texto
-            do prompt também não resolve autorização, fatos atualizados, validação, efeitos externos ou observabilidade.
+            Instruções ambíguas produzem saídas inconsistentes. Porém, aumentar
+            indefinidamente o texto do prompt também não resolve autorização,
+            fatos atualizados, validação, efeitos externos ou observabilidade.
           </p>
           <p>
-            A primeira decisão é separar responsabilidades: o prompt orienta o comportamento do modelo;
-            código e infraestrutura aplicam políticas, permissões, contratos, limites e auditoria.
+            A primeira decisão é separar responsabilidades: o prompt orienta o
+            comportamento do modelo; código e infraestrutura aplicam políticas,
+            permissões, contratos, limites e auditoria.
           </p>
-          <p><strong>Tese:</strong> prompt engineering madura transforma intenção em especificação testável.</p>
+          <p>
+            <strong>Tese:</strong> prompt engineering madura transforma intenção
+            em especificação testável.
+          </p>
         </section>
 
-        <section class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10" id="pace">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-purple-300">Framework PACE</p>
-          <h2 class="mt-3 text-3xl font-bold">Quatro perguntas antes de escrever a instrução</h2>
+        <section
+          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
+          id="pace"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-purple-300"
+          >
+            Framework PACE
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Quatro perguntas antes de escrever a instrução
+          </h2>
           <div class="mt-8 grid gap-4 md:grid-cols-2">
-            <article class="rounded-xl bg-white/10 p-6"><span class="font-mono text-xs text-purple-300">P · Purpose</span><h3 class="mt-2 text-xl font-bold">Qual transformação é necessária?</h3><p class="mt-2 text-sm leading-relaxed text-slate-300">Defina tarefa, entrada, saída, sucesso, recusa e o que está fora de escopo.</p></article>
-            <article class="rounded-xl bg-white/10 p-6"><span class="font-mono text-xs text-purple-300">A · Audience</span><h3 class="mt-2 text-xl font-bold">Quem usará a saída?</h3><p class="mt-2 text-sm leading-relaxed text-slate-300">Ajuste linguagem, profundidade, acessibilidade e risco ao destinatário real.</p></article>
-            <article class="rounded-xl bg-white/10 p-6"><span class="font-mono text-xs text-purple-300">C · Context</span><h3 class="mt-2 text-xl font-bold">Quais dados são necessários e permitidos?</h3><p class="mt-2 text-sm leading-relaxed text-slate-300">Forneça apenas contexto autorizado, relevante, delimitado e identificável.</p></article>
-            <article class="rounded-xl bg-white/10 p-6"><span class="font-mono text-xs text-purple-300">E · Examples</span><h3 class="mt-2 text-xl font-bold">Quais casos definem o comportamento?</h3><p class="mt-2 text-sm leading-relaxed text-slate-300">Inclua casos típicos, limites, recusas e contraexemplos sem ensinar padrões incorretos.</p></article>
+            <article class="rounded-xl bg-white/10 p-6">
+              <span class="font-mono text-xs text-purple-300">P · Purpose</span>
+              <h3 class="mt-2 text-xl font-bold">
+                Qual transformação é necessária?
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-300">
+                Defina tarefa, entrada, saída, sucesso, recusa e o que está fora
+                de escopo.
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-6">
+              <span class="font-mono text-xs text-purple-300"
+                >A · Audience</span
+              >
+              <h3 class="mt-2 text-xl font-bold">Quem usará a saída?</h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-300">
+                Ajuste linguagem, profundidade, acessibilidade e risco ao
+                destinatário real.
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-6">
+              <span class="font-mono text-xs text-purple-300">C · Context</span>
+              <h3 class="mt-2 text-xl font-bold">
+                Quais dados são necessários e permitidos?
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-300">
+                Forneça apenas contexto autorizado, relevante, delimitado e
+                identificável.
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-6">
+              <span class="font-mono text-xs text-purple-300"
+                >E · Examples</span
+              >
+              <h3 class="mt-2 text-xl font-bold">
+                Quais casos definem o comportamento?
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-300">
+                Inclua casos típicos, limites, recusas e contraexemplos sem
+                ensinar padrões incorretos.
+              </p>
+            </article>
           </div>
         </section>
 
         <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Exemplo hipotético</p>
-          <h2 class="mt-3 text-3xl font-bold">Extrair risco e próxima ação de um chamado</h2>
-          <p>Uma instrução vaga como “resuma este chamado” não define uso nem contrato. Uma especificação melhor separa:</p>
-          <pre class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-purple-100"><code>PURPOSE
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Exemplo hipotético
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Extrair risco e próxima ação de um chamado
+          </h2>
+          <p>
+            Uma instrução vaga como “resuma este chamado” não define uso nem
+            contrato. Uma especificação melhor separa:
+          </p>
+          <pre
+            class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-purple-100"
+          ><code>PURPOSE
 Classificar risco e sugerir a próxima ação permitida.
 Se faltarem dados, retornar needs_review=true.
 
@@ -99,62 +244,164 @@ Incluir caso normal, ambíguo, fora de escopo e tentativa de injection.
 OUTPUT
 JSON validado por schema: risk, rationale, next_action, needs_review.</code></pre>
           <p>
-            O schema deve ser validado fora do modelo. A ação sugerida não deve ser executada automaticamente
-            sem autorização e controles compatíveis com seu impacto.
+            O schema deve ser validado fora do modelo. A ação sugerida não deve
+            ser executada automaticamente sem autorização e controles
+            compatíveis com seu impacto.
           </p>
         </section>
 
-        <section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700">Separação de responsabilidades</p>
-          <h2 class="mt-3 text-3xl font-bold">O que não deve depender apenas do prompt</h2>
+        <section
+          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
+          >
+            Separação de responsabilidades
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            O que não deve depender apenas do prompt
+          </h2>
           <div class="mt-7 overflow-x-auto">
-            <table class="w-full min-w-[720px] border-collapse text-left text-sm">
-              <thead><tr class="bg-slate-900 text-white"><th class="p-4">Responsabilidade</th><th class="p-4">Controle principal</th></tr></thead>
+            <table
+              class="w-full min-w-[720px] border-collapse text-left text-sm"
+            >
+              <thead>
+                <tr class="bg-slate-900 text-white">
+                  <th class="p-4">Responsabilidade</th>
+                  <th class="p-4">Controle principal</th>
+                </tr>
+              </thead>
               <tbody class="divide-y divide-slate-200">
-                <tr><th class="p-4">Autorização</th><td class="p-4">identidade, política e filtro aplicados em código</td></tr>
-                <tr class="bg-white/60"><th class="p-4">Formato</th><td class="p-4">schema e validação de tipos</td></tr>
-                <tr><th class="p-4">Fatos atuais</th><td class="p-4">fonte autorizada, retrieval ou ferramenta</td></tr>
-                <tr class="bg-white/60"><th class="p-4">Efeitos externos</th><td class="p-4">contrato da ferramenta, escopo e confirmação</td></tr>
-                <tr><th class="p-4">Dados sensíveis</th><td class="p-4">minimização, mascaramento e controle de acesso</td></tr>
-                <tr class="bg-white/60"><th class="p-4">Confiabilidade</th><td class="p-4">testes, limites, fallback e observabilidade</td></tr>
+                <tr>
+                  <th class="p-4">Autorização</th>
+                  <td class="p-4">
+                    identidade, política e filtro aplicados em código
+                  </td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Formato</th>
+                  <td class="p-4">schema e validação de tipos</td>
+                </tr>
+                <tr>
+                  <th class="p-4">Fatos atuais</th>
+                  <td class="p-4">fonte autorizada, retrieval ou ferramenta</td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Efeitos externos</th>
+                  <td class="p-4">
+                    contrato da ferramenta, escopo e confirmação
+                  </td>
+                </tr>
+                <tr>
+                  <th class="p-4">Dados sensíveis</th>
+                  <td class="p-4">
+                    minimização, mascaramento e controle de acesso
+                  </td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Confiabilidade</th>
+                  <td class="p-4">
+                    testes, limites, fallback e observabilidade
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="avaliacao">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Avaliação</p>
-          <h2 class="mt-3 text-3xl font-bold">O prompt só melhora quando a comparação é reproduzível</h2>
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="avaliacao"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Avaliação
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            O prompt só melhora quando a comparação é reproduzível
+          </h2>
           <ol>
-            <li><strong>Crie um dataset representativo.</strong> Inclua casos comuns, raros, ambíguos, adversariais e recusas.</li>
-            <li><strong>Registre uma linha de base.</strong> Preserve prompt, configuração, modelo e resultados.</li>
-            <li><strong>Defina critérios por tarefa.</strong> Validade do schema, correção, cobertura, groundedness, segurança e estilo não são a mesma métrica.</li>
-            <li><strong>Altere uma variável por vez.</strong> Caso contrário, o ganho não pode ser atribuído à mudança.</li>
-            <li><strong>Revise amostras qualitativamente.</strong> Uma média pode esconder falhas graves em subgrupos ou casos críticos.</li>
-            <li><strong>Execute regressão.</strong> Uma melhoria local não deve degradar tarefas já aprovadas.</li>
+            <li>
+              <strong>Crie um dataset representativo.</strong> Inclua casos
+              comuns, raros, ambíguos, adversariais e recusas.
+            </li>
+            <li>
+              <strong>Registre uma linha de base.</strong> Preserve prompt,
+              configuração, modelo e resultados.
+            </li>
+            <li>
+              <strong>Defina critérios por tarefa.</strong> Validade do schema,
+              correção, cobertura, groundedness, segurança e estilo não são a
+              mesma métrica.
+            </li>
+            <li>
+              <strong>Altere uma variável por vez.</strong> Caso contrário, o
+              ganho não pode ser atribuído à mudança.
+            </li>
+            <li>
+              <strong>Revise amostras qualitativamente.</strong> Uma média pode
+              esconder falhas graves em subgrupos ou casos críticos.
+            </li>
+            <li>
+              <strong>Execute regressão.</strong> Uma melhoria local não deve
+              degradar tarefas já aprovadas.
+            </li>
           </ol>
           <p>
-            Avaliadores automáticos podem ajudar a escalar triagem, mas também erram. Calibração humana e critérios explícitos continuam necessários.
+            Avaliadores automáticos podem ajudar a escalar triagem, mas também
+            erram. Calibração humana e critérios explícitos continuam
+            necessários.
           </p>
         </section>
 
-        <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700">Segurança</p>
-          <h2 class="mt-3 text-3xl font-bold">Contexto externo deve ser tratado como dado não confiável</h2>
+        <section
+          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
+          >
+            Segurança
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Contexto externo deve ser tratado como dado não confiável
+          </h2>
           <ul>
-            <li>delimitar claramente instruções do sistema e conteúdo fornecido;</li>
-            <li>não confiar em frases do usuário ou documento que tentem mudar políticas;</li>
-            <li>limitar ferramentas por identidade, escopo e argumentos permitidos;</li>
+            <li>
+              delimitar claramente instruções do sistema e conteúdo fornecido;
+            </li>
+            <li>
+              não confiar em frases do usuário ou documento que tentem mudar
+              políticas;
+            </li>
+            <li>
+              limitar ferramentas por identidade, escopo e argumentos
+              permitidos;
+            </li>
             <li>validar toda saída antes de executar efeitos;</li>
             <li>não inserir segredos no prompt;</li>
-            <li>registrar sinais de ataque sem armazenar conteúdo sensível desnecessário;</li>
-            <li>testar exfiltração, instruções conflitantes e conteúdo malicioso.</li>
+            <li>
+              registrar sinais de ataque sem armazenar conteúdo sensível
+              desnecessário;
+            </li>
+            <li>
+              testar exfiltração, instruções conflitantes e conteúdo malicioso.
+            </li>
           </ul>
         </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="producao">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Operação</p>
-          <h2 class="mt-3 text-3xl font-bold">Prompts são artefatos versionados</h2>
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="producao"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Operação
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Prompts são artefatos versionados
+          </h2>
           <p>Cada versão relevante deve registrar:</p>
           <ul>
             <li>identificador e objetivo da mudança;</li>
@@ -166,28 +413,62 @@ JSON validado por schema: risk, rationale, next_action, needs_review.</code></pr
             <li>responsável e data de liberação.</li>
           </ul>
           <p>
-            Telemetria deve permitir relacionar uma falha à versão do prompt e aos componentes envolvidos,
-            sem registrar indiscriminadamente dados pessoais ou conteúdo confidencial.
+            Telemetria deve permitir relacionar uma falha à versão do prompt e
+            aos componentes envolvidos, sem registrar indiscriminadamente dados
+            pessoais ou conteúdo confidencial.
           </p>
         </section>
 
         <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Conclusão</p>
-          <h2 class="mt-3 text-3xl font-bold">Clareza ajuda; avaliação decide</h2>
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Conclusão
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Clareza ajuda; avaliação decide
+          </h2>
           <p>
-            PACE organiza objetivo, público, contexto e exemplos. O ganho real, porém, deve aparecer em testes reproduzíveis.
-            Quando o problema for conhecimento externo ou comportamento especializado, prompts podem precisar ser combinados
-            com RAG, ferramentas ou fine-tuning — temas dos próximos artigos.
+            PACE organiza objetivo, público, contexto e exemplos. O ganho real,
+            porém, deve aparecer em testes reproduzíveis. Quando o problema for
+            conhecimento externo ou comportamento especializado, prompts podem
+            precisar ser combinados com RAG, ferramentas ou fine-tuning — temas
+            dos próximos artigos.
           </p>
         </section>
 
-        <nav aria-label="Artigos relacionados" class="grid gap-4 sm:grid-cols-2">
-          <a href="01-do-modelo-ao-produto.html" class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Anterior</span><strong class="mt-2 block text-lg text-brand-900">Do modelo ao produto</strong></a>
-          <a href="03-rag-cardapios.html" class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Próximo</span><strong class="mt-2 block text-lg text-brand-900">RAG para dados dinâmicos</strong></a>
+        <nav
+          aria-label="Artigos relacionados"
+          class="grid gap-4 sm:grid-cols-2"
+        >
+          <a
+            href="01-do-modelo-ao-produto.html"
+            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Anterior</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >Do modelo ao produto</strong
+            ></a
+          >
+          <a
+            href="03-rag-cardapios.html"
+            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Próximo</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >RAG para dados dinâmicos</strong
+            ></a
+          >
         </nav>
       </div>
     </main>
 
-    <footer class="border-t border-slate-200 bg-white py-8"><div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso</div></footer>
+    <footer class="border-t border-slate-200 bg-white py-8">
+      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
+        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
+      </div>
+    </footer>
   </body>
 </html>

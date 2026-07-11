@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Senioridade também é saber recusar automação inadequada. Quatro cenários em que delegar uma tarefa a um agente de IA exige cautela redobrada — ou recusa."
+    />
+    <title>
+      65. Quando não usar agentes de IA para programar — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>65. Quando não usar agentes de IA para programar</h1>
+
+<p>
+  A pressão era clara: "use IA em tudo, é mais rápido". Um desenvolvedor
+  aplicou essa diretriz a uma mudança num sistema de controle de acesso
+  físico de uma instalação industrial — sem cobertura de testes automatizados
+  que validasse o comportamento crítico, sem ambiente de homologação
+  equivalente ao de produção, e sem alguém com profundo conhecimento daquele
+  domínio específico revisando com atenção redobrada. A tarefa parecia
+  simples. O risco de um erro não detectado, nesse contexto, não era
+  simples de forma nenhuma.
+</p>
+
+<p>
+  Recusar delegar aquela tarefa integralmente a um agente não seria
+  resistência à tecnologia — seria o mesmo julgamento que um engenheiro
+  sênior aplicaria a qualquer mudança de alto risco, com ou sem IA
+  envolvida.
+</p>
+
+<h2>Recusar automação também é senioridade</h2>
+
+<blockquote>
+  <p>Senioridade também é saber recusar automação inadequada.</p>
+</blockquote>
+
+<p>
+  Ao longo desta série, a maior parte dos artigos tratou de como usar
+  agentes de IA com responsabilidade. Este trata do reverso: reconhecer
+  quando a resposta correta não é "como delegar melhor", e sim "não
+  delegar, ou delegar com uma restrição muito maior do que o padrão".
+</p>
+
+<h2>Quatro cenários que pedem cautela redobrada</h2>
+
+<ul>
+  <li>
+    <strong>Sistemas críticos sem rede de segurança:</strong> quando uma
+    falha tem consequência física, financeira ou legal severa, e não existe
+    cobertura de teste que capturaria um erro antes da produção.
+  </li>
+  <li>
+    <strong>Ausência de testes que validem a mudança:</strong> sem testes de
+    caracterização ou cobertura mínima, não há como confirmar que o
+    comportamento permaneceu correto depois da alteração.
+  </li>
+  <li>
+    <strong>Dados ou segredos sensíveis demais:</strong> quando o contexto
+    necessário para a tarefa exigiria expor informação que não deveria
+    circular por um agente ou por logs de execução.
+  </li>
+  <li>
+    <strong>Tarefa trivial demais para justificar o processo:</strong> o
+    oposto do risco alto — orquestrar Context Pack, gates e revisão para uma
+    mudança de uma linha, sem risco algum, é desperdício de estrutura.
+  </li>
+</ul>
+
+<h2>Um filtro rápido antes de delegar</h2>
+
+<pre><code>Antes de delegar uma tarefa a um agente, perguntar:
+
+1. Uma falha aqui teria consequência grave e de difícil
+   reversão? (sistemas críticos)
+2. Existe uma forma confiável de validar que o resultado
+   está correto antes de ir para produção? (ausência de
+   rede de segurança)
+3. A tarefa exige expor dados que não deveriam estar no
+   contexto de um agente? (dados sensíveis)
+4. O risco e a complexidade da tarefa justificam o
+   esforço de orquestração envolvido? (proporcionalidade)
+
+Se a resposta às perguntas 1 ou 3 for "sim", ou a
+pergunta 2 for "não", reconsiderar a delegação ou reduzir
+drasticamente o escopo autorizado.</code></pre>
+
+<p>
+  Aplicado ao sistema de controle de acesso do início, esse filtro teria
+  sinalizado pelo menos dois alertas — ausência de rede de segurança e
+  potencial gravidade da falha — antes que a tarefa fosse delegada sem
+  restrições adicionais.
+</p>
+
+<h2>O limite: cautela em excesso também tem custo</h2>
+
+<p>
+  Recusar automação para toda tarefa que envolva qualquer risco, por menor
+  que seja, elimina o ganho real que agentes de IA podem trazer. A cautela
+  deveria ser proporcional ao risco identificado nas perguntas acima, não
+  aplicada uniformemente como política de recusa geral.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Nem toda tarefa deveria ser delegada a um agente só porque a tecnologia
+  está disponível e a pressão por velocidade existe. Saber reconhecer os
+  cenários em que a automação exige mais cautela — ou não deveria acontecer
+  sem revisão muito mais rigorosa — é parte da mesma responsabilidade que
+  define um engenheiro sênior, com ou sem IA na equação.
+</p>
+
+<p>
+  <strong
+    >Existe alguma tarefa atualmente delegada a um agente no seu projeto que,
+    aplicando o filtro deste artigo, mereceria reconsideração?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 65 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #GestaoDeRisco #Senioridade
+    #ResponsabilidadeTecnica
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

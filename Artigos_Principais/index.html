@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Índice completo da série Engenharia de Software com Agentes de IA: 70 artigos organizados em 9 blocos e 8 arcos narrativos."
+    />
+    <title>
+      Índice — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Esconde artigos que não correspondem ao filtro de busca */
+      [data-article].is-hidden {
+        display: none;
+      }
+      /* Esconde um bloco inteiro quando nenhum artigo dele sobra visível */
+      [data-block].is-empty {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-linkedin-bg font-sans text-slate-800 antialiased">
+    <main class="mx-auto max-w-5xl px-4 pb-20 pt-4 md:pt-10">
+      <!-- Capa -->
+      <header
+        class="mb-8 overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-700 px-6 py-14 text-center text-white shadow-sm md:py-20"
+      >
+        <svg
+          aria-hidden="true"
+          class="mx-auto mb-5 h-14 w-14 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+        <p
+          class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Índice da série
+        </p>
+        <h1 class="mx-auto max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
+          Engenharia de Software com Agentes de IA
+        </h1>
+        <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
+          70 artigos sobre contexto, arquitetura, coordenação, qualidade,
+          rastreabilidade e operação responsável no desenvolvimento de
+          software com agentes de IA.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-2">
+          <span
+            class="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200"
+          >
+            70 de 70 publicados
+          </span>
+        </div>
+      </header>
+
+      <!-- Busca -->
+      <div class="mb-8">
+        <label for="busca" class="sr-only">Buscar artigo por título</label>
+        <div class="relative">
+          <svg
+            aria-hidden="true"
+            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-4.35-4.35m1.35-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+          <input
+            id="busca"
+            type="search"
+            placeholder="Buscar por título ou número do artigo..."
+            class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-linkedin-blue focus:outline-none focus:ring-2 focus:ring-linkedin-blue/20"
+          />
+        </div>
+        <p id="contador" class="mt-2 text-xs text-slate-500">
+          70 artigos encontrados
+        </p>
+      </div>
+
+      <!-- Blocos -->
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Bloco 01 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 1 — Da improvisação ao método</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              01 · Fundamentos e Organização
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_01_do_prompt_engenharia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">01</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Do prompt à engenharia: como organizar o desenvolvimento de
+                  software com agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_02_por_que_pedir_codigo_nao_é_o_mesmo_que_especificar.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">02</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Por que pedir código não é o mesmo que especificar
+                  software</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_03_ai_software_engineer_studio.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">03</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >AI Software Engineer Studio: como criar uma fábrica
+                  reutilizável de software com IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_04_context_pack.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">04</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Context Pack: como entregar à IA exatamente o contexto de
+                  que ela precisa</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_05_engenharia_de_contexto.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">05</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Engenharia de contexto: o novo fundamento do
+                  desenvolvimento orientado por IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_06_escopo_explicito.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">06</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Escopo explícito: como impedir que agentes de IA alterem
+                  o que não deveriam</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="01_FUNDAMENTOS_E_ORGANIZACAO/artigo_07_definicao_de_pronto.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">07</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Definição de pronto para agentes de IA: quando uma
+                  tarefa realmente terminou?</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 02 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 1 — Da improvisação ao método</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              02 · Planejamento e Decomposição
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_08_requisitos_amplos_em_tarefas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">08</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como transformar requisitos amplos em tarefas executáveis
+                  por agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_09_issues_bem_escritas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">09</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Issues bem escritas: o contrato operacional entre
+                  humanos e agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_10_epicos_features_issues_subtarefas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">10</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Épicos, features, issues e subtarefas: como organizar
+                  projetos desenvolvidos com IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_11_planejamento_por_dependencias.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">11</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Planejamento orientado por dependências: em que ordem os
+                  agentes devem trabalhar?</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_12_paralelismo_seguro.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">12</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como decidir quais tarefas podem ser executadas em
+                  paralelo por agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_13_handoff_entre_agentes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">13</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Handoff entre agentes: como continuar um projeto sem
+                  perder decisões e contexto</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02_PLANEJAMENTO_E_DECOMPOSICAO/artigo_14_checklists_memoria_operacional.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">14</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Checklists não são burocracia: são memória operacional
+                  para agentes de IA</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 03 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 2 — Da tarefa à arquitetura</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              03 · Arquitetura e Decisões
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_15_adr_na_pratica.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">15</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >ADR na prática: como preservar decisões arquiteturais em
+                  projetos com IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_16_ia_nao_escolhe_stack_sozinha.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">16</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >A IA pode sugerir a stack, mas não deveria escolhê-la
+                  sozinha</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_17_arquitetura_antes_do_codigo.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">17</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Arquitetura antes do código: como evitar sistemas
+                  incoerentes gerados por agentes</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_18_contratos_tecnicos.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">18</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Contratos técnicos: o que permite que vários agentes
+                  trabalhem no mesmo sistema</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_19_monolito_modular_ou_microsservicos.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">19</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Monólito, modular ou microsserviços: como orientar a
+                  decisão com IA sem cair em exageros</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_20_impedir_ia_recriar_arquitetura.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">20</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como impedir que a IA recrie a arquitetura a cada nova
+                  conversa</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03_ARQUITETURA_E_DECISOES/artigo_21_biblioteca_transversal.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">21</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Biblioteca transversal: como centralizar boas práticas
+                  sem contaminar os projetos</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 04 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 3 — Do agente isolado à equipe multiagente</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              04 · Agentes, Papéis e Coordenação
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_22_agente_unico_ou_especializado.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">22</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Um agente para tudo ou agentes especializados? Como
+                  dividir responsabilidades</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_23_agente_de_arquitetura.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">23</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agente de arquitetura: o que ele deve decidir e o que
+                  deve apenas recomendar</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_24_agente_de_design.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">24</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agente de design: por que software funcional também
+                  precisa ser utilizável</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_25_agente_de_seguranca.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">25</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agente de segurança: como incorporar segurança desde o
+                  início do desenvolvimento</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_26_agente_de_testes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">26</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agente de testes: como fazer a IA provar que o código
+                  funciona</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_27_agente_revisor.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">27</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agente revisor: por que quem implementa não deveria ser
+                  o único a validar</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_28_agente_orquestrador.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">28</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >O agente orquestrador não deve programar tudo</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_29_skills_para_agentes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">29</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Skills para agentes de IA: capacidades reutilizáveis
+                  além dos prompts</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04_AGENTES_PAPEIS_E_COORDENACAO/artigo_30_matriz_de_autoridade.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">30</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Matriz de autoridade: o que cada agente pode analisar,
+                  decidir e modificar</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 05 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 4 — Da geração de código à implementação sustentável</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              05 · Execução e Desenvolvimento
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_31_codigo_orientado_por_evidencias.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">31</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Código orientado por evidências: como acompanhar cada
+                  alteração feita pela IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_32_implementacao_em_pequenos_lotes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">32</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Implementação em pequenos lotes: por que agentes de IA
+                  devem alterar menos por vez</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_33_mocks_como_contrato_temporario.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">33</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Mocks como contrato temporário entre frontend e
+                  backend</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_34_frontend_orientado_por_estados.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">34</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Frontend orientado por estados: como evitar interfaces
+                  incompletas geradas por IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_35_backend_orientado_por_contratos.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">35</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Backend orientado por contratos: como evitar regras de
+                  negócio espalhadas</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_36_refatoracao_com_agentes_de_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">36</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Refatoração com agentes de IA: como melhorar o código
+                  sem mudar seu comportamento</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_37_divida_tecnica_gerada_por_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">37</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Dívida técnica gerada por IA: como ela nasce e como
+                  impedir seu crescimento</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="05_EXECUCAO_E_DESENVOLVIMENTO/artigo_38_legado_e_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">38</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Legado e IA: como modificar sistemas existentes sem
+                  quebrar o que já funciona</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 06 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 5 — Da alegação à evidência</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              06 · Qualidade, Testes e Validação
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_39_gates_de_qualidade.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">39</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Gates de qualidade: como impedir que código não
+                  validado avance no processo</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_40_ia_disse_que_testes_passaram.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">40</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >A IA disse que os testes passaram. Onde estão as
+                  evidências?</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_41_testes_gerados_por_ia_podem_estar_errados.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">41</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Testes gerados por IA podem estar errados — e
+                  frequentemente estão</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_42_criterios_de_aceite_executaveis.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">42</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Critérios de aceite executáveis: aproximando requisitos
+                  e testes</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_43_revisar_nao_significa_alterar.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">43</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Revisar não significa alterar: três modos de atuação
+                  que a IA precisa respeitar</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_44_qualidade_alem_dos_testes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">44</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Qualidade além dos testes: acessibilidade, desempenho,
+                  segurança e experiência do usuário</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_45_auditoria_de_projeto_com_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">45</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Auditoria de projeto com IA: como produzir diagnósticos
+                  úteis em vez de listas genéricas</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06_QUALIDADE_TESTES_E_VALIDACAO/artigo_46_definition_of_done_para_projetos.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">46</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Definition of Done para projetos desenvolvidos com
+                  agentes de IA</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 07 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 6 — Da alteração à rastreabilidade</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              07 · Git, Documentação e Rastreabilidade
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_47_commits_produzidos_por_agentes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">47</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Commits produzidos por agentes de IA: como manter um
+                  histórico compreensível</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_48_pull_requests_orientados_por_evidencias.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">48</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Pull requests orientados por evidências para código
+                  gerado por IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_49_documentacao_viva.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">49</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Documentação viva: como impedir que a IA atualize o
+                  código e abandone os documentos</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_50_mapas_de_projeto.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">50</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Mapas de projeto: como ajudar humanos e agentes a
+                  navegar em repositórios complexos</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_51_rastreabilidade_ponta_a_ponta.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">51</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Rastreabilidade ponta a ponta: do requisito ao commit,
+                  teste e deploy</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_52_readme_nao_e_contexto_suficiente.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">52</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >O README não é contexto suficiente para um agente de
+                  IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07_GIT_DOCUMENTACAO_E_RASTREABILIDADE/artigo_53_estado_atual_do_projeto.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">53</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como registrar o estado atual de um projeto para que
+                  qualquer agente possa continuar</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 08 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 7 — Da automação à operação responsável</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              08 · Segurança, Custos e Operação
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_54_seguranca_por_padrao.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">54</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Segurança por padrão em projetos desenvolvidos com
+                  agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_55_acesso_ao_repositorio.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">55</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Agentes de IA e acesso ao repositório: quais permissões
+                  realmente são necessárias?</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_56_prompt_injection.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">56</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Prompt injection também é um problema de engenharia de
+                  software</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_57_tokens_tambem_sao_arquitetura.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">57</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Tokens também são arquitetura: como reduzir custo sem
+                  empobrecer o contexto</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_58_custo_invisivel_das_voltas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">58</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >O custo invisível das voltas desnecessárias dos agentes
+                  de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_59_observabilidade_para_agentes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">59</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Observabilidade para agentes de IA: como entender o que
+                  eles fizeram e por quê</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_60_deploy_com_agentes_de_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">60</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Deploy com agentes de IA: automação não elimina a
+                  necessidade de controle</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08_SEGURANCA_CUSTOS_E_OPERACAO/artigo_61_incidentes_causados_por_ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">61</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Incidentes causados por IA: como investigar, corrigir e
+                  aprender</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Bloco 09 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6 md:col-span-2"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Arco 8 — Da ferramenta à capacidade organizacional</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              09 · Estratégia e Maturidade
+            </h2>
+          </div>
+          <ul class="grid gap-1 md:grid-cols-2">
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_62_niveis_de_maturidade.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">62</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Os níveis de maturidade do desenvolvimento de software
+                  com agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_63_medir_produtividade_real.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">63</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como medir a produtividade real de agentes de IA no
+                  desenvolvimento de software</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_64_velocidade_de_geracao.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">64</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Velocidade de geração não é velocidade de entrega</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_65_quando_nao_usar_agentes.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">65</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Quando não usar agentes de IA para programar</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_66_papel_humano.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">66</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >O papel humano na engenharia de software orientada por
+                  agentes</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_67_da_assistencia_a_autonomia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">67</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Da assistência à autonomia controlada: até onde um
+                  agente de IA deve ir?</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_68_governanca_sem_burocracia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">68</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Governança sem burocracia: como controlar agentes sem
+                  tornar o processo lento</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_69_organizacao_preparada.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">69</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Como construir uma organização preparada para
+                  desenvolver software com agentes de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09_ESTRATEGIA_E_MATURIDADE/artigo_70_futuro_do_ai_software_engineer.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">70</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >O futuro do AI Software Engineer: menos geração de
+                  código, mais engenharia de sistemas</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <p id="sem-resultado" class="mt-8 hidden text-center text-sm text-slate-500">
+        Nenhum artigo encontrado para essa busca.
+      </p>
+
+      <footer class="mt-12 text-center text-xs text-slate-400">
+        Série Engenharia de Software com Agentes de IA — 70 artigos
+      </footer>
+    </main>
+
+    <script>
+      const input = document.getElementById("busca");
+      const contador = document.getElementById("contador");
+      const semResultado = document.getElementById("sem-resultado");
+      const artigos = Array.from(document.querySelectorAll("[data-article]"));
+      const blocos = Array.from(document.querySelectorAll("[data-block]"));
+
+      function normalizar(texto) {
+        return texto
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "");
+      }
+
+      input.addEventListener("input", () => {
+        const termo = normalizar(input.value.trim());
+        let visiveis = 0;
+
+        artigos.forEach((li) => {
+          const texto = normalizar(li.textContent);
+          const corresponde = termo === "" || texto.includes(termo);
+          li.classList.toggle("is-hidden", !corresponde);
+          if (corresponde) visiveis++;
+        });
+
+        blocos.forEach((bloco) => {
+          const algumVisivel = bloco.querySelector(
+            "[data-article]:not(.is-hidden)"
+          );
+          bloco.classList.toggle("is-empty", !algumVisivel);
+        });
+
+        contador.textContent =
+          visiveis === 1
+            ? "1 artigo encontrado"
+            : visiveis + " artigos encontrados";
+        semResultado.classList.toggle("hidden", visiveis !== 0);
+      });
+    </script>
+  </body>
+</html>

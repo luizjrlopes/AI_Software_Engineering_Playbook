@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Escalar desenvolvimento com agentes de IA não vem de copiar projetos, mas de reutilizar contexto, papéis, skills e critérios de qualidade entre eles: o AI Software Engineer Studio."
+    />
+    <title>
+      03. AI Software Engineer Studio: como criar uma fábrica reutilizável de
+      software com IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>
+          03. AI Software Engineer Studio: como criar uma fábrica reutilizável
+          de software com IA
+        </h1>
+
+        <p>
+          Uma equipe abre o terceiro projeto do trimestre. Antes de qualquer
+          linha de código, alguém precisa explicar ao agente, de novo, que a
+          empresa usa Fastify e não Express, que senhas passam por bcrypt, que
+          o padrão de commits segue Conventional Commits e que nenhuma rota
+          toca o banco diretamente sem passar pelo repository. É a mesma
+          conversa do projeto anterior, e do anterior a esse, reescrita à mão
+          porque ninguém guardou essas regras em lugar nenhum além do
+          histórico de um chat que já foi apagado.
+        </p>
+
+        <p>
+          No quarto projeto, alguém esquece de repetir a regra do bcrypt. O
+          agente, sem essa restrição, gera autenticação salvando senha em
+          texto puro — não porque o modelo seja descuidado, mas porque nada na
+          tarefa dizia o contrário. O erro não está na IA. Está na ausência de
+          um lugar onde o conhecimento acumulado da engenharia da empresa
+          pudesse ser reaproveitado.
+        </p>
+
+        <h2>O que realmente é um Studio</h2>
+
+        <blockquote>
+          <p>
+            Escala não vem de copiar projetos, mas de reutilizar métodos e
+            ativos de engenharia.
+          </p>
+        </blockquote>
+
+        <p>
+          O termo <strong>AI Software Engineer Studio</strong>, apresentado no
+          primeiro artigo desta série, descreve exatamente essa camada
+          reutilizável: um conjunto organizado de contexto, papéis, critérios
+          de qualidade e conhecimento operacional que qualquer projeto novo
+          pode herdar, em vez de reconstruir do zero a cada nova conversa com
+          um agente. Não é uma ferramenta específica nem uma plataforma que
+          precisa ser comprada. É uma prática de organização que pode existir
+          num diretório de regras versionado, numa base de <em>skills</em>
+          reutilizáveis ou num conjunto de templates de Issue e ADR
+          compartilhados entre repositórios.
+        </p>
+
+        <h2>Os quatro ativos que sustentam um Studio</h2>
+
+        <p>
+          Na prática, um Studio funcional se apoia em quatro tipos de ativo
+          reutilizável:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Biblioteca de contexto:</strong> stack homologada,
+            convenções de nomenclatura, padrões de segurança e restrições
+            arquiteturais que valem para toda a organização, não apenas para
+            um repositório.
+          </li>
+          <li>
+            <strong>Papéis de agente:</strong> definições reutilizáveis do que
+            um agente de arquitetura, de testes ou de revisão deve analisar,
+            decidir e modificar, para não reinventar essa divisão a cada
+            projeto.
+          </li>
+          <li>
+            <strong>Skills e playbooks:</strong> procedimentos documentados
+            para tarefas recorrentes — como abrir uma migração de banco de
+            dados ou preparar um pull request — que podem ser acionados em
+            vez de descritos por extenso toda vez.
+          </li>
+          <li>
+            <strong>Critérios de qualidade padronizados:</strong> a mesma
+            Definition of Done, os mesmos <em>quality gates</em> e o mesmo
+            checklist de validação aplicados de forma consistente, projeto
+            após projeto.
+          </li>
+        </ul>
+
+        <section aria-labelledby="comparacao" class="not-prose my-10">
+          <h2
+            id="comparacao"
+            class="mb-5 text-2xl font-semibold text-slate-900"
+          >
+            Sem Studio vs. Com Studio
+          </h2>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-red-900">
+                Cada projeto reinventa as regras
+              </h3>
+              <p class="leading-7 text-red-950">
+                Toda nova tarefa começa com uma explicação verbal da stack, da
+                política de segurança e dos critérios de aceite. O
+                conhecimento vive na memória de quem escreveu o prompt, e some
+                quando essa pessoa sai de férias ou muda de time.
+              </p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+                O projeto herda o Studio
+              </h3>
+              <p class="leading-7 text-emerald-950">
+                O agente recebe, por padrão, as mesmas restrições de
+                segurança, os mesmos papéis e os mesmos critérios de
+                qualidade já validados em outros projetos. A tarefa nova
+                começa no nível de maturidade da organização, não do zero.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <h2>Checklist mínimo para começar um Studio</h2>
+
+        <p>
+          Não é preciso construir uma plataforma completa para colher o
+          benefício da reutilização. Um ponto de partida realista responde a
+          quatro perguntas:
+        </p>
+
+        <div
+          class="not-prose my-8 rounded-md border border-slate-200 border-l-4 border-l-slate-600 bg-slate-50 p-6"
+        >
+          <h4
+            class="mb-4 font-sans text-base font-semibold uppercase tracking-wide text-slate-900"
+          >
+            Checklist mínimo de um AI Software Engineer Studio
+          </h4>
+          <ul class="space-y-4 font-sans text-slate-700">
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >As regras de stack e segurança estão escritas?</strong
+                >
+                Existe um documento versionado, e não apenas uma memória
+                coletiva, com o que é permitido e o que é proibido.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >Os papéis de agente estão definidos?</strong
+                >
+                Fica claro o que cada tipo de agente pode analisar, decidir e
+                modificar, sem depender de combinar isso a cada tarefa.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >Existe um critério único de conclusão?</strong
+                >
+                A mesma Definition of Done é aplicada a todos os projetos, em
+                vez de cada equipe negociar a sua.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >Alguém é responsável por manter esses ativos
+                  atualizados?</strong
+                >
+                Sem um dono, a biblioteca de contexto envelhece e volta a ser
+                ignorada.</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <h2>O limite: Studio não é engessamento</h2>
+
+        <p>
+          Um Studio bem-intencionado pode virar um problema diferente:
+          centralização rígida demais, que impede um projeto específico de se
+          adaptar a uma restrição real do seu domínio. Nem toda regra global
+          serve para todo contexto — um serviço que processa dados médicos
+          pode exigir uma política de logging mais restritiva do que o padrão
+          da organização, por exemplo. A saída não é abandonar o Studio
+          quando isso acontece, e sim permitir exceções documentadas, com uma
+          justificativa registrada em um ADR, em vez de um desvio silencioso
+          que ninguém rastreia depois.
+        </p>
+
+        <h2>Conclusão</h2>
+
+        <p>
+          O ganho de produtividade real de agentes de IA não aparece na
+          velocidade de gerar código num projeto isolado. Aparece na
+          velocidade acumulada de não precisar reensinar, projeto após
+          projeto, o que a organização já aprendeu sobre suas próprias regras.
+          Um Studio é essa memória institucional tornada explícita e
+          reutilizável — e, como qualquer ativo de engenharia, só funciona se
+          alguém cuidar da sua manutenção.
+        </p>
+
+        <p>
+          <strong
+            >Na sua organização, o conhecimento de engenharia vive em
+            documentos reutilizáveis ou na memória de quem escreveu o último
+            prompt?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 03 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 font-semibold text-linkedin-blue">
+            #AISoftwareEngineering #EngenhariaDeSoftware #AgentesDeIA
+            #PlataformaDeEngenharia #Reuso #Governanca
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

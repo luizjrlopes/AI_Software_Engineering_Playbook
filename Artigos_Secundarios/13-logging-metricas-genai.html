@@ -1,29 +1,177 @@
 <!doctype html>
 <html lang="pt-BR" class="scroll-smooth">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Logs, métricas e traces para aplicações de IA com correlação, controle de cardinalidade, custo e privacidade." />
-  <title>Telemetria para aplicações de IA: logs, métricas e traces</title>
-  <script src="https://cdn.tailwindcss.com"></script><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
-  <script>tailwind.config={theme:{extend:{fontFamily:{sans:["Inter","sans-serif"],mono:["Fira Code","monospace"]},colors:{brand:{50:"#f8fafc",100:"#f1f5f9",500:"#64748b",600:"#475569",700:"#334155",900:"#0f172a"}}}}};</script>
-  <style>body{font-family:"Inter",sans-serif}.copy p{margin-top:1rem;line-height:1.8}.copy ul,.copy ol{margin:1rem 0 0 1.25rem}.copy li{margin-top:.55rem;line-height:1.7}.copy ul{list-style:disc}.copy ol{list-style:decimal}</style>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased">
-<header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"><div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><a href="index.html" class="font-bold text-brand-700">Artigos_GenAi</a><nav aria-label="Navegação do artigo" class="flex gap-4 text-sm font-medium"><a href="#logs">Logs</a><a href="#metricas">Métricas</a><a href="#traces">Traces</a></nav></div></header>
-<main>
-  <section class="bg-gradient-to-br from-brand-900 via-brand-700 to-slate-500 text-white"><div class="mx-auto max-w-5xl px-5 py-20 md:py-28"><div class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"><span class="rounded-full bg-white/15 px-3 py-1">Observabilidade</span><span class="rounded-full bg-white/15 px-3 py-1">Artigo conceitual</span><span class="rounded-full bg-white/15 px-3 py-1">Nível intermediário</span></div><p class="mb-4 font-mono text-sm text-slate-200">Artigo 13 · Revisado em julho de 2026</p><h1 class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl">Telemetria para aplicações de IA</h1><p class="mt-6 max-w-3xl text-xl leading-relaxed text-slate-200">Logs explicam eventos, métricas revelam padrões e traces conectam a jornada entre serviços e componentes de IA.</p></div></section>
-  <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Problema</p><h2 class="mt-3 text-3xl font-bold">“A resposta ficou ruim” não localiza a falha</h2><p>O problema pode estar no gateway, retrieval, modelo, ferramenta, validação ou interface. Registrar somente erro final perde a cadeia causal; registrar todo conteúdo cria custo, cardinalidade e risco de privacidade.</p><p><strong>Tese:</strong> telemetria útil registra identidade, versão, duração, resultado e relação entre etapas com o mínimo de conteúdo necessário.</p></section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Logs, métricas e traces para aplicações de IA com correlação, controle de cardinalidade, custo e privacidade."
+    />
+    <title>Telemetria para aplicações de IA: logs, métricas e traces</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Fira Code", "monospace"],
+            },
+            colors: {
+              brand: {
+                50: "#f8fafc",
+                100: "#f1f5f9",
+                500: "#64748b",
+                600: "#475569",
+                700: "#334155",
+                900: "#0f172a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .copy p {
+        margin-top: 1rem;
+        line-height: 1.8;
+      }
+      .copy ul,
+      .copy ol {
+        margin: 1rem 0 0 1.25rem;
+      }
+      .copy li {
+        margin-top: 0.55rem;
+        line-height: 1.7;
+      }
+      .copy ul {
+        list-style: disc;
+      }
+      .copy ol {
+        list-style: decimal;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased">
+    <header
+      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+    >
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a href="index.html" class="font-bold text-brand-700"
+          >AI_Software_Engineering_Playbook</a
+        >
+        <nav
+          aria-label="Navegação do artigo"
+          class="flex gap-4 text-sm font-medium"
+        >
+          <a href="#logs">Logs</a><a href="#metricas">Métricas</a
+          ><a href="#traces">Traces</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section
+        class="bg-gradient-to-br from-brand-900 via-brand-700 to-slate-500 text-white"
+      >
+        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
+          <div
+            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
+          >
+            <span class="rounded-full bg-white/15 px-3 py-1"
+              >Observabilidade</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Artigo conceitual</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Nível intermediário</span
+            >
+          </div>
+          <p class="mb-4 font-mono text-sm text-slate-200">
+            Artigo 13 · Revisado em julho de 2026
+          </p>
+          <h1
+            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
+          >
+            Telemetria para aplicações de IA
+          </h1>
+          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-slate-200">
+            Logs explicam eventos, métricas revelam padrões e traces conectam a
+            jornada entre serviços e componentes de IA.
+          </p>
+        </div>
+      </section>
+      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Problema
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            “A resposta ficou ruim” não localiza a falha
+          </h2>
+          <p>
+            O problema pode estar no gateway, retrieval, modelo, ferramenta,
+            validação ou interface. Registrar somente erro final perde a cadeia
+            causal; registrar todo conteúdo cria custo, cardinalidade e risco de
+            privacidade.
+          </p>
+          <p>
+            <strong>Tese:</strong> telemetria útil registra identidade, versão,
+            duração, resultado e relação entre etapas com o mínimo de conteúdo
+            necessário.
+          </p>
+        </section>
 
-    <section class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-slate-300">Modelo comum</p><h2 class="mt-3 text-3xl font-bold">Propague contexto observável</h2><pre class="mt-7 overflow-x-auto rounded-xl bg-black/30 p-5 font-mono text-sm leading-relaxed text-slate-200"><code>request_id → operação do cliente
+        <section
+          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-slate-300"
+          >
+            Modelo comum
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">Propague contexto observável</h2>
+          <pre
+            class="mt-7 overflow-x-auto rounded-xl bg-black/30 p-5 font-mono text-sm leading-relaxed text-slate-200"
+          ><code>request_id → operação do cliente
 trace_id   → jornada distribuída
 span_id    → etapa específica
 tenant_ref → identificador não sensível
 feature    → capacidade de produto
 release    → manifesto do sistema
-result     → sucesso, recusa, fallback ou erro</code></pre><p class="mt-5 text-slate-300">Esses campos precisam de convenção estável entre gateway, orquestrador, retrieval, modelo, ferramentas e fila.</p></section>
+result     → sucesso, recusa, fallback ou erro</code></pre>
+          <p class="mt-5 text-slate-300">
+            Esses campos precisam de convenção estável entre gateway,
+            orquestrador, retrieval, modelo, ferramentas e fila.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="logs"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Logs</p><h2 class="mt-3 text-3xl font-bold">Eventos estruturados, não narrativas soltas</h2><pre class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-slate-200"><code>{
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="logs"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Logs
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Eventos estruturados, não narrativas soltas
+          </h2>
+          <pre
+            class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-slate-200"
+          ><code>{
   "event": "ai.operation.completed",
   "request_id": "req_...",
   "trace_id": "trace_...",
@@ -33,30 +181,225 @@ result     → sucesso, recusa, fallback ou erro</code></pre><p class="mt-5 text
   "attempts": 1,
   "result": "completed",
   "fallback": false
-}</code></pre><ul><li>usar categorias e campos consistentes;</li><li>não registrar prompt ou resposta por padrão;</li><li>mascarar identificadores e argumentos sensíveis;</li><li>separar mensagem humana de campos consultáveis;</li><li>definir retenção por finalidade;</li><li>registrar mudanças administrativas críticas.</li></ul></section>
+}</code></pre>
+          <ul>
+            <li>usar categorias e campos consistentes;</li>
+            <li>não registrar prompt ou resposta por padrão;</li>
+            <li>mascarar identificadores e argumentos sensíveis;</li>
+            <li>separar mensagem humana de campos consultáveis;</li>
+            <li>definir retenção por finalidade;</li>
+            <li>registrar mudanças administrativas críticas.</li>
+          </ul>
+        </section>
 
-    <section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10" id="metricas"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700">Métricas</p><h2 class="mt-3 text-3xl font-bold">Labels controladas evitam explosão de cardinalidade</h2><div class="mt-7 overflow-x-auto"><table class="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr class="bg-slate-900 text-white"><th class="p-4">Família</th><th class="p-4">Exemplos</th><th class="p-4">Dimensões seguras</th></tr></thead><tbody class="divide-y divide-slate-200"><tr><th class="p-4">Tráfego</th><td class="p-4">requisições e operações</td><td class="p-4">feature, status, release</td></tr><tr class="bg-white/60"><th class="p-4">Latência</th><td class="p-4">fim a fim e por etapa</td><td class="p-4">componente, operação</td></tr><tr><th class="p-4">Erros</th><td class="p-4">timeout, rate limit, schema</td><td class="p-4">categoria, retryable</td></tr><tr class="bg-white/60"><th class="p-4">Qualidade</th><td class="p-4">recusa, groundedness, cobertura</td><td class="p-4">feature, versão avaliada</td></tr><tr><th class="p-4">Custo</th><td class="p-4">unidades consumidas e estimativa</td><td class="p-4">feature, provedor, release</td></tr></tbody></table></div><p>Não use `request_id`, usuário, prompt, documento ou texto de erro como label de métrica.</p></section>
+        <section
+          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
+          id="metricas"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
+          >
+            Métricas
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Labels controladas evitam explosão de cardinalidade
+          </h2>
+          <div class="mt-7 overflow-x-auto">
+            <table
+              class="w-full min-w-[760px] border-collapse text-left text-sm"
+            >
+              <thead>
+                <tr class="bg-slate-900 text-white">
+                  <th class="p-4">Família</th>
+                  <th class="p-4">Exemplos</th>
+                  <th class="p-4">Dimensões seguras</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <th class="p-4">Tráfego</th>
+                  <td class="p-4">requisições e operações</td>
+                  <td class="p-4">feature, status, release</td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Latência</th>
+                  <td class="p-4">fim a fim e por etapa</td>
+                  <td class="p-4">componente, operação</td>
+                </tr>
+                <tr>
+                  <th class="p-4">Erros</th>
+                  <td class="p-4">timeout, rate limit, schema</td>
+                  <td class="p-4">categoria, retryable</td>
+                </tr>
+                <tr class="bg-white/60">
+                  <th class="p-4">Qualidade</th>
+                  <td class="p-4">recusa, groundedness, cobertura</td>
+                  <td class="p-4">feature, versão avaliada</td>
+                </tr>
+                <tr>
+                  <th class="p-4">Custo</th>
+                  <td class="p-4">unidades consumidas e estimativa</td>
+                  <td class="p-4">feature, provedor, release</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Não use `request_id`, usuário, prompt, documento ou texto de erro
+            como label de métrica.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="traces"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Tracing</p><h2 class="mt-3 text-3xl font-bold">Um span por responsabilidade relevante</h2><pre class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-slate-200"><code>POST /summaries
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="traces"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Tracing
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Um span por responsabilidade relevante
+          </h2>
+          <pre
+            class="mt-7 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm leading-relaxed text-slate-200"
+          ><code>POST /summaries
   ├─ authorize
   ├─ retrieve
   │   ├─ vector_search
   │   └─ rerank
   ├─ generate
   ├─ validate_output
-  └─ persist_result</code></pre><p>Spans registram duração, estado, versão e contagens. Payloads e conteúdo exigem opt-in controlado, sanitização e retenção curta.</p></section>
+  └─ persist_result</code></pre>
+          <p>
+            Spans registram duração, estado, versão e contagens. Payloads e
+            conteúdo exigem opt-in controlado, sanitização e retenção curta.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl border border-amber-200 bg-amber-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-amber-700">Custo</p><h2 class="mt-3 text-3xl font-bold">Meça unidades e aplique preços fora do evento</h2><p>Registre unidades de entrada, saída, retrieval, armazenamento e ferramentas. A conversão monetária deve usar uma tabela versionada e datada, pois preços mudam. Assim, o histórico pode ser recalculado sem reescrever logs.</p><ul><li>custo estimado por operação e funcionalidade;</li><li>tentativas e desperdício por retry;</li><li>cache hit e economia estimada;</li><li>budget por tenant ou fluxo;</li><li>anomalias após mudança de release.</li></ul></section>
+        <section
+          class="copy rounded-2xl border border-amber-200 bg-amber-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-amber-700"
+          >
+            Custo
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Meça unidades e aplique preços fora do evento
+          </h2>
+          <p>
+            Registre unidades de entrada, saída, retrieval, armazenamento e
+            ferramentas. A conversão monetária deve usar uma tabela versionada e
+            datada, pois preços mudam. Assim, o histórico pode ser recalculado
+            sem reescrever logs.
+          </p>
+          <ul>
+            <li>custo estimado por operação e funcionalidade;</li>
+            <li>tentativas e desperdício por retry;</li>
+            <li>cache hit e economia estimada;</li>
+            <li>budget por tenant ou fluxo;</li>
+            <li>anomalias após mudança de release.</li>
+          </ul>
+        </section>
 
-    <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700">Privacidade e segurança</p><h2 class="mt-3 text-3xl font-bold">Telemetria também é superfície de dados</h2><ul><li>classificar campos antes de instrumentar;</li><li>usar allowlist de atributos;</li><li>sanitizar exceções e respostas de ferramentas;</li><li>controlar acesso por função;</li><li>criptografar e definir retenção;</li><li>impedir segredos em logs;</li><li>auditar consultas e exportações sensíveis;</li><li>testar redaction no pipeline.</li></ul></section>
+        <section
+          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
+          >
+            Privacidade e segurança
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Telemetria também é superfície de dados
+          </h2>
+          <ul>
+            <li>classificar campos antes de instrumentar;</li>
+            <li>usar allowlist de atributos;</li>
+            <li>sanitizar exceções e respostas de ferramentas;</li>
+            <li>controlar acesso por função;</li>
+            <li>criptografar e definir retenção;</li>
+            <li>impedir segredos em logs;</li>
+            <li>auditar consultas e exportações sensíveis;</li>
+            <li>testar redaction no pipeline.</li>
+          </ul>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Dashboards e alertas</p><h2 class="mt-3 text-3xl font-bold">Organize por pergunta operacional</h2><ul><li>o serviço está disponível e dentro do SLO?</li><li>qual etapa domina a latência?</li><li>qual versão aumentou erro ou custo?</li><li>o retrieval perdeu cobertura?</li><li>fallback ou recusa cresceram?</li><li>algum tenant ou fluxo está saturando recursos?</li></ul><p>Alertas precisam de owner e runbook. Investigações exploratórias pertencem a dashboards e traces, não necessariamente ao pager.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Dashboards e alertas
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Organize por pergunta operacional
+          </h2>
+          <ul>
+            <li>o serviço está disponível e dentro do SLO?</li>
+            <li>qual etapa domina a latência?</li>
+            <li>qual versão aumentou erro ou custo?</li>
+            <li>o retrieval perdeu cobertura?</li>
+            <li>fallback ou recusa cresceram?</li>
+            <li>algum tenant ou fluxo está saturando recursos?</li>
+          </ul>
+          <p>
+            Alertas precisam de owner e runbook. Investigações exploratórias
+            pertencem a dashboards e traces, não necessariamente ao pager.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Conclusão</p><h2 class="mt-3 text-3xl font-bold">Boa telemetria reduz incerteza sem capturar o usuário</h2><p>Identidade, versão, duração e resultado permitem explicar comportamento. Conteúdo deve ser exceção controlada, não padrão de instrumentação.</p><p>O próximo artigo usa essa base para gestão de custos e FinOps de aplicações de IA.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Conclusão
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Boa telemetria reduz incerteza sem capturar o usuário
+          </h2>
+          <p>
+            Identidade, versão, duração e resultado permitem explicar
+            comportamento. Conteúdo deve ser exceção controlada, não padrão de
+            instrumentação.
+          </p>
+          <p>
+            O próximo artigo usa essa base para gestão de custos e FinOps de
+            aplicações de IA.
+          </p>
+        </section>
 
-    <nav aria-label="Artigos relacionados" class="grid gap-4 sm:grid-cols-2"><a href="12-monitorando-qualidade-respostas.html" class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Anterior</span><strong class="mt-2 block text-lg text-brand-900">Monitoramento de qualidade</strong></a><a href="14-custos-ia-chamadas-modelo.html" class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Próximo</span><strong class="mt-2 block text-lg text-brand-900">FinOps para aplicações de IA</strong></a></nav>
-  </div>
-</main>
-<footer class="border-t border-slate-200 bg-white py-8"><div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso</div></footer>
-</body>
+        <nav
+          aria-label="Artigos relacionados"
+          class="grid gap-4 sm:grid-cols-2"
+        >
+          <a
+            href="12-monitorando-qualidade-respostas.html"
+            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Anterior</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >Monitoramento de qualidade</strong
+            ></a
+          ><a
+            href="14-custos-ia-chamadas-modelo.html"
+            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Próximo</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >FinOps para aplicações de IA</strong
+            ></a
+          >
+        </nav>
+      </div>
+    </main>
+    <footer class="border-t border-slate-200 bg-white py-8">
+      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
+        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
+      </div>
+    </footer>
+  </body>
 </html>

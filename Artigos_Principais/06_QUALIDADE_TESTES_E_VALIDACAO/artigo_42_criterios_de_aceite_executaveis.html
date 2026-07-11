@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Critérios claros conectam negócio, desenvolvimento e validação. Como converter requisitos subjetivos como "rápido e intuitivo" em cenários testáveis."
+    />
+    <title>
+      42. Critérios de aceite executáveis: aproximando requisitos e testes — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>42. Critérios de aceite executáveis: aproximando requisitos e testes</h1>
+
+<p>
+  A Issue pedia que "a busca de produtos deve ser rápida e intuitiva". O
+  agente implementou uma busca funcional, testou manualmente, e declarou a
+  tarefa concluída. Ninguém conseguia dizer, com segurança, se aquilo
+  atendia ao pedido original — "rápida" comparado a quê? "intuitiva" segundo
+  qual critério? A discussão sobre se a tarefa estava realmente pronta durou
+  mais do que a implementação em si, porque o requisito nunca tinha sido
+  escrito de um jeito que permitisse uma resposta objetiva de sim ou não.
+</p>
+
+<p>
+  Um requisito subjetivo não é apenas impreciso — é impossível de testar. E
+  o que não pode ser testado não pode ser comprovadamente concluído, apenas
+  declarado concluído por impressão pessoal.
+</p>
+
+<h2>Critério de aceite é a ponte entre negócio e verificação</h2>
+
+<blockquote>
+  <p>Critérios claros conectam negócio, desenvolvimento e validação.</p>
+</blockquote>
+
+<p>
+  Um critério de aceite executável transforma uma expectativa subjetiva —
+  "rápido", "intuitivo", "robusto" — em uma condição que pode ser verificada
+  de forma objetiva, com um número, um comportamento específico ou um
+  cenário concreto. Essa tradução não elimina a intenção original do
+  requisito; torna essa intenção verificável por qualquer pessoa, incluindo
+  um agente de IA que vai implementá-la.
+</p>
+
+<h2>De frase subjetiva a cenário testável</h2>
+
+<p>
+  Um formato eficaz para essa tradução usa a estrutura Dado/Quando/Então,
+  originária de práticas de desenvolvimento orientado por comportamento:
+</p>
+
+<pre><code>## Requisito original (subjetivo)
+"A busca de produtos deve ser rápida e intuitiva."
+
+## Critério de aceite executável
+
+Cenário: busca retorna resultados relevantes rapidamente
+  Dado que existem 10.000 produtos cadastrados
+  Quando o usuário busca por "tênis azul"
+  Então os resultados aparecem em até 500ms
+  E os 5 primeiros resultados contêm "tênis" no nome ou categoria
+
+Cenário: busca sem resultados orienta o próximo passo
+  Dado que o usuário busca por um termo sem correspondência
+  Quando a busca retorna zero resultados
+  Então a tela exibe "nenhum produto encontrado" com
+       sugestão de termos relacionados</code></pre>
+
+<p>
+  Nenhum desses dois cenários deixa margem para interpretação: "500ms",
+  "5 primeiros resultados" e "nenhum produto encontrado" são condições que
+  um teste automatizado pode verificar diretamente, sem depender da opinião
+  de quem está avaliando se a busca "parece" rápida ou intuitiva.
+</p>
+
+<h2>Quem faz essa tradução</h2>
+
+<p>
+  Converter requisitos subjetivos em critérios executáveis é, idealmente,
+  um trabalho conjunto entre quem entende o negócio — o que "rápido" e
+  "intuitivo" deveriam significar na prática para aquele produto específico
+  — e quem vai implementar e testar. Delegar essa tradução inteiramente a um
+  agente, sem esse contexto de negócio, corre o risco de fixar números
+  arbitrários que não refletem a real expectativa por trás do requisito
+  original.
+</p>
+
+<h2>O limite: nem todo requisito precisa virar cenário formal</h2>
+
+<p>
+  Para uma tarefa interna de baixíssimo risco, formalizar cada requisito em
+  cenários Dado/Quando/Então pode ser mais processo do que a tarefa
+  justifica. A prática compensa quando o requisito é ambíguo o suficiente
+  para gerar discordância sobre se foi cumprido — o que geralmente acontece
+  em funcionalidades voltadas ao usuário final ou com impacto de negócio
+  relevante.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  "Rápido" e "intuitivo" são intenções legítimas, mas não são critérios de
+  aceite até que alguém as traduza em números e comportamentos verificáveis.
+  Essa tradução é o que permite que um agente de IA implemente exatamente o
+  que o negócio pretendia, e que a conclusão da tarefa seja comprovada, não
+  apenas debatida.
+</p>
+
+<p>
+  <strong
+    >O último requisito subjetivo que chegou à sua equipe já foi traduzido
+    em um cenário testável, ou ainda depende de opinião para saber se foi
+    atendido?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 42 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #CriteriosDeAceite #BDD
+    #QualidadeDeSoftware
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

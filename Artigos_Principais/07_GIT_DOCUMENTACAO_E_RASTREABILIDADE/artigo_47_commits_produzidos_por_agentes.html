@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Histórico Git é parte da documentação operacional. Como transformar uma mudança grande em commits atômicos, coerentes e vinculados à Issue original."
+    />
+    <title>
+      47. Commits produzidos por agentes de IA: como manter um histórico compreensível — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  47. Commits produzidos por agentes de IA: como manter um histórico
+  compreensível
+</h1>
+
+<p>
+  Investigando um bug em produção, um desenvolvedor rodou <code>git
+  blame</code> na linha suspeita e chegou a um commit com a mensagem
+  "updates". O commit alterava quinze arquivos diferentes: parte de uma
+  feature nova, uma correção não relacionada, e um ajuste de configuração.
+  Nenhuma referência a uma Issue, nenhuma explicação do porquê daquela
+  mudança específica. O histórico do Git existia, tecnicamente — mas não
+  contava nada sobre o que tinha acontecido ali, nem por quê.
+</p>
+
+<p>
+  Um commit sem contexto não é apenas um detalhe estético do histórico. É
+  uma lacuna de rastreabilidade que aparece exatamente no momento mais caro
+  para descobri-la: durante uma investigação sob pressão.
+</p>
+
+<h2>O histórico do Git é documentação, não apenas mecanismo de versionamento</h2>
+
+<blockquote>
+  <p>Histórico Git é parte da documentação operacional.</p>
+</blockquote>
+
+<p>
+  Cada commit é uma oportunidade de registrar não apenas o que mudou, mas
+  por quê — e essa informação, acumulada ao longo do tempo, forma um
+  histórico que qualquer pessoa, ou qualquer agente, pode consultar para
+  entender a evolução do sistema. Tratar o commit como um detalhe
+  administrativo, gerado automaticamente com mensagens genéricas, transforma
+  esse histórico potencialmente valioso em ruído.
+</p>
+
+<h2>Da mudança grande aos commits atômicos</h2>
+
+<p>
+  A mesma mudança de quinze arquivos, dividida em commits atômicos e
+  vinculados à Issue original, ficaria assim:
+</p>
+
+<pre><code>a1b2c3d feat(checkout): adiciona validação de cupom (#482)
+e4f5g6h fix(checkout): corrige cálculo de frete grátis (#479)
+h7i8j9k chore(config): atualiza timeout de conexão com gateway (#485)</code></pre>
+
+<p>
+  Cada linha, sozinha, já responde três perguntas: o que mudou (o tipo e o
+  escopo), qual a intenção (a descrição curta) e por que essa mudança existe
+  (a referência à Issue). Um <code>git blame</code> nessas condições leva
+  diretamente ao contexto da mudança, não a um mistério rotulado "updates".
+</p>
+
+<h2>Um padrão mínimo de mensagem de commit</h2>
+
+<pre><code>&lt;tipo&gt;(&lt;escopo&gt;): &lt;descrição curta e específica&gt; (#&lt;issue&gt;)
+
+tipo: feat, fix, refactor, chore, docs, test
+escopo: o módulo ou área afetada
+descrição: o que mudou, em uma frase, no imperativo
+issue: referência obrigatória para mudanças não triviais</code></pre>
+
+<p>
+  Esse padrão não exige ferramentas sofisticadas — exige apenas que cada
+  commit, gerado por um agente ou por uma pessoa, siga uma estrutura mínima
+  que preserva contexto para quem for consultar aquele histórico no futuro.
+</p>
+
+<h2>O limite: nem todo commit precisa de referência formal</h2>
+
+<p>
+  Exigir referência a uma Issue para um commit de correção de digitação num
+  comentário é rigor desproporcional. O padrão compensa para mudanças que
+  afetam comportamento observável do sistema — a mesma distinção já discutida
+  no artigo sobre código orientado por evidências.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de IA pode gerar commits com a mesma facilidade que gera
+  qualquer outro artefato — a questão é se esses commits carregam contexto
+  suficiente para servir de documentação no futuro, ou se são apenas
+  marcações técnicas de "algo mudou aqui". Um histórico de commits bem
+  escrito é, muitas vezes, a primeira e mais rápida fonte de verdade sobre
+  por que o sistema é do jeito que é.
+</p>
+
+<p>
+  <strong
+    >Se você rodasse <code>git blame</code> na linha mais crítica do seu
+    sistema hoje, o commit encontrado explicaria o porquê da mudança, ou
+    diria apenas "updates"?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 47 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Git #Rastreabilidade
+    #BoasPraticas
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cada nível de trabalho deve responder a uma pergunta diferente: por quê, o quê, como e em que ordem. Como organizar épicos, features, issues e subtarefas para agentes de IA."
+    />
+    <title>
+      10. Épicos, features, issues e subtarefas: como organizar projetos desenvolvidos com IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  10. Épicos, features, issues e subtarefas: como organizar projetos
+  desenvolvidos com IA
+</h1>
+
+<p>
+  O quadro do projeto tinha uma única lista de tarefas, todas no mesmo nível:
+  "melhorar autenticação" ao lado de "corrigir alinhamento do botão de
+  logout". Um agente pegou o primeiro item — que na verdade era um épico
+  inteiro disfarçado de tarefa — e o tratou como se fosse do mesmo tamanho do
+  segundo. O resultado foi um conjunto de mudanças superficiais espalhadas por
+  seis arquivos diferentes, nenhuma delas completa o suficiente para resolver
+  o que a liderança de produto realmente tinha em mente.
+</p>
+
+<p>
+  O agente não errou por incompetência. Errou porque recebeu um item de
+  trabalho sem indicação de que nível de granularidade ele representava.
+  "Melhorar autenticação" é uma pergunta de estratégia, não uma tarefa de
+  código — e tratar as duas coisas como equivalentes é o que gera entregas
+  rasas disfarçadas de progresso.
+</p>
+
+<h2>Cada nível responde a uma pergunta diferente</h2>
+
+<blockquote>
+  <p>
+    Cada nível deve responder a uma pergunta diferente: por quê, o quê, como
+    e em que ordem.
+  </p>
+</blockquote>
+
+<p>
+  A hierarquia clássica de gestão de projetos — épico, feature, issue,
+  subtarefa — não é burocracia herdada do modelo em cascata. Ela existe
+  porque perguntas diferentes exigem respostas em momentos diferentes do
+  planejamento, e misturar todas no mesmo nível produz itens de trabalho que
+  não são nem estratégicos o bastante para orientar decisão, nem específicos
+  o bastante para serem executados sem ambiguidade.
+</p>
+
+<h2>Do épico à subtarefa: autenticação como exemplo</h2>
+
+<ul>
+  <li>
+    <strong>Épico — por quê:</strong> "Reduzir abandono no cadastro
+    melhorando a experiência de autenticação." Define a motivação de negócio,
+    sem detalhar implementação.
+  </li>
+  <li>
+    <strong>Feature — o quê:</strong> "Adicionar login social via Google" e
+    "Adicionar recuperação de senha por e-mail." Cada feature é uma
+    capacidade entregável e observável pelo usuário.
+  </li>
+  <li>
+    <strong>Issue — como:</strong> "Implementar endpoint de callback OAuth do
+    Google com validação de estado e tratamento de erro." Uma unidade de
+    trabalho executável, com escopo e critérios de aceite próprios.
+  </li>
+  <li>
+    <strong>Subtarefa — em que ordem:</strong> "Configurar client ID no
+    ambiente de homologação" antes de "implementar o handler de callback",
+    que por sua vez vem antes de "escrever teste de integração do fluxo
+    completo."
+  </li>
+</ul>
+
+<p>
+  Um agente que recebe uma Issue sabe exatamente o que construir. Um agente
+  que recebe um épico sem essa tradução prévia é forçado a adivinhar, ao
+  mesmo tempo, a estratégia de produto e os detalhes de implementação — duas
+  responsabilidades que raramente deveriam estar na mesma cabeça, humana ou
+  artificial.
+</p>
+
+<h2>Onde a tradução acontece</h2>
+
+<p>
+  A responsabilidade de traduzir um épico em features, e features em issues,
+  continua sendo humana — de produto, de tech lead ou de arquitetura. O papel
+  do agente é executar issues e subtarefas já traduzidas, não decidir
+  sozinho o que "melhorar autenticação" deveria significar. Delegar essa
+  tradução ao agente é delegar uma decisão de produto a uma ferramenta que
+  não tem acesso às conversas de negócio que a embasam.
+</p>
+
+<h2>O limite: nem todo projeto precisa dos quatro níveis</h2>
+
+<p>
+  Para um projeto pequeno, com uma pessoa e poucas semanas de escopo, manter
+  as quatro camadas completas pode ser overhead desnecessário — épico e
+  feature podem se fundir em um único documento de intenção. O que não muda,
+  independentemente do tamanho do projeto, é a separação entre a pergunta de
+  "por quê" e a pergunta de "como": mesmo em um projeto pequeno, a intenção de
+  negócio e a tarefa executável precisam estar em lugares distintos e
+  identificáveis.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Organizar trabalho em camadas não é sobre nomenclatura de ferramenta de
+  gestão. É sobre garantir que cada decisão seja tomada no nível certo — a
+  estratégica por quem entende o negócio, a de execução por quem (ou o que)
+  vai escrever o código — e que um agente de IA nunca receba uma pergunta de
+  "por quê" travestida de tarefa de "como".
+</p>
+
+<p>
+  <strong
+    >No seu quadro de tarefas hoje, dá para saber, só de olhar, se um item é
+    um épico, uma feature ou uma issue executável — ou está tudo misturado na
+    mesma coluna?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 10 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #GestaoDeProjetos #EngenhariaDeSoftware #AgentesDeIA #PlanejamentoAgil
+    #ProductManagement
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

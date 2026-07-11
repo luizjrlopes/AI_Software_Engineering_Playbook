@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Uma boa issue limita interpretação, registra responsabilidade e permite revisão independente. Como escrever issues que funcionam como contrato operacional para agentes de IA."
+    />
+    <title>
+      09. Issues bem escritas: o contrato operacional entre humanos e agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  09. Issues bem escritas: o contrato operacional entre humanos e agentes de
+  IA
+</h1>
+
+<p>
+  A Issue tinha uma linha: "Corrigir bug do checkout que às vezes falha". O
+  agente investigou, encontrou uma exceção não tratada no processamento de
+  pagamento e "corrigiu" o sintoma envolvendo a chamada num bloco
+  <code>try/catch</code> que engolia o erro silenciosamente. A tela parou de
+  quebrar. O problema é que, agora, quando o pagamento falha de verdade, o
+  cliente vê uma mensagem de sucesso e o pedido nunca é processado.
+</p>
+
+<p>
+  Tecnicamente, o bug relatado — a tela quebrando — foi resolvido. Só que
+  ninguém tinha escrito, em lugar nenhum, o que "corrigir" deveria significar:
+  se era para o pagamento falhar de forma visível e recuperável, ou apenas
+  parar de gerar um erro visível na interface. A Issue definiu um sintoma,
+  não um resultado esperado.
+</p>
+
+<h2>Issue não é um lembrete, é um contrato</h2>
+
+<blockquote>
+  <p>
+    Uma boa issue limita interpretação, registra responsabilidade e permite
+    revisão independente.
+  </p>
+</blockquote>
+
+<p>
+  Entre humanos experientes, uma Issue mal escrita costuma ser compensada por
+  conversa informal — alguém pergunta no corredor, confirma a intenção, ajusta
+  o entendimento. Um agente de IA não tem corredor. Ele preenche a lacuna com
+  a interpretação estatisticamente mais provável do texto que recebeu, que
+  raramente coincide com a intenção não escrita de quem abriu a tarefa.
+</p>
+
+<section aria-labelledby="comparacao" class="not-prose my-10">
+  <h2 id="comparacao" class="mb-5 text-2xl font-semibold text-slate-900">
+    A mesma tarefa, duas Issues
+  </h2>
+  <div class="grid gap-5 md:grid-cols-2">
+    <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-red-900">
+        "Corrigir bug do checkout que às vezes falha"
+      </h3>
+      <p class="leading-7 text-red-950">
+        Sem descrição do comportamento esperado, sem critério do que conta
+        como corrigido, sem menção ao que fazer quando o pagamento
+        efetivamente falhar. O agente decide sozinho o que "corrigir"
+        significa.
+      </p>
+    </div>
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+      <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+        Issue com contexto, escopo e critérios
+      </h3>
+      <p class="leading-7 text-emerald-950">
+        Descreve o comportamento atual, o comportamento esperado quando o
+        gateway de pagamento recusa a cobrança, o escopo (arquivo do
+        handler de checkout) e o critério de aceite: erro de pagamento deve
+        ser exibido ao usuário e registrado em log, nunca silenciado.
+      </p>
+    </div>
+  </div>
+</section>
+
+<h2>Os cinco elementos de uma Issue operável</h2>
+
+<p>
+  Uma Issue capaz de ser executada por um agente sem gerar ambiguidade
+  normalmente contém:
+</p>
+
+<ul>
+  <li>
+    <strong>Contexto:</strong> por que essa mudança importa e o que está
+    acontecendo hoje.
+  </li>
+  <li>
+    <strong>Escopo:</strong> quais arquivos ou módulos a tarefa deve tocar —
+    e, implicitamente, quais não deve.
+  </li>
+  <li>
+    <strong>Critérios de aceite:</strong> como comprovar, de forma objetiva,
+    que o resultado está correto.
+  </li>
+  <li>
+    <strong>Riscos conhecidos:</strong> o que pode dar errado ou o que exige
+    cuidado especial nessa mudança.
+  </li>
+  <li>
+    <strong>Evidência esperada:</strong> o que deve ser anexado ao final —
+    log de teste, captura de tela, saída de comando — para provar a
+    conclusão.
+  </li>
+</ul>
+
+<h2>Reescrevendo a Issue do checkout</h2>
+
+<pre><code># Corrigir tratamento de erro no checkout
+
+## Contexto
+Quando o gateway de pagamento recusa uma cobrança, a aplicação
+lança uma exceção não tratada e a tela quebra para o usuário.
+
+## Escopo
+- src/checkout/payment-handler.ts
+- fora de escopo: src/checkout/cart.ts
+
+## Critérios de aceite
+- [ ] Recusa do gateway exibe mensagem de erro legível ao usuário.
+- [ ] Recusa do gateway é registrada em log com o motivo retornado.
+- [ ] Nenhum erro de pagamento é silenciado ou tratado como sucesso.
+
+## Riscos conhecidos
+Não alterar o fluxo de sucesso do pagamento nem o webhook de
+confirmação.
+
+## Evidência esperada
+Teste automatizado simulando recusa do gateway, com saída da
+execução anexada ao pull request.</code></pre>
+
+<h2>O limite: nem toda tarefa precisa desse nível de detalhe</h2>
+
+<p>
+  Exigir os cinco elementos completos para uma correção trivial de texto na
+  interface é desperdício de tempo de planejamento. O nível de detalhe de
+  uma Issue deve ser proporcional ao risco da mudança: tarefas que tocam
+  dinheiro, dados sensíveis ou autenticação exigem os cinco elementos;
+  ajustes cosméticos isolados podem se contentar com contexto e critério de
+  aceite.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Uma Issue de uma linha pode parecer suficiente quando escrita para outro
+  humano, que preenche lacunas por convivência e contexto compartilhado. Para
+  um agente de IA, a Issue é o contrato inteiro. O que não está escrito nela
+  simplesmente não existe — e será preenchido pela interpretação mais
+  genérica disponível.
+</p>
+
+<p>
+  <strong
+    >A última Issue que você abriu para um agente definia o resultado
+    esperado, ou apenas descrevia o sintoma que incomodava?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 09 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #GestaoDeProjetos #EngenhariaDeSoftware #AgentesDeIA #Issues
+    #Rastreabilidade
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

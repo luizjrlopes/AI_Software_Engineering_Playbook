@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="DoD alinha qualidade mínima entre tarefas, pessoas e agentes. Como transformar uma Definition of Done vaga em um checklist verificável de código, testes, docs e operação."
+    />
+    <title>
+      46. Definition of Done para projetos desenvolvidos com agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>46. Definition of Done para projetos desenvolvidos com agentes de IA</h1>
+
+<p>
+  O projeto tinha uma Definition of Done — um parágrafo numa página da wiki
+  interna, escrito havia mais de um ano, dizendo genericamente que "o código
+  deve estar testado e documentado antes de ir para produção". Duas equipes
+  diferentes, trabalhando com agentes de IA no mesmo projeto, terminavam
+  tarefas com níveis de rigor completamente diferentes: uma exigia testes de
+  caso negativo e relatório de execução reproduzível; a outra aceitava "os
+  testes passaram" como suficiente. Ambas diziam estar seguindo a mesma DoD,
+  porque o parágrafo da wiki era vago o bastante para justificar qualquer
+  uma das duas interpretações.
+</p>
+
+<p>
+  Uma Definition of Done que não é operacionalizada como checklist
+  verificável não alinha nada — vira um texto que cada equipe lê como quiser.
+</p>
+
+<h2>DoD é o padrão mínimo, não uma aspiração</h2>
+
+<blockquote>
+  <p>DoD alinha qualidade mínima entre tarefas, pessoas e agentes.</p>
+</blockquote>
+
+<p>
+  Este artigo já tratou, no início da série, a definição de pronto para uma
+  tarefa individual, cobrindo quatro dimensões: funcional, técnico,
+  documental e operacional. Uma Definition of Done de projeto amplia essa
+  mesma lógica para o padrão que vale para toda tarefa que passa por ali —
+  reunindo, num único checklist verificável, tudo o que este bloco discutiu:
+  gates que bloqueiam avanço sem validação, evidências reproduzíveis em vez
+  de alegações, testes que provam algo real, critérios de aceite executáveis
+  e achados de auditoria específicos.
+</p>
+
+<h2>Uma DoD de projeto, operacionalizada</h2>
+
+<pre><code>## Definition of Done — projeto Checkout
+
+Uma tarefa está pronta quando:
+
+### Código
+- [ ] Lint e verificação de tipos sem erros
+- [ ] Nenhuma duplicação óbvia de lógica já existente
+
+### Testes
+- [ ] Casos positivos, negativos e de borda cobertos
+- [ ] Relatório de execução reproduzível anexado
+      (comando, ambiente, saída completa)
+
+### Documentação
+- [ ] Mudanças de contrato de API refletidas na
+      documentação correspondente
+
+### Segurança
+- [ ] Nenhuma dependência nova com vulnerabilidade
+      conhecida de severidade alta ou crítica
+
+### Operação
+- [ ] Log ou métrica que permite observar a mudança
+      após o deploy</code></pre>
+
+<p>
+  Com esse checklist explícito, as duas equipes do início deste artigo não
+  teriam mais espaço para interpretações divergentes: a DoD deixa de ser um
+  parágrafo de intenção e passa a ser uma lista binária, verificável por
+  qualquer pessoa — ou qualquer agente — antes de considerar uma tarefa
+  concluída.
+</p>
+
+<h2>DoD como contrato entre humanos e agentes</h2>
+
+<p>
+  Uma DoD operacionalizada dessa forma cumpre a mesma função para agentes de
+  IA que cumpre para desenvolvedores humanos: remove a ambiguidade sobre o
+  que "pronto" significa naquele projeto específico, independentemente de
+  quem — ou o que — executou a tarefa. Ela deveria fazer parte do Context
+  Pack de qualquer tarefa delegada a um agente, não existir apenas como
+  documentação de referência raramente consultada.
+</p>
+
+<h2>O limite: DoD única para todo tipo de tarefa é rígida demais</h2>
+
+<p>
+  Aplicar a mesma DoD completa, com todas as verificações, a uma correção
+  trivial de texto na interface é desproporcional. Uma DoD madura permite
+  níveis diferentes de rigor conforme o risco da tarefa — mas isso precisa
+  ser uma variação explícita e documentada, não uma interpretação livre de
+  cada equipe sobre o que a DoD "realmente" exige.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Uma Definition of Done vaga produz o mesmo problema, em escala de
+  projeto, que uma Issue vaga produz em escala de tarefa: cada pessoa, e
+  cada agente, preenche a ambiguidade com seu próprio critério. Transformar
+  a DoD num checklist verificável e explícito é o que garante que "pronto"
+  signifique a mesma coisa, não importa quem tenha feito o trabalho.
+</p>
+
+<p>
+  <strong
+    >A Definition of Done do seu projeto hoje é um checklist verificável, ou
+    um parágrafo vago o suficiente para significar coisas diferentes para
+    equipes diferentes?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 46 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #DefinitionOfDone #QualidadeDeSoftware
+    #Governanca
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

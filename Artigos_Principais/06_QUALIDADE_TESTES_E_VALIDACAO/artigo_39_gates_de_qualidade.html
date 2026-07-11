@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gates transformam expectativas em condições verificáveis. Como bloquear formalmente requisitos, código, segurança, documentação e deploy até que estejam comprovados."
+    />
+    <title>
+      39. Gates de qualidade: como impedir que código não validado avance no processo — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  39. Gates de qualidade: como impedir que código não validado avance no
+  processo
+</h1>
+
+<p>
+  Todo mundo sabia que aquela feature tinha problemas: nenhum teste
+  automatizado cobria o fluxo principal, e um scanner de acessibilidade
+  tinha apontado contraste insuficiente nos botões. Mesmo assim, o código foi
+  mesclado e implantado, porque a expectativa de "alguém vai revisar isso
+  depois" nunca se transformou numa barreira real. Não havia nenhum ponto
+  formal no processo que impedisse o avanço — apenas uma esperança difusa de
+  que a qualidade aconteceria por boa vontade coletiva.
+</p>
+
+<p>
+  Expectativas informais não bloqueiam nada. Elas competem com prazo, e
+  prazo quase sempre vence quando não existe um mecanismo que force a
+  verificação antes de avançar.
+</p>
+
+<h2>Gate transforma expectativa em condição verificável</h2>
+
+<blockquote>
+  <p>Gates transformam expectativas em condições verificáveis.</p>
+</blockquote>
+
+<p>
+  Um <em>quality gate</em> (portão de qualidade) é um ponto formal no
+  processo em que uma condição específica precisa ser satisfeita antes que o
+  trabalho avance para a etapa seguinte. A diferença entre "esperamos que os
+  testes passem" e um gate de qualidade é que o segundo bloqueia
+  mecanicamente o avanço se a condição não for cumprida — não depende de
+  ninguém lembrar de verificar manualmente.
+</p>
+
+<h2>Cinco gates ao longo do ciclo de uma tarefa</h2>
+
+<ul>
+  <li>
+    <strong>Requisitos:</strong> a Issue tem critério de aceite verificável
+    antes de qualquer código ser escrito.
+  </li>
+  <li>
+    <strong>Código:</strong> lint e verificação de tipos passam sem erros
+    antes do commit ser aceito.
+  </li>
+  <li>
+    <strong>Segurança:</strong> nenhuma dependência com vulnerabilidade
+    conhecida de severidade alta antes do merge.
+  </li>
+  <li>
+    <strong>Documentação:</strong> mudanças de contrato de API refletidas na
+    documentação antes do merge.
+  </li>
+  <li>
+    <strong>Deploy:</strong> testes de integração passando no ambiente de
+    homologação antes da promoção para produção.
+  </li>
+</ul>
+
+<h2>Um gate configurado, não apenas combinado verbalmente</h2>
+
+<pre><code># pipeline.yml (trecho)
+gates:
+  - nome: "codigo"
+    condicao: "lint_passou AND typecheck_passou"
+    bloqueia: "merge"
+  - nome: "seguranca"
+    condicao: "nenhuma_vulnerabilidade_alta_ou_critica"
+    bloqueia: "merge"
+  - nome: "deploy"
+    condicao: "testes_integracao_passaram_em_homologacao"
+    bloqueia: "promocao_para_producao"</code></pre>
+
+<p>
+  Com esses gates configurados no pipeline, a feature do início deste artigo
+  simplesmente não teria chegado à produção sem cobertura de teste
+  automatizada — não porque alguém lembrou de verificar, mas porque o
+  próprio processo recusaria o avanço.
+</p>
+
+<h2>O limite: gates demais travam o fluxo de trabalho</h2>
+
+<p>
+  Um gate para cada critério imaginável, incluindo verificações de baixo
+  valor, transforma o pipeline num gargalo que ninguém consegue atravessar
+  rapidamente. Gates deveriam existir nos pontos que já causaram problema
+  real antes, ou que protegem contra riscos genuinamente altos — não em
+  cada etapa possível do processo.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Qualidade que depende de boa vontade e memória é qualidade opcional, que
+  desaparece sob pressão de prazo. Gates de qualidade retiram essa
+  opcionalidade, transformando "esperamos que esteja certo" em "o processo
+  não avança até que esteja comprovadamente certo".
+</p>
+
+<p>
+  <strong
+    >Existe algum ponto do seu processo hoje em que a qualidade depende
+    apenas de alguém lembrar de verificar, em vez de um gate que bloqueia
+    automaticamente o avanço?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 39 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #QualityGates #QualidadeDeSoftware
+    #DevOps
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

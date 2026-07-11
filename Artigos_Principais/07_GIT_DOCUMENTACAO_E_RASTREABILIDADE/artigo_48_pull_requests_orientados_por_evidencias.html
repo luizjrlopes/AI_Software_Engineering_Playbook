@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Uma PR deve explicar intenção, mudança, provas, riscos e rollback. Um template de pull request que permite revisão informada de código gerado por IA."
+    />
+    <title>
+      48. Pull requests orientados por evidências para código gerado por IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>48. Pull requests orientados por evidências para código gerado por IA</h1>
+
+<p>
+  O pull request tinha apenas um título — "fix bug" — e o diff. Nenhuma
+  descrição do problema original, nenhuma explicação do porquê daquela
+  abordagem, nenhuma menção a testes, nenhuma indicação do que fazer se algo
+  desse errado depois do deploy. O revisor, sob pressão de prazo, leu o
+  código, achou razoável e aprovou. Dias depois, quando um efeito colateral
+  apareceu em produção, ninguém conseguia responder rapidamente: essa
+  mudança tinha sido testada para esse cenário? Havia um plano de reversão
+  conhecido?
+</p>
+
+<p>
+  O código em si podia estar correto. O pull request, como documento de
+  decisão, não continha nada que permitisse avaliar isso com confiança — só
+  convidava à aprovação por confiança no tom, não por evidência.
+</p>
+
+<h2>Um pull request é um documento de decisão, não só um diff</h2>
+
+<blockquote>
+  <p>Uma PR deve explicar intenção, mudança, provas, riscos e rollback.</p>
+</blockquote>
+
+<p>
+  Um pull request bem estruturado permite que um revisor avalie uma mudança
+  em minutos, com confiança, porque a informação necessária já está ali —
+  não precisa ser reconstruída através de perguntas no chat ou de leitura
+  extensa de código sem contexto. Isso vale igualmente para mudanças feitas
+  por humanos e por agentes de IA: a estrutura do PR é o que carrega o
+  contexto da decisão, não apenas o resultado dela.
+</p>
+
+<h2>Os cinco elementos de um PR revisável</h2>
+
+<ul>
+  <li>
+    <strong>Intenção:</strong> qual problema esta mudança resolve, ou qual
+    Issue ela atende.
+  </li>
+  <li>
+    <strong>Mudança:</strong> um resumo do que foi alterado, em linguagem
+    natural, complementando o diff.
+  </li>
+  <li>
+    <strong>Provas:</strong> evidência de que a mudança funciona — saída de
+    testes, captura de tela, resultado de migração.
+  </li>
+  <li>
+    <strong>Riscos:</strong> o que pode dar errado, ou o que exige atenção
+    específica na revisão.
+  </li>
+  <li>
+    <strong>Rollback:</strong> como reverter a mudança, caso necessário
+    depois do deploy.
+  </li>
+</ul>
+
+<h2>Um template aplicado ao mesmo bug</h2>
+
+<pre><code>## Intenção
+Corrige Issue #491: erro 500 ao aplicar cupom expirado
+no checkout.
+
+## Mudança
+Adiciona validação de data de expiração antes de aplicar
+o cupom; retorna erro 400 com mensagem clara em vez de 500.
+
+## Provas
+$ npm test -- coupon.test.ts
+✓ rejeita cupom expirado com erro 400
+✓ aceita cupom válido normalmente
+2 passed, 0 failed
+
+## Riscos
+Nenhuma migração de dados. Sem impacto em cupons já
+aplicados anteriormente.
+
+## Rollback
+Reverter este commit isoladamente; nenhuma dependência
+de outras mudanças no mesmo deploy.</code></pre>
+
+<p>
+  Com essa estrutura, o revisor do início deste artigo teria a resposta às
+  duas perguntas que ficaram sem resposta depois do incidente: sim, havia
+  teste cobrindo o cenário de cupom expirado, e sim, o rollback seria
+  simples e isolado.
+</p>
+
+<h2>O limite: nem todo PR precisa dos cinco elementos completos</h2>
+
+<p>
+  Uma correção trivial e de baixíssimo risco não precisa de uma seção de
+  rollback elaborada. O rigor do template deveria ser proporcional ao
+  impacto da mudança — mudanças em fluxos críticos justificam os cinco
+  elementos completos; ajustes cosméticos podem se contentar com intenção e
+  mudança.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um pull request que só contém um diff transfere para o revisor todo o
+  trabalho de reconstruir intenção, risco e plano de reversão — trabalho que
+  quem abriu o PR já tinha essa informação em mãos. Estruturar essa
+  informação de forma explícita é o que transforma revisão em avaliação
+  informada, em vez de aprovação por confiança no tom da descrição.
+</p>
+
+<p>
+  <strong
+    >O último pull request que você aprovou continha prova de teste e plano
+    de rollback, ou apenas um diff e a confiança de que provavelmente estava
+    certo?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 48 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #PullRequest #CodeReview
+    #Rastreabilidade
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

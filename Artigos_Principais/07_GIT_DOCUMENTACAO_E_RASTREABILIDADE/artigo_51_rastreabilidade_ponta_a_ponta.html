@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Rastreabilidade permite explicar por que algo existe e como foi validado. Como conectar issue, commit, pull request e deploy numa cadeia contínua."
+    />
+    <title>
+      51. Rastreabilidade ponta a ponta: do requisito ao commit, teste e deploy — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>51. Rastreabilidade ponta a ponta: do requisito ao commit, teste e deploy</h1>
+
+<p>
+  Durante um incidente, alguém precisava responder duas perguntas simples:
+  por que esse trecho de código existe, e ele foi validado antes de ir para
+  produção? A Issue original tinha sido fechada sem nenhuma referência ao
+  pull request que a implementou. O pull request, por sua vez, tinha sido
+  mesclado sem menção clara a qual commit específico continha a mudança
+  relevante. E o log de deploy mostrava apenas "versão 2.4.1 implantada",
+  sem indicar quais mudanças específicas aquela versão continha. Cada elo
+  da cadeia existia isoladamente. Nenhum se conectava ao seguinte.
+</p>
+
+<p>
+  A informação necessária para responder às duas perguntas estava,
+  tecnicamente, espalhada pelo sistema. Só não estava conectada de um jeito
+  que permitisse segui-la em sequência, do requisito original até a versão
+  em produção.
+</p>
+
+<h2>Rastreabilidade é uma corrente, não pontos isolados</h2>
+
+<blockquote>
+  <p>
+    Rastreabilidade permite explicar por que algo existe e como foi
+    validado.
+  </p>
+</blockquote>
+
+<p>
+  Este bloco já tratou, separadamente, boas práticas para commits, pull
+  requests e documentação. Rastreabilidade ponta a ponta é o que conecta
+  esses artefatos numa cadeia contínua: cada elo referenciando o anterior,
+  de forma que seguir do requisito ao deploy seja uma questão de navegação,
+  não de investigação arqueológica.
+</p>
+
+<h2>A cadeia completa, elo por elo</h2>
+
+<pre><code>Issue #482 "Corrigir cálculo de desconto combinado"
+    ↓ referenciada em
+Commit a1b2c3d "fix(checkout): corrige desconto (#482)"
+    ↓ incluído em
+Pull Request #97 "Corrige desconto combinado com frete grátis"
+    ↓ com testes anexados: discount.test.ts (3 passed)
+    ↓ mesclado e taggeado como
+Release v2.4.1
+    ↓ registrado no changelog
+CHANGELOG.md — v2.4.1: "Corrige #482 (desconto combinado)"</code></pre>
+
+<p>
+  Com essa cadeia intacta, a investigação do incidente levaria minutos: a
+  versão em produção referencia o changelog, o changelog referencia a
+  Issue, a Issue referencia o commit e o pull request, e o pull request
+  contém a prova de que o cenário específico foi testado antes do deploy.
+</p>
+
+<h2>Onde a cadeia costuma quebrar</h2>
+
+<ul>
+  <li>
+    <strong>Issue sem referência ao commit:</strong> perde-se a ligação
+    entre intenção e implementação.
+  </li>
+  <li>
+    <strong>Pull request sem prova anexada:</strong> perde-se a evidência de
+    validação, mesmo que a mudança esteja correta.
+  </li>
+  <li>
+    <strong>Deploy sem changelog vinculado:</strong> perde-se a capacidade
+    de saber o que uma versão específica contém, sem investigar
+    manualmente.
+  </li>
+</ul>
+
+<h2>O limite: rastreabilidade completa tem custo de manutenção</h2>
+
+<p>
+  Manter essa cadeia intacta para cada mudança, incluindo ajustes triviais,
+  consome tempo de documentação desproporcional ao risco. A cadeia completa
+  compensa para mudanças que afetam comportamento observável do sistema — a
+  mesma fronteira discutida em outros artigos deste bloco — não para cada
+  commit isolado do repositório.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Rastreabilidade não é sobre ter cada artefato individualmente bem
+  documentado — é sobre eles se conectarem em sequência, permitindo que
+  qualquer pessoa siga do requisito original até a versão em produção sem
+  depender de memória ou investigação manual. Quando essa cadeia se rompe em
+  qualquer elo, a rastreabilidade deixa de existir na prática, mesmo que cada
+  peça isolada pareça bem cuidada.
+</p>
+
+<p>
+  <strong
+    >Se você precisasse hoje seguir uma funcionalidade específica do
+    requisito original até a versão atual em produção, conseguiria fazer
+    isso em minutos, ou levaria horas investigando?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 51 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Rastreabilidade #Governanca
+    #DevOps
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Uma tarefa executada por um agente de IA termina quando critérios funcionais, técnicos, documentais e operacionais foram comprovados — não quando o agente afirma que terminou."
+    />
+    <title>
+      07. Definição de pronto para agentes de IA: quando uma tarefa realmente
+      terminou? — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>
+          07. Definição de pronto para agentes de IA: quando uma tarefa
+          realmente terminou?
+        </h1>
+
+        <p>
+          "Pronto! Implementei a exportação de relatórios em CSV e os testes
+          estão passando." A mensagem do agente parece uma entrega completa.
+          Só que, ao abrir o repositório, não existe nenhum arquivo de teste
+          novo. O botão de exportação não trata o caso de uma lista vazia — ele
+          simplesmente quebra. Ninguém atualizou a documentação da API para
+          mencionar o novo endpoint. E o botão em si não tem nome acessível
+          para quem usa leitor de tela.
+        </p>
+
+        <p>
+          Nada do que o agente disse era, tecnicamente, uma mentira. O código
+          da exportação existe e funciona no caminho feliz. O problema é que
+          "funciona no caminho feliz" e "está pronto" são afirmações
+          diferentes, e tratá-las como sinônimo é um erro recorrente em
+          equipes que delegam tarefas a agentes de IA.
+        </p>
+
+        <h2>Pronto é um estado comprovado, não declarado</h2>
+
+        <blockquote>
+          <p>
+            Uma tarefa termina quando critérios funcionais, técnicos,
+            documentais e operacionais foram comprovados.
+          </p>
+        </blockquote>
+
+        <p>
+          Times de engenharia já conhecem esse princípio sob o nome de
+          <em>Definition of Done</em> (definição de pronto): um conjunto de
+          critérios objetivos que precisam ser satisfeitos antes de uma tarefa
+          ser considerada concluída, independentemente de quem a executou. A
+          diferença, com agentes de IA, é que a tentação de aceitar a palavra
+          do executor como prova é maior — o texto de resposta soa confiante e
+          bem escrito, o que facilmente é confundido com verificação real.
+        </p>
+
+        <h2>As quatro dimensões de uma entrega completa</h2>
+
+        <p>
+          Uma tarefa comprovadamente pronta normalmente atende critérios em
+          quatro dimensões:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Funcional:</strong> o comportamento pedido funciona,
+            incluindo casos de borda e de erro, não apenas o caminho feliz.
+          </li>
+          <li>
+            <strong>Técnico:</strong> o código passa em lint, testes
+            automatizados e nas verificações de tipo, com evidência
+            executável — não com a afirmação de que "deveria passar".
+          </li>
+          <li>
+            <strong>Documental:</strong> mudanças relevantes em contrato de
+            API, comportamento ou configuração estão refletidas na
+            documentação correspondente.
+          </li>
+          <li>
+            <strong>Operacional:</strong> a mudança pode ser observada e
+            revertida em produção — existe log, métrica ou forma de detectar
+            problema após o deploy.
+          </li>
+        </ul>
+
+        <section aria-labelledby="comparacao" class="not-prose my-10">
+          <h2
+            id="comparacao"
+            class="mb-5 text-2xl font-semibold text-slate-900"
+          >
+            Declarado pronto vs. comprovado pronto
+          </h2>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-red-900">
+                "Pronto! Os testes passam."
+              </h3>
+              <p class="leading-7 text-red-950">
+                Uma frase de confiança no chat, sem arquivo de teste
+                correspondente no repositório, sem log de execução e sem
+                menção ao que acontece com uma lista vazia ou um erro de rede.
+              </p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+                "Pronto — evidências anexadas."
+              </h3>
+              <p class="leading-7 text-emerald-950">
+                Arquivo de teste novo, cobrindo lista vazia e falha de rede;
+                saída do lint sem erros; trecho de documentação atualizado;
+                log configurado para o novo endpoint.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <h2>Um checklist de pronto aplicável</h2>
+
+        <div
+          class="not-prose my-8 rounded-md border border-slate-200 border-l-4 border-l-slate-600 bg-slate-50 p-6"
+        >
+          <h4
+            class="mb-4 font-sans text-base font-semibold uppercase tracking-wide text-slate-900"
+          >
+            Definição de pronto mínima para tarefas de agentes de IA
+          </h4>
+          <ul class="space-y-4 font-sans text-slate-700">
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >Os casos de erro e de borda foram tratados</strong
+                >, não apenas o cenário ideal descrito na tarefa.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >Existe evidência executável dos testes</strong
+                >, como o arquivo de teste no repositório e a saída real da
+                execução, não apenas a afirmação de que passaram.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >A documentação relevante foi atualizada</strong
+                >, quando a mudança afeta contrato, comportamento ou
+                configuração visível a outras equipes.</span
+              >
+            </li>
+            <li class="flex items-start">
+              <svg
+                aria-hidden="true"
+                class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"></rect>
+              </svg>
+              <span
+                ><strong class="font-semibold text-slate-900"
+                  >É possível observar e reverter a mudança em
+                  produção</strong
+                >, com log ou métrica que permita perceber um problema depois
+                do deploy.</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <h2>O limite: nem toda tarefa precisa das quatro dimensões completas</h2>
+
+        <p>
+          Aplicar as quatro dimensões com o mesmo rigor a um ajuste cosmético
+          de CSS e a uma mudança no fluxo de pagamento seria desperdício de
+          tempo em um caso e negligência no outro. A definição de pronto deve
+          ser proporcional ao risco da mudança: tarefas de baixo impacto podem
+          dispensar a dimensão documental ou operacional; tarefas que tocam
+          dados sensíveis, dinheiro ou autenticação normalmente não deveriam
+          dispensar nenhuma das quatro.
+        </p>
+
+        <h2>Conclusão</h2>
+
+        <p>
+          A palavra "pronto" vinda de um agente de IA carrega o mesmo peso que
+          a palavra "pronto" vinda de qualquer colega de equipe: precisa ser
+          verificável, não apenas convincente. Definir com antecedência o que
+          conta como prova — e não aceitar a afirmação como substituto da
+          evidência — é o que separa uma entrega real de um código que apenas
+          parece terminado.
+        </p>
+
+        <p>
+          <strong
+            >Na última vez que um agente disse "pronto", você verificou a
+            evidência ou confiou no tom de confiança da resposta?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 07 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 font-semibold text-linkedin-blue">
+            #DefinitionOfDone #EngenhariaDeSoftware #AgentesDeIA
+            #QualidadeDeSoftware #Evidencias
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

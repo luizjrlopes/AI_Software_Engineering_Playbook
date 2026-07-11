@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Escopo é mecanismo de execução, segurança e controle de mudança: como definir limites positivos, negativos e condicionais para agentes de IA antes de delegar uma tarefa."
+    />
+    <title>
+      06. Escopo explícito: como impedir que agentes de IA alterem o que não
+      deveriam — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Fundamentos e Organização
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+        <h1>
+          06. Escopo explícito: como impedir que agentes de IA alterem o que
+          não deveriam
+        </h1>
+
+        <p>
+          A tarefa era pontual: corrigir um erro de arredondamento no cálculo
+          de preços de um módulo de <em>pricing</em>. O agente resolveu o
+          problema pedido e, no mesmo commit, "aproveitou" para melhorar uma
+          função utilitária de formatação de datas usada por outros cinco
+          módulos, porque identificou ali um padrão que considerou
+          inconsistente. Dois dias depois, um relatório financeiro gerado por
+          um módulo completamente diferente começou a exibir datas erradas em
+          fusos horários específicos. Ninguém associou o problema ao commit de
+          pricing, porque, em teoria, aquele commit não deveria ter tocado em
+          nada além de pricing.
+        </p>
+
+        <p>
+          O agente não tinha instrução nenhuma que o proibisse de mexer
+          naquele arquivo utilitário. E é exatamente esse o problema: ausência
+          de proibição, na prática, funciona como permissão.
+        </p>
+
+        <h2>Escopo é mecanismo, não formalidade</h2>
+
+        <blockquote>
+          <p>Escopo é mecanismo de execução, segurança e controle de mudança.</p>
+        </blockquote>
+
+        <p>
+          Definir escopo para um agente de IA não é burocracia adicionada por
+          desconfiança. É a mesma prática que qualquer engenheiro sênior já
+          aplica ao revisar um pull request: perguntar se a mudança está
+          contida no que foi pedido, ou se extrapolou silenciosamente para
+          território que exigiria revisão adicional. A diferença é que, com
+          agentes, essa contenção precisa ser declarada antes da execução, não
+          apenas cobrada depois, na revisão.
+        </p>
+
+        <h2>Três tipos de limite</h2>
+
+        <ul>
+          <li>
+            <strong>Limite positivo (allow-list):</strong> os arquivos, pastas
+            ou módulos que o agente está autorizado a alterar para cumprir a
+            tarefa.
+          </li>
+          <li>
+            <strong>Limite negativo (deny-list):</strong> os arquivos ou
+            pastas explicitamente fora de alcance, mesmo que pareçam
+            relacionados — como o utilitário de datas do exemplo acima.
+          </li>
+          <li>
+            <strong>Limite condicional:</strong> ações que exigem aprovação
+            humana antes de prosseguir, como migrações de schema, remoção de
+            arquivos ou adição de novas dependências externas.
+          </li>
+        </ul>
+
+        <section aria-labelledby="comparacao" class="not-prose my-10">
+          <h2
+            id="comparacao"
+            class="mb-5 text-2xl font-semibold text-slate-900"
+          >
+            Sem escopo declarado vs. com escopo declarado
+          </h2>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div class="rounded-lg border border-red-200 bg-red-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-red-900">
+                Contenção implícita
+              </h3>
+              <p class="leading-7 text-red-950">
+                O agente interpreta "corrigir o módulo de pricing" como
+                licença para tocar em qualquer arquivo que julgue relacionado.
+                O efeito colateral só aparece dias depois, num módulo
+                diferente, e ninguém associa a causa à tarefa original.
+              </p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+              <h3 class="mb-3 text-lg font-semibold text-emerald-900">
+                Contenção explícita
+              </h3>
+              <p class="leading-7 text-emerald-950">
+                O agente recebe uma allow-list restrita ao módulo de pricing,
+                uma deny-list cobrindo utilitários compartilhados e uma regra
+                condicional: qualquer alteração fora da allow-list exige
+                aprovação antes do commit.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <h2>Um contrato de escopo na prática</h2>
+
+        <p>
+          Aplicado ao caso do módulo de pricing, o contrato de escopo poderia
+          ter sido declarado assim, antes da tarefa começar:
+        </p>
+
+        <pre><code>escopo:
+  allow:
+    - src/pricing/**
+    - tests/pricing/**
+  deny:
+    - src/shared/utils/**
+    - src/auth/**
+  requer_aprovacao:
+    - "qualquer alteração em src/shared/**"
+    - "qualquer nova dependência em package.json"
+    - "qualquer migração de schema"</code></pre>
+
+        <p>
+          Com esse contrato, a mesma "melhoria" na função de datas não seria
+          bloqueada silenciosamente — seria sinalizada como uma alteração fora
+          do escopo, que exige decisão humana antes de acontecer. O agente
+          continua livre para sugerir a melhoria. O que muda é que ela não
+          entra no repositório sem revisão.
+        </p>
+
+        <h2>O limite: escopo rígido demais também tem custo</h2>
+
+        <p>
+          Escopo excessivamente restrito cria seu próprio problema: tarefas
+          legítimas que exigem tocar em múltiplos módulos — como propagar uma
+          correção de segurança por vários serviços — ficam travadas
+          esperando aprovação para cada arquivo, mesmo quando a mudança é
+          simples e de baixo risco. A resposta não é eliminar o escopo, e sim
+          calibrá-lo à natureza da tarefa: mudanças isoladas justificam
+          contenção rígida; mudanças estruturais planejadas justificam um
+          escopo mais amplo, definido conscientemente, não por omissão.
+        </p>
+
+        <h2>Conclusão</h2>
+
+        <p>
+          Um agente de IA não tem, por padrão, noção de fronteira
+          organizacional entre módulos, times ou responsabilidades. Essa
+          fronteira só existe se alguém a declarar antes da execução. Escopo
+          explícito transforma uma tarefa de "vá lá e resolva" em uma unidade
+          de mudança com limites conhecidos — o que é, em essência, a mesma
+          disciplina que qualquer pull request revisado por humanos deveria
+          ter.
+        </p>
+
+        <p>
+          <strong
+            >Na última tarefa que você delegou a um agente, existia algum
+            arquivo que ele simplesmente não tinha permissão de tocar, ou essa
+            fronteira só existia na sua cabeça?</strong
+          >
+        </p>
+
+        <hr />
+
+        <footer class="not-prose pt-2 text-sm text-slate-600">
+          <p class="mb-3">
+            <strong>Artigo 06 de 70</strong> da série sobre engenharia de
+            software com agentes de IA.
+          </p>
+          <p class="leading-7 font-semibold text-linkedin-blue">
+            #EscopoDeMudanca #EngenhariaDeSoftware #AgentesDeIA #Seguranca
+            #ChangeManagement #Governanca
+          </p>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

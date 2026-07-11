@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Produtividade deve considerar lead time, retrabalho, defeitos, revisão, custo e resultado. Por que volume de código mesclado não mede produtividade real."
+    />
+    <title>
+      63. Como medir a produtividade real de agentes de IA no desenvolvimento de software — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  63. Como medir a produtividade real de agentes de IA no desenvolvimento de
+  software
+</h1>
+
+<p>
+  Uma liderança técnica comemorou os números: depois de adotar agentes de
+  IA de forma intensiva, a Equipe A triplicou o volume de pull requests
+  mesclados em relação à Equipe B, que manteve um ritmo mais tradicional.
+  Três meses depois, o quadro era outro: a Equipe A respondia por quase
+  todos os incidentes de produção do trimestre, e boa parte do seu tempo
+  recente tinha sido gasta corrigindo reversões de mudanças anteriores. A
+  Equipe B, mais lenta em volume bruto, tinha entregado menos
+  funcionalidades, mas nenhuma delas precisou ser revertida.
+</p>
+
+<p>
+  Volume de código mesclado media atividade, não produtividade. As duas
+  coisas parecem a mesma coisa até que os defeitos e o retrabalho comecem a
+  aparecer — momento em que a diferença entre elas fica dolorosamente
+  clara.
+</p>
+
+<h2>Produtividade é resultado, não volume</h2>
+
+<blockquote>
+  <p>
+    Produtividade deve considerar lead time, retrabalho, defeitos, revisão,
+    custo e resultado.
+  </p>
+</blockquote>
+
+<p>
+  Medir produtividade apenas por linhas de código, número de commits ou
+  pull requests mesclados favorece sistematicamente equipes que produzem
+  volume, independentemente da qualidade desse volume. Uma medição mais
+  honesta precisa considerar o que acontece depois do código ser escrito:
+  quanto tempo leva até chegar em produção de forma estável, quanto
+  retrabalho ele gera, e que resultado real ele produz para o negócio.
+</p>
+
+<h2>Seis dimensões de uma medição honesta</h2>
+
+<ul>
+  <li>
+    <strong>Lead time:</strong> tempo do início da tarefa até a entrega
+    estável em produção, não apenas até o merge.
+  </li>
+  <li>
+    <strong>Retrabalho:</strong> quantas tarefas precisaram ser refeitas ou
+    corrigidas depois de "concluídas".
+  </li>
+  <li>
+    <strong>Defeitos:</strong> quantos bugs ou incidentes uma entrega
+    específica gerou depois do deploy.
+  </li>
+  <li>
+    <strong>Tempo de revisão:</strong> quanto tempo humano foi consumido
+    revisando o volume produzido.
+  </li>
+  <li>
+    <strong>Custo total:</strong> tokens, tempo humano e custo de
+    coordenação somados, não apenas o preço da chamada de API.
+  </li>
+  <li>
+    <strong>Resultado:</strong> o impacto real no produto ou no negócio, não
+    apenas a atividade registrada.
+  </li>
+</ul>
+
+<h2>Comparando as duas equipes com essas seis dimensões</h2>
+
+<section aria-labelledby="comparacao" class="not-prose my-10">
+  <h2 id="comparacao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Volume alto vs. resultado estável
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Dimensão</th>
+          <th class="px-4 py-3 font-semibold">Equipe A (volume alto)</th>
+          <th class="px-4 py-3 font-semibold">Equipe B (volume moderado)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">PRs mesclados</td>
+          <td class="px-4 py-3 text-slate-700">3x mais</td>
+          <td class="px-4 py-3 text-slate-700">Referência</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Reversões</td>
+          <td class="px-4 py-3 text-slate-700">Alta</td>
+          <td class="px-4 py-3 text-slate-700">Quase zero</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Incidentes</td>
+          <td class="px-4 py-3 text-slate-700">Maioria do trimestre</td>
+          <td class="px-4 py-3 text-slate-700">Nenhum atribuído</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Lead time real</td>
+          <td class="px-4 py-3 text-slate-700">
+            Aparentemente curto, mas inflado por retrabalho não contabilizado
+          </td>
+          <td class="px-4 py-3 text-slate-700">
+            Mais longo por entrega, mas sem retrabalho subsequente
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>O limite: medir tudo tem custo de coleta e interpretação</h2>
+
+<p>
+  Instrumentar as seis dimensões com precisão total, para toda tarefa, exige
+  esforço de coleta que pode superar o valor da informação obtida. Um
+  conjunto mínimo — lead time, taxa de reversão e incidentes atribuíveis —
+  já revela a maior parte de distorções graves, sem exigir instrumentação
+  completa desde o primeiro dia.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um número de produtividade que ignora o que acontece depois do merge
+  favorece exatamente o tipo de velocidade que gera mais trabalho no futuro.
+  Medir produtividade real de agentes de IA exige olhar além do volume
+  produzido, para o custo total e o resultado que esse volume efetivamente
+  gerou.
+</p>
+
+<p>
+  <strong
+    >A métrica de produtividade usada na sua organização hoje considera o
+    que acontece depois do merge, ou para na contagem de linhas e pull
+    requests?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 63 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Produtividade #MetricasDeEngenharia
+    #GestaoBaseadaEmDados
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

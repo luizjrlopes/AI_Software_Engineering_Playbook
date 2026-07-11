@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="README orienta entrada; não substitui arquitetura, decisões, operação e regras locais. Quais documentos além do README um agente de IA realmente precisa."
+    />
+    <title>
+      52. O README não é contexto suficiente para um agente de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Git, Documentação e Rastreabilidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 6 — Da alteração à rastreabilidade
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>52. O README não é contexto suficiente para um agente de IA</h1>
+
+<p>
+  O README do projeto era exemplar: instruções claras de instalação,
+  comandos para rodar localmente, descrição resumida do que o sistema
+  fazia. Um agente, recebendo apenas esse arquivo como contexto, implementou
+  uma nova integração de pagamento chamando diretamente uma API externa a
+  partir da camada de rotas — uma decisão que violava uma escolha
+  arquitetural registrada meses antes, num ADR que dizia explicitamente que
+  toda integração externa deveria passar por uma camada de adaptador
+  dedicada, justamente para permitir trocar de provedor sem reescrever o
+  domínio. O README nunca mencionava essa regra, porque nunca foi seu
+  trabalho mencionar isso.
+</p>
+
+<p>
+  O agente não tinha como saber da regra. O README, por bem escrito que
+  fosse, simplesmente não é o lugar onde esse tipo de decisão vive.
+</p>
+
+<h2>README orienta a entrada, não substitui o resto</h2>
+
+<blockquote>
+  <p>
+    README orienta entrada; não substitui arquitetura, decisões, operação e
+    regras locais.
+  </p>
+</blockquote>
+
+<p>
+  Um README cumpre bem uma função específica: ajudar alguém a instalar,
+  rodar e entender superficialmente um projeto pela primeira vez. Tratá-lo
+  como a fonte única de contexto para um agente de IA — a prática mais
+  comum quando ninguém pensou explicitamente sobre isso — deixa de fora
+  exatamente o tipo de informação que evita decisões erradas: arquitetura,
+  decisões já tomadas, práticas operacionais e regras locais específicas do
+  domínio.
+</p>
+
+<h2>O que existe além do README</h2>
+
+<ul>
+  <li>
+    <strong>Arquitetura:</strong> o mapa de módulos e responsabilidades
+    discutido anteriormente neste bloco.
+  </li>
+  <li>
+    <strong>Decisões:</strong> os ADRs que registram por que certas escolhas
+    foram feitas e não deveriam ser revertidas sem novo contexto.
+  </li>
+  <li>
+    <strong>Operação:</strong> como o sistema é implantado, monitorado e o
+    que fazer em caso de incidente.
+  </li>
+  <li>
+    <strong>Regras locais:</strong> convenções e restrições específicas de
+    um módulo, que não se aplicam ao projeto inteiro.
+  </li>
+</ul>
+
+<h2>Um índice mínimo que o README poderia apontar</h2>
+
+<pre><code>## docs/README.md — índice de documentação
+
+- Arquitetura e módulos: docs/architecture/map.md
+- Decisões arquiteturais: docs/adr/
+- Runbook de operação: docs/ops/runbook.md
+- Regras do domínio de pagamento: docs/domain/payments.md
+
+Para tarefas que envolvem integração externa, consultar
+OBRIGATORIAMENTE docs/adr/012-adapter-pattern.md antes de
+implementar.</code></pre>
+
+<p>
+  Esse índice não substitui o README — complementa ele, apontando
+  explicitamente para onde vive o tipo de informação que evitaria o erro do
+  exemplo inicial. Um Context Pack bem montado para uma tarefa de integração
+  externa incluiria essa referência diretamente, sem depender de o agente
+  adivinhar que ela existe.
+</p>
+
+<h2>O limite: nem todo projeto precisa da documentação completa</h2>
+
+<p>
+  Um projeto pequeno, de escopo estável e sem decisões arquiteturais
+  complexas, pode se sustentar razoavelmente bem com um README detalhado e
+  pouco mais. A necessidade de documentação estruturada em múltiplas camadas
+  cresce com a complexidade do domínio e o número de decisões acumuladas ao
+  longo do tempo — não é um requisito universal desde o primeiro commit.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um README responde "como eu rodo isso". Não responde "por que essa decisão
+  foi tomada" ou "que regra este módulo específico precisa respeitar". Tratar
+  o README como contexto suficiente para um agente de IA é assumir que ele
+  sabe algo que nunca foi escrito em lugar nenhum que ele pudesse consultar.
+</p>
+
+<p>
+  <strong
+    >Se um agente recebesse hoje apenas o README do seu projeto como
+    contexto, ele saberia das decisões arquiteturais que não podem ser
+    violadas?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 52 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Documentacao #ArquiteturaDeSoftware
+    #ContextEngineering
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Intenção, prioridade, risco, aprovação e responsabilidade não desaparecem. Quais decisões permanecem estruturalmente humanas quando agentes executam o resto."
+    />
+    <title>
+      66. O papel humano na engenharia de software orientada por agentes — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>66. O papel humano na engenharia de software orientada por agentes</h1>
+
+<p>
+  Com agentes especializados cobrindo arquitetura, implementação, testes,
+  revisão e deploy, alguém perguntou, meio a sério meio de brincadeira: "o
+  que sobra para nós fazermos, além de aprovar?". A resposta apareceu na
+  prática poucos dias depois, quando um agente encarregado de otimizar o
+  tempo de resposta de uma API se deparou com uma escolha real de produto: a
+  otimização mais eficaz exigia remover um campo de auditoria detalhado, que
+  ajudava no atendimento a poucos clientes específicos mas raramente usados
+  por eles. O agente não tinha como saber, sozinho, se a velocidade
+  importava mais do que aquele campo específico para o negócio — essa não é
+  uma pergunta técnica, é uma pergunta sobre o que a empresa valoriza.
+</p>
+
+<p>
+  A tarefa travou, não por limitação técnica do agente, mas porque a decisão
+  exigida não era dele para tomar.
+</p>
+
+<h2>Cinco responsabilidades que não se automatizam</h2>
+
+<blockquote>
+  <p>Intenção, prioridade, risco, aprovação e responsabilidade não desaparecem.</p>
+</blockquote>
+
+<p>
+  À medida que agentes assumem parcelas cada vez maiores da execução técnica,
+  cinco responsabilidades permanecem estruturalmente humanas — não porque a
+  IA seja incapaz de processá-las tecnicamente, mas porque elas exigem
+  contexto de negócio, valores organizacionais e disposição para assumir
+  consequência, que não podem ser transferidos para uma ferramenta.
+</p>
+
+<h2>As cinco responsabilidades</h2>
+
+<ul>
+  <li>
+    <strong>Intenção:</strong> o que construir e por quê — a motivação de
+    negócio por trás de qualquer tarefa técnica.
+  </li>
+  <li>
+    <strong>Prioridade:</strong> o que importa mais agora, entre várias
+    opções tecnicamente válidas.
+  </li>
+  <li>
+    <strong>Risco:</strong> quanto de incerteza e potencial dano a
+    organização está disposta a tolerar numa decisão específica.
+  </li>
+  <li>
+    <strong>Aprovação:</strong> autorizar formalmente que uma mudança avance,
+    assumindo que ela está de acordo com o que se espera.
+  </li>
+  <li>
+    <strong>Responsabilidade:</strong> quem responde pelo resultado, bom ou
+    ruim, de uma decisão tomada.
+  </li>
+</ul>
+
+<h2>Mapeando decisão humana e execução automatizável</h2>
+
+<pre><code>## Otimização de API — divisão de responsabilidade
+
+Humano decide:
+- Prioridade: velocidade de resposta importa mais que o
+  campo de auditoria detalhado para os clientes afetados?
+- Risco: qual o impacto aceitável em atendimento se o
+  campo for removido?
+- Aprovação: autorizar a remoção após avaliar o trade-off.
+
+Agente executa:
+- Implementar a otimização escolhida.
+- Medir o ganho real de performance.
+- Gerar evidência de que a mudança não quebrou outros
+  fluxos.</code></pre>
+
+<p>
+  Com essa divisão explícita, o agente do exemplo inicial não precisaria
+  travar indefinidamente — ele apresentaria a opção e o trade-off para
+  decisão humana, executando a escolha depois que a prioridade fosse
+  definida por quem tem contexto de negócio para isso.
+</p>
+
+<h2>O limite: nem toda decisão precisa de aprovação humana explícita</h2>
+
+<p>
+  Formalizar aprovação humana para cada micro-decisão técnica, mesmo as de
+  baixíssimo impacto, recria o gargalo que a autonomia de agentes deveria
+  aliviar. As cinco responsabilidades permanecem humanas de forma
+  estratégica — nas decisões que realmente pesam — não em cada detalhe de
+  implementação que um agente pode resolver dentro de limites já aprovados.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Automatizar execução técnica não elimina a necessidade de julgamento
+  humano — desloca esse julgamento para um nível mais estratégico. Intenção,
+  prioridade, risco, aprovação e responsabilidade continuam sendo, e
+  provavelmente continuarão sendo por muito tempo, decisões que exigem
+  contexto que nenhum agente tem acesso sozinho.
+</p>
+
+<p>
+  <strong
+    >Na divisão de trabalho do seu time hoje, as cinco responsabilidades
+    deste artigo estão claramente atribuídas a pessoas, ou foram
+    silenciosamente delegadas a um agente que não deveria decidi-las?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 66 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #LiderancaTecnica #Responsabilidade
+    #TomadaDeDecisao
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

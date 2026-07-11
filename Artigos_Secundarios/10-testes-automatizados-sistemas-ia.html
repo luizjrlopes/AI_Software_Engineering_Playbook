@@ -1,39 +1,446 @@
 <!doctype html>
 <html lang="pt-BR" class="scroll-smooth">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Estratégia de testes automatizados em camadas para aplicações de IA, retrieval, ferramentas, segurança e qualidade." />
-  <title>Testes de sistemas de IA: contratos, avaliações e regressões</title>
-  <script src="https://cdn.tailwindcss.com"></script><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet" />
-  <script>tailwind.config={theme:{extend:{fontFamily:{sans:["Inter","sans-serif"],mono:["Fira Code","monospace"]},colors:{brand:{50:"#ecfeff",100:"#cffafe",500:"#06b6d4",600:"#0891b2",700:"#0e7490",900:"#164e63"}}}}};</script>
-  <style>body{font-family:"Inter",sans-serif}.copy p{margin-top:1rem;line-height:1.8}.copy ul,.copy ol{margin:1rem 0 0 1.25rem}.copy li{margin-top:.55rem;line-height:1.7}.copy ul{list-style:disc}.copy ol{list-style:decimal}</style>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased">
-<header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"><div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><a href="index.html" class="font-bold text-brand-700">Artigos_GenAi</a><nav aria-label="Navegação do artigo" class="flex gap-4 text-sm font-medium"><a href="#camadas">Camadas</a><a href="#dataset">Dataset</a><a href="#pipeline">Pipeline</a></nav></div></header>
-<main>
-  <section class="bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500 text-white"><div class="mx-auto max-w-5xl px-5 py-20 md:py-28"><div class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"><span class="rounded-full bg-white/15 px-3 py-1">Qualidade</span><span class="rounded-full bg-white/15 px-3 py-1">Artigo conceitual</span><span class="rounded-full bg-white/15 px-3 py-1">Nível intermediário</span></div><p class="mb-4 font-mono text-sm text-cyan-100">Artigo 10 · Revisado em julho de 2026</p><h1 class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl">Testes de sistemas de IA</h1><p class="mt-6 max-w-3xl text-xl leading-relaxed text-cyan-100">O texto pode variar; contratos, políticas e critérios de qualidade não precisam ficar sem teste.</p></div></section>
-  <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Problema</p><h2 class="mt-3 text-3xl font-bold">Comparar strings não cobre comportamento probabilístico</h2><p>Uma saída válida pode usar palavras diferentes e ainda preservar significado. Ao mesmo tempo, respostas fluentes podem violar schema, inventar fatos, usar fonte proibida ou chamar ferramenta indevida.</p><p><strong>Tese:</strong> testes eficazes separam invariantes determinísticos, qualidade probabilística e comportamento do sistema.</p></section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Estratégia de testes automatizados em camadas para aplicações de IA, retrieval, ferramentas, segurança e qualidade."
+    />
+    <title>Testes de sistemas de IA: contratos, avaliações e regressões</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Fira Code", "monospace"],
+            },
+            colors: {
+              brand: {
+                50: "#ecfeff",
+                100: "#cffafe",
+                500: "#06b6d4",
+                600: "#0891b2",
+                700: "#0e7490",
+                900: "#164e63",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .copy p {
+        margin-top: 1rem;
+        line-height: 1.8;
+      }
+      .copy ul,
+      .copy ol {
+        margin: 1rem 0 0 1.25rem;
+      }
+      .copy li {
+        margin-top: 0.55rem;
+        line-height: 1.7;
+      }
+      .copy ul {
+        list-style: disc;
+      }
+      .copy ol {
+        list-style: decimal;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased">
+    <header
+      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+    >
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a href="index.html" class="font-bold text-brand-700"
+          >AI_Software_Engineering_Playbook</a
+        >
+        <nav
+          aria-label="Navegação do artigo"
+          class="flex gap-4 text-sm font-medium"
+        >
+          <a href="#camadas">Camadas</a><a href="#dataset">Dataset</a
+          ><a href="#pipeline">Pipeline</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section
+        class="bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500 text-white"
+      >
+        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
+          <div
+            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
+          >
+            <span class="rounded-full bg-white/15 px-3 py-1">Qualidade</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Artigo conceitual</span
+            ><span class="rounded-full bg-white/15 px-3 py-1"
+              >Nível intermediário</span
+            >
+          </div>
+          <p class="mb-4 font-mono text-sm text-cyan-100">
+            Artigo 10 · Revisado em julho de 2026
+          </p>
+          <h1
+            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
+          >
+            Testes de sistemas de IA
+          </h1>
+          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-cyan-100">
+            O texto pode variar; contratos, políticas e critérios de qualidade
+            não precisam ficar sem teste.
+          </p>
+        </div>
+      </section>
+      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Problema
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Comparar strings não cobre comportamento probabilístico
+          </h2>
+          <p>
+            Uma saída válida pode usar palavras diferentes e ainda preservar
+            significado. Ao mesmo tempo, respostas fluentes podem violar schema,
+            inventar fatos, usar fonte proibida ou chamar ferramenta indevida.
+          </p>
+          <p>
+            <strong>Tese:</strong> testes eficazes separam invariantes
+            determinísticos, qualidade probabilística e comportamento do
+            sistema.
+          </p>
+        </section>
 
-    <section class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10" id="camadas"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300">Pirâmide de testes</p><h2 class="mt-3 text-3xl font-bold">Teste cada responsabilidade no nível mais barato</h2><div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3"><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Contratos</h3><p class="mt-2 text-sm text-slate-300">schemas, validação, autorização e limites</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Componentes</h3><p class="mt-2 text-sm text-slate-300">templates, parsers, ferramentas e regras</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Retrieval</h3><p class="mt-2 text-sm text-slate-300">relevância, filtros, permissão e frescor</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Avaliações</h3><p class="mt-2 text-sm text-slate-300">correção, sustentação, recusa e estilo</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">Integração</h3><p class="mt-2 text-sm text-slate-300">modelo, ferramentas, retries e estado</p></article><article class="rounded-xl bg-white/10 p-5"><h3 class="font-bold">E2E</h3><p class="mt-2 text-sm text-slate-300">jornada, efeitos, observabilidade e rollback</p></article></div></section>
+        <section
+          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
+          id="camadas"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300"
+          >
+            Pirâmide de testes
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Teste cada responsabilidade no nível mais barato
+          </h2>
+          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Contratos</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                schemas, validação, autorização e limites
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Componentes</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                templates, parsers, ferramentas e regras
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Retrieval</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                relevância, filtros, permissão e frescor
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Avaliações</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                correção, sustentação, recusa e estilo
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">Integração</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                modelo, ferramentas, retries e estado
+              </p>
+            </article>
+            <article class="rounded-xl bg-white/10 p-5">
+              <h3 class="font-bold">E2E</h3>
+              <p class="mt-2 text-sm text-slate-300">
+                jornada, efeitos, observabilidade e rollback
+              </p>
+            </article>
+          </div>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Invariantes</p><h2 class="mt-3 text-3xl font-bold">Comece pelo que deve ser sempre verdadeiro</h2><ul><li>saída respeita schema e enumerações;</li><li>identidade sem permissão não acessa contexto;</li><li>argumentos de ferramenta passam por validação;</li><li>operação destrutiva exige confirmação;</li><li>deadline e cancelamento são propagados;</li><li>retry não duplica efeito;</li><li>segredos não aparecem em resposta ou log;</li><li>versão do sistema é rastreável.</li></ul><p>Esses checks devem ser rápidos, determinísticos e executados com frequência.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Invariantes
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Comece pelo que deve ser sempre verdadeiro
+          </h2>
+          <ul>
+            <li>saída respeita schema e enumerações;</li>
+            <li>identidade sem permissão não acessa contexto;</li>
+            <li>argumentos de ferramenta passam por validação;</li>
+            <li>operação destrutiva exige confirmação;</li>
+            <li>deadline e cancelamento são propagados;</li>
+            <li>retry não duplica efeito;</li>
+            <li>segredos não aparecem em resposta ou log;</li>
+            <li>versão do sistema é rastreável.</li>
+          </ul>
+          <p>
+            Esses checks devem ser rápidos, determinísticos e executados com
+            frequência.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10" id="dataset"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700">Dataset de avaliação</p><h2 class="mt-3 text-3xl font-bold">Casos representativos são um ativo versionado</h2><p>Cada caso deve registrar entrada, contexto permitido, resultado esperado ou critérios, risco e origem. O conjunto precisa incluir:</p><ul><li>casos comuns e fronteiras;</li><li>ambiguidade e contexto insuficiente;</li><li>idiomas, formatos e tamanhos relevantes;</li><li>recusa e escalonamento humano;</li><li>prompt injection e exfiltração;</li><li>falhas de retrieval e ferramentas;</li><li>subgrupos importantes para o produto;</li><li>incidentes reais sanitizados quando disponíveis.</li></ul><p>Dados de produção exigem autorização, minimização e remoção de informações pessoais.</p></section>
+        <section
+          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
+          id="dataset"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
+          >
+            Dataset de avaliação
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Casos representativos são um ativo versionado
+          </h2>
+          <p>
+            Cada caso deve registrar entrada, contexto permitido, resultado
+            esperado ou critérios, risco e origem. O conjunto precisa incluir:
+          </p>
+          <ul>
+            <li>casos comuns e fronteiras;</li>
+            <li>ambiguidade e contexto insuficiente;</li>
+            <li>idiomas, formatos e tamanhos relevantes;</li>
+            <li>recusa e escalonamento humano;</li>
+            <li>prompt injection e exfiltração;</li>
+            <li>falhas de retrieval e ferramentas;</li>
+            <li>subgrupos importantes para o produto;</li>
+            <li>incidentes reais sanitizados quando disponíveis.</li>
+          </ul>
+          <p>
+            Dados de produção exigem autorização, minimização e remoção de
+            informações pessoais.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Retrieval</p><h2 class="mt-3 text-3xl font-bold">Avalie busca antes da geração</h2><div class="mt-7 overflow-x-auto"><table class="w-full min-w-[720px] border-collapse text-left text-sm"><thead><tr class="bg-slate-900 text-white"><th class="p-4">Camada</th><th class="p-4">Pergunta de teste</th></tr></thead><tbody class="divide-y divide-slate-200"><tr><th class="p-4">Ingestão</th><td class="p-4">documentos corretos, atuais e autorizados entraram?</td></tr><tr class="bg-slate-50"><th class="p-4">Chunking</th><td class="p-4">a unidade preserva o significado necessário?</td></tr><tr><th class="p-4">Recuperação</th><td class="p-4">itens relevantes aparecem e proibidos ficam fora?</td></tr><tr class="bg-slate-50"><th class="p-4">Ranking</th><td class="p-4">a melhor evidência está nas primeiras posições?</td></tr><tr><th class="p-4">Contexto</th><td class="p-4">há cobertura, frescor e tamanho adequados?</td></tr></tbody></table></div></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Retrieval
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">Avalie busca antes da geração</h2>
+          <div class="mt-7 overflow-x-auto">
+            <table
+              class="w-full min-w-[720px] border-collapse text-left text-sm"
+            >
+              <thead>
+                <tr class="bg-slate-900 text-white">
+                  <th class="p-4">Camada</th>
+                  <th class="p-4">Pergunta de teste</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <th class="p-4">Ingestão</th>
+                  <td class="p-4">
+                    documentos corretos, atuais e autorizados entraram?
+                  </td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <th class="p-4">Chunking</th>
+                  <td class="p-4">
+                    a unidade preserva o significado necessário?
+                  </td>
+                </tr>
+                <tr>
+                  <th class="p-4">Recuperação</th>
+                  <td class="p-4">
+                    itens relevantes aparecem e proibidos ficam fora?
+                  </td>
+                </tr>
+                <tr class="bg-slate-50">
+                  <th class="p-4">Ranking</th>
+                  <td class="p-4">
+                    a melhor evidência está nas primeiras posições?
+                  </td>
+                </tr>
+                <tr>
+                  <th class="p-4">Contexto</th>
+                  <td class="p-4">
+                    há cobertura, frescor e tamanho adequados?
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section class="copy rounded-2xl border border-amber-200 bg-amber-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-amber-700">Avaliadores</p><h2 class="mt-3 text-3xl font-bold">Nenhum juiz automático é verdade absoluta</h2><ul><li><strong>Regras:</strong> ótimas para schema, padrões proibidos e citações.</li><li><strong>Métricas:</strong> úteis quando alinhadas à tarefa e interpretadas por caso.</li><li><strong>Modelo avaliador:</strong> escala análise semântica, mas possui viés e variância.</li><li><strong>Revisão humana:</strong> necessária para calibrar critérios e casos críticos.</li></ul><p>Calibre avaliadores contra amostras humanas, registre versão e mantenha exemplos de desacordo.</p></section>
+        <section
+          class="copy rounded-2xl border border-amber-200 bg-amber-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-amber-700"
+          >
+            Avaliadores
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Nenhum juiz automático é verdade absoluta
+          </h2>
+          <ul>
+            <li>
+              <strong>Regras:</strong> ótimas para schema, padrões proibidos e
+              citações.
+            </li>
+            <li>
+              <strong>Métricas:</strong> úteis quando alinhadas à tarefa e
+              interpretadas por caso.
+            </li>
+            <li>
+              <strong>Modelo avaliador:</strong> escala análise semântica, mas
+              possui viés e variância.
+            </li>
+            <li>
+              <strong>Revisão humana:</strong> necessária para calibrar
+              critérios e casos críticos.
+            </li>
+          </ul>
+          <p>
+            Calibre avaliadores contra amostras humanas, registre versão e
+            mantenha exemplos de desacordo.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700">Segurança</p><h2 class="mt-3 text-3xl font-bold">Testes adversariais fazem parte da regressão</h2><ul><li>instruções conflitantes em conteúdo externo;</li><li>tentativa de revelar prompt ou segredo;</li><li>acesso cruzado entre tenants;</li><li>argumentos perigosos em ferramentas;</li><li>conteúdo codificado ou ofuscado;</li><li>loops e chamadas excessivas;</li><li>saída tóxica ou proibida pelo domínio;</li><li>logs contendo dados indevidos.</li></ul></section>
+        <section
+          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
+          >
+            Segurança
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Testes adversariais fazem parte da regressão
+          </h2>
+          <ul>
+            <li>instruções conflitantes em conteúdo externo;</li>
+            <li>tentativa de revelar prompt ou segredo;</li>
+            <li>acesso cruzado entre tenants;</li>
+            <li>argumentos perigosos em ferramentas;</li>
+            <li>conteúdo codificado ou ofuscado;</li>
+            <li>loops e chamadas excessivas;</li>
+            <li>saída tóxica ou proibida pelo domínio;</li>
+            <li>logs contendo dados indevidos.</li>
+          </ul>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10" id="pipeline"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Pipeline</p><h2 class="mt-3 text-3xl font-bold">Distribua testes por custo e risco</h2><ol><li><strong>A cada mudança:</strong> contratos, unidades, lint, schemas e pequena regressão estável.</li><li><strong>Antes do merge:</strong> integração controlada e avaliação do conjunto crítico.</li><li><strong>Antes da release:</strong> dataset ampliado, segurança, custo e latência.</li><li><strong>Periodicamente:</strong> avaliações completas, drift, subgrupos e novos ataques.</li><li><strong>Em produção:</strong> canário, feature flag, métricas, amostragem e rollback.</li></ol><p>Use caches somente quando preservarem a validade do teste e mantenha budgets explícitos para avaliações caras.</p></section>
+        <section
+          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
+          id="pipeline"
+        >
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Pipeline
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Distribua testes por custo e risco
+          </h2>
+          <ol>
+            <li>
+              <strong>A cada mudança:</strong> contratos, unidades, lint,
+              schemas e pequena regressão estável.
+            </li>
+            <li>
+              <strong>Antes do merge:</strong> integração controlada e avaliação
+              do conjunto crítico.
+            </li>
+            <li>
+              <strong>Antes da release:</strong> dataset ampliado, segurança,
+              custo e latência.
+            </li>
+            <li>
+              <strong>Periodicamente:</strong> avaliações completas, drift,
+              subgrupos e novos ataques.
+            </li>
+            <li>
+              <strong>Em produção:</strong> canário, feature flag, métricas,
+              amostragem e rollback.
+            </li>
+          </ol>
+          <p>
+            Use caches somente quando preservarem a validade do teste e mantenha
+            budgets explícitos para avaliações caras.
+          </p>
+        </section>
 
-    <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"><p class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700">Conclusão</p><h2 class="mt-3 text-3xl font-bold">Qualidade probabilística também pode ter disciplina</h2><p>O objetivo não é tornar cada frase idêntica. É garantir contratos, segurança e desempenho aceitável em casos representativos, com evidência reproduzível e regressão detectável.</p><p>O próximo artigo conecta esses testes a um ciclo operacional de LLMOps.</p></section>
+        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
+          <p
+            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
+          >
+            Conclusão
+          </p>
+          <h2 class="mt-3 text-3xl font-bold">
+            Qualidade probabilística também pode ter disciplina
+          </h2>
+          <p>
+            O objetivo não é tornar cada frase idêntica. É garantir contratos,
+            segurança e desempenho aceitável em casos representativos, com
+            evidência reproduzível e regressão detectável.
+          </p>
+          <p>
+            O próximo artigo conecta esses testes a um ciclo operacional de
+            LLMOps.
+          </p>
+        </section>
 
-    <nav aria-label="Artigos relacionados" class="grid gap-4 sm:grid-cols-2"><a href="09-arquiteturas-event-driven-ia.html" class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Anterior</span><strong class="mt-2 block text-lg text-brand-900">Arquiteturas orientadas a eventos</strong></a><a href="11-basico-mlops-llmops.html" class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Próximo</span><strong class="mt-2 block text-lg text-brand-900">LLMOps como ciclo operacional</strong></a></nav>
-  </div>
-</main>
-<footer class="border-t border-slate-200 bg-white py-8"><div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso</div></footer>
-</body>
+        <nav
+          aria-label="Artigos relacionados"
+          class="grid gap-4 sm:grid-cols-2"
+        >
+          <a
+            href="09-arquiteturas-event-driven-ia.html"
+            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Anterior</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >Arquiteturas orientadas a eventos</strong
+            ></a
+          ><a
+            href="11-basico-mlops-llmops.html"
+            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
+            ><span
+              class="text-xs font-bold uppercase tracking-wider text-brand-700"
+              >Próximo</span
+            ><strong class="mt-2 block text-lg text-brand-900"
+              >LLMOps como ciclo operacional</strong
+            ></a
+          >
+        </nav>
+      </div>
+    </main>
+    <footer class="border-t border-slate-200 bg-white py-8">
+      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
+        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
+      </div>
+    </footer>
+  </body>
 </html>

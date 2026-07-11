@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Boa decomposição reduz ambiguidades, dependências ocultas e conflitos: como fatiar um requisito amplo em tarefas verificáveis para agentes de IA."
+    />
+    <title>
+      08. Como transformar requisitos amplos em tarefas executáveis por agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Planejamento e Decomposição
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 1 — Da improvisação ao método
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  08. Como transformar requisitos amplos em tarefas executáveis por agentes
+  de IA
+</h1>
+
+<p>
+  A Issue dizia apenas: "Implementar sistema de login". O agente interpretou
+  isso da forma mais literal possível e devolveu, dois dias depois, um pull
+  request de quase dois mil linhas cobrindo cadastro, login, recuperação de
+  senha, autenticação em duas etapas e gestão de sessão — tudo pela metade,
+  tudo misturado no mesmo commit. Nenhum revisor conseguiu avaliar aquilo com
+  segurança em menos de uma tarde inteira, e boa parte acabou aprovada por
+  cansaço, não por convicção.
+</p>
+
+<p>
+  O problema não foi a velocidade do agente. Foi o tamanho da pergunta que
+  ele recebeu. Um requisito amplo, sem fatias, força quem executa — humano ou
+  agente — a tomar sozinho dezenas de decisões de escopo que deveriam ter
+  sido feitas antes, por quem entende o produto.
+</p>
+
+<h2>Decompor é reduzir superfícies de ambiguidade</h2>
+
+<blockquote>
+  <p>
+    Boa decomposição reduz ambiguidades, dependências ocultas e conflitos.
+  </p>
+</blockquote>
+
+<p>
+  Quando um requisito amplo vira uma única tarefa, cada decisão de fronteira —
+  o que entra nesta entrega, o que fica para depois, o que depende do quê —
+  passa a ser resolvida de improviso durante a implementação, em vez de
+  durante o planejamento. Decompor não é apenas "quebrar em pedaços menores".
+  É identificar unidades de trabalho que podem ser entregues, testadas e
+  revisadas de forma independente, cada uma respondendo por um pedaço
+  verificável do problema maior.
+</p>
+
+<h2>Fatiar por contrato, não por camada técnica</h2>
+
+<p>
+  Uma tentação comum é fatiar por camada técnica — "backend", depois
+  "frontend", depois "testes" — o que cria dependências artificiais e entrega
+  fatias que não funcionam sozinhas. Uma decomposição mais útil corta pelo
+  contrato de comportamento, permitindo que cada fatia seja validada por si
+  só. Aplicando isso ao mesmo épico de autenticação:
+</p>
+
+<ul>
+  <li>
+    <strong>Descoberta:</strong> quais fluxos de autenticação realmente
+    precisam existir nesta versão — cadastro social entra ou fica para depois?
+  </li>
+  <li>
+    <strong>Contratos:</strong> o formato de entrada e saída de cada endpoint,
+    acordado antes de qualquer implementação começar.
+  </li>
+  <li>
+    <strong>Cadastro:</strong> criação de conta, com suas próprias regras de
+    validação e seus próprios critérios de aceite.
+  </li>
+  <li>
+    <strong>Login:</strong> autenticação de uma conta já existente, testável
+    de forma isolada do cadastro.
+  </li>
+  <li>
+    <strong>Recuperação:</strong> redefinição de senha, com suas próprias
+    regras de expiração e segurança.
+  </li>
+  <li>
+    <strong>Testes:</strong> cobertura automatizada dos casos de borda de cada
+    fluxo acima, não apenas do caminho feliz.
+  </li>
+  <li>
+    <strong>Segurança:</strong> revisão específica de hashing, limitação de
+    tentativas e proteção contra força bruta.
+  </li>
+</ul>
+
+<p>
+  Cada uma dessas sete fatias pode virar uma Issue independente, com seu
+  próprio Context Pack e seus próprios critérios de aceite. Nenhuma delas
+  depende de as outras seis estarem prontas ao mesmo tempo — algumas, como
+  contratos, precisam vir antes; outras, como testes de segurança, podem
+  correr em paralelo assim que o contrato estiver fechado.
+</p>
+
+<h2>Perguntas para decompor um requisito amplo</h2>
+
+<p>
+  Antes de transformar um requisito em tarefas, um roteiro simples de
+  perguntas ajuda a encontrar o corte certo:
+</p>
+
+<pre><code>1. Esta fatia pode ser entregue e testada sozinha,
+   sem depender de outra fatia ainda não pronta?
+2. Existe um critério de aceite específico para ela,
+   diferente do critério do épico inteiro?
+3. Um revisor consegue avaliar esta fatia em menos
+   de trinta minutos?
+4. Se esta fatia falhar, o restante do sistema
+   continua funcionando?</code></pre>
+
+<p>
+  Quando a resposta para qualquer uma dessas perguntas é "não", normalmente a
+  fatia ainda está grande demais ou cortada no lugar errado.
+</p>
+
+<h2>O limite: fatiar demais também tem custo</h2>
+
+<p>
+  Decomposição em excesso cria seu próprio problema: dezenas de tarefas
+  minúsculas, cada uma exigindo Context Pack, revisão e handoff próprios,
+  cujo custo de coordenação supera o ganho de clareza. Fatiar "criar o botão
+  de login" separado de "estilizar o botão de login" raramente compensa. A
+  fatia ideal é a menor unidade que ainda é independentemente verificável —
+  não a menor unidade tecnicamente possível.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um requisito amplo entregue como está a um agente de IA transfere para a
+  execução decisões que deveriam ter sido tomadas no planejamento. Fatiar por
+  contrato de comportamento, e não por camada técnica, produz tarefas que um
+  agente pode executar com ambiguidade mínima — e que um humano consegue
+  revisar em tempo hábil.
+</p>
+
+<p>
+  <strong
+    >Da próxima vez que uma tarefa devolvida por um agente for grande demais
+    para revisar numa sentada, o problema estava na execução ou no tamanho da
+    pergunta que foi feita a ele?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 08 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #PlanejamentoDeSoftware #EngenhariaDeSoftware #AgentesDeIA
+    #GestaoDeProjetos #Decomposicao
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

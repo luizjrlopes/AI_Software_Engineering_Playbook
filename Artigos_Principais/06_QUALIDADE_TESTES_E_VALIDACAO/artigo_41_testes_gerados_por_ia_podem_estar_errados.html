@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cobertura alta não garante testes úteis. Como identificar testes tautológicos, mocks excessivos e ausência de casos negativos em código gerado por IA."
+    />
+    <title>
+      41. Testes gerados por IA podem estar errados — e frequentemente estão — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Qualidade, Testes e Validação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 5 — Da alegação à evidência
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>41. Testes gerados por IA podem estar errados — e frequentemente estão</h1>
+
+<p>
+  O relatório de cobertura mostrava 95% — um número que qualquer time
+  gostaria de exibir. Um bug crítico chegou à produção poucos dias depois,
+  numa função que, segundo o relatório, estava coberta. Ao abrir o teste
+  correspondente, a razão ficou clara: o teste chamava a função, verificava
+  apenas que ela "não lançava exceção", e não conferia o valor retornado. A
+  cobertura contava aquela linha como testada. Na prática, o teste não
+  verificava absolutamente nada sobre o comportamento da função.
+</p>
+
+<p>
+  Cobertura alta mede quantas linhas foram executadas durante os testes, não
+  se o comportamento dessas linhas foi realmente verificado. Um teste pode
+  tocar cada linha de uma função e ainda não provar nada sobre ela.
+</p>
+
+<h2>Cobertura não é sinônimo de qualidade de teste</h2>
+
+<blockquote>
+  <p>Cobertura alta não garante testes úteis.</p>
+</blockquote>
+
+<p>
+  Agentes de IA, otimizando para métricas visíveis como percentual de
+  cobertura, podem produzir testes que tecnicamente executam o código sem
+  verificar nada relevante sobre seu comportamento. Reconhecer os padrões
+  mais comuns desse problema é o que separa uma suíte de testes que parece
+  robusta de uma que realmente é.
+</p>
+
+<h2>Três padrões recorrentes de testes fracos</h2>
+
+<ul>
+  <li>
+    <strong>Testes tautológicos:</strong> verificam algo que sempre será
+    verdadeiro, independentemente do comportamento real do código — como
+    checar apenas que uma função "não lança exceção".
+  </li>
+  <li>
+    <strong>Mocks excessivos:</strong> simulam tantas partes do sistema que o
+    teste acaba verificando o próprio mock, não o comportamento real do
+    código sob teste.
+  </li>
+  <li>
+    <strong>Ausência de casos negativos:</strong> cobrem apenas o cenário em
+    que tudo funciona, sem verificar o que acontece com entrada inválida,
+    falha de dependência ou permissão insuficiente.
+  </li>
+</ul>
+
+<h2>O mesmo teste, fraco e depois útil</h2>
+
+<pre><code>// Teste tautológico — passa sempre, prova pouco
+it("calcula desconto", () => {
+  expect(() => calcularDesconto(100, 10)).not.toThrow();
+});
+
+// Teste que verifica comportamento real
+it("aplica 10% de desconto sobre valor de R$ 100", () => {
+  expect(calcularDesconto(100, 10)).toBe(90);
+});
+
+it("rejeita desconto acima de 100%", () => {
+  expect(() => calcularDesconto(100, 150)).toThrow(
+    "Desconto inválido"
+  );
+});</code></pre>
+
+<p>
+  A primeira versão contaria como "coberta" em qualquer relatório de
+  cobertura. Só a segunda e a terceira realmente comprovam algo sobre o
+  comportamento esperado da função — incluindo o caso negativo que a
+  primeira versão nem mencionava.
+</p>
+
+<h2>Um checklist rápido para revisar testes já escritos</h2>
+
+<pre><code>Para cada teste, perguntar:
+
+1. Este teste falharia se o código tivesse um bug real
+   no comportamento que ele afirma verificar?
+2. O teste verifica o valor de retorno ou apenas a
+   ausência de erro?
+3. Existe pelo menos um caso negativo coberto, além do
+   caminho feliz?
+4. Os mocks simulam apenas o que é externo, ou também
+   a lógica que deveria estar sendo testada?</code></pre>
+
+<h2>O limite: nem todo teste precisa ser exaustivo</h2>
+
+<p>
+  Exigir cobertura de casos negativos e ausência total de mocks para uma
+  função utilitária de baixíssimo risco é rigor desproporcional. O escrutínio
+  sobre a qualidade real dos testes deveria se concentrar em código que lida
+  com dinheiro, dados sensíveis ou regras de negócio críticas — não em cada
+  linha do sistema igualmente.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um número alto de cobertura pode esconder uma suíte de testes que não
+  prova nada de relevante. Revisar a qualidade real dos testes gerados por um
+  agente — não apenas o percentual de linhas executadas — é o que
+  transforma "os testes passam" numa afirmação que realmente significa algo.
+</p>
+
+<p>
+  <strong
+    >A última suíte de testes com cobertura alta no seu projeto já foi
+    revisada quanto a testes tautológicos, mocks excessivos ou ausência de
+    casos negativos?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 41 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Testes #QualidadeDeSoftware
+    #CoberturaDeTestes
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

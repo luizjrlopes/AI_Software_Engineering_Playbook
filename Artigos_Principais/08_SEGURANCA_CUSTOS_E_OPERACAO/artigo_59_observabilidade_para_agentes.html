@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sem observabilidade, autonomia vira opacidade. Como registrar ferramentas, arquivos, comandos, resultados e falhas de um agente de IA autônomo."
+    />
+    <title>
+      59. Observabilidade para agentes de IA: como entender o que eles fizeram e por quê — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>59. Observabilidade para agentes de IA: como entender o que eles fizeram e por quê</h1>
+
+<p>
+  Um comportamento inesperado apareceu em produção: um arquivo de
+  configuração tinha sido alterado de um jeito que ninguém reconhecia como
+  parte de nenhuma tarefa recente. A suspeita recaiu sobre um agente que
+  vinha operando com autonomia naquele repositório havia semanas. O
+  problema é que não existia nenhum registro de quais comandos aquele
+  agente tinha executado, quais arquivos tinha tocado, ou por que tinha
+  tomado aquela decisão específica. A autonomia que permitiu ao agente agir
+  sozinho também significou que ninguém conseguia reconstruir, depois do
+  fato, o que exatamente tinha acontecido.
+</p>
+
+<p>
+  Autonomia sem registro não é apenas arriscada — é opaca. E opacidade,
+  quando algo dá errado, transforma uma investigação simples numa
+  reconstrução especulativa do que "provavelmente" aconteceu.
+</p>
+
+<h2>Autonomia exige visibilidade equivalente</h2>
+
+<blockquote>
+  <p>Sem observabilidade, autonomia vira opacidade.</p>
+</blockquote>
+
+<p>
+  Quanto mais autonomia um agente tem — mais ações que pode tomar sem
+  aprovação humana intermediária — maior a necessidade de um registro
+  detalhado do que ele realmente fez. Observabilidade para agentes de IA
+  não é o mesmo que observabilidade de aplicação convencional (métricas de
+  performance, taxa de erro): é o registro específico das ações que o
+  próprio agente executou, das ferramentas que acionou e das decisões que
+  tomou ao longo do caminho.
+</p>
+
+<h2>Cinco elementos de um registro de execução útil</h2>
+
+<ul>
+  <li>
+    <strong>Ferramentas usadas:</strong> quais ferramentas ou comandos o
+    agente acionou durante a tarefa.
+  </li>
+  <li>
+    <strong>Arquivos tocados:</strong> quais arquivos foram lidos ou
+    alterados, mesmo os que não fizeram parte da entrega final.
+  </li>
+  <li>
+    <strong>Comandos executados:</strong> o comando exato, não uma descrição
+    aproximada dele.
+  </li>
+  <li>
+    <strong>Resultados:</strong> a saída de cada comando ou ferramenta
+    acionada.
+  </li>
+  <li>
+    <strong>Falhas:</strong> tentativas que não funcionaram, incluindo as
+    que foram descartadas silenciosamente ao longo da execução.
+  </li>
+</ul>
+
+<h2>Um log de execução que teria resolvido o mistério</h2>
+
+<pre><code>## Log de execução — sessão a7f3c9
+
+[14:02:11] Ferramenta: read_file → src/config/database.yml
+[14:02:15] Ferramenta: read_file → src/config/cache.yml
+[14:03:02] Ferramenta: edit_file → src/config/cache.yml
+           Motivo: "ajustar timeout de cache conforme
+           sugestão da tarefa #512"
+[14:03:04] Ferramenta: run_command → npm test
+           Resultado: 12 passed, 0 failed
+[14:03:10] Sessão encerrada — tarefa marcada como concluída</code></pre>
+
+<p>
+  Com esse log disponível, a investigação do arquivo de configuração
+  alterado levaria segundos, não dias: bastaria buscar qual sessão tocou
+  aquele arquivo específico e ler o motivo registrado para a mudança — em
+  vez de reconstruir especulação sobre o que "provavelmente" aconteceu.
+</p>
+
+<h2>O limite: registrar tudo tem custo de armazenamento e ruído</h2>
+
+<p>
+  Gravar cada micro-ação de cada agente, indefinidamente, gera volume de
+  log que pode se tornar tão difícil de consultar quanto a ausência de log
+  nenhum. Observabilidade útil prioriza reter detalhe completo para ações
+  que alteram estado — escrita de arquivo, execução de comando — e pode ser
+  mais resumida para ações de leitura pura, sem risco de causar efeito
+  colateral.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Conceder autonomia a um agente sem manter um registro equivalente de suas
+  ações é abrir mão da capacidade de entender, depois do fato, o que
+  aconteceu e por quê. Observabilidade não restringe a autonomia — ela é o
+  que torna essa autonomia auditável, transformando "provavelmente foi o
+  agente" em "foi exatamente esta ação, por este motivo, neste momento".
+</p>
+
+<p>
+  <strong
+    >Se um comportamento inesperado aparecesse no seu sistema amanhã, você
+    conseguiria reconstruir exatamente o que um agente autônomo fez nas
+    últimas semanas, ou dependeria de suposição?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 59 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Observabilidade #DevOps
+    #Rastreabilidade
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

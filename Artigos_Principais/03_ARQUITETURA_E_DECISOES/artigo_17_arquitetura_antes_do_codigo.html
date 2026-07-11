@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sem arquitetura mínima, cada agente otimiza localmente e prejudica o sistema. Como um mapa de módulos e responsabilidades evita incoerência entre tarefas de IA."
+    />
+    <title>
+      17. Arquitetura antes do código: como evitar sistemas incoerentes gerados por agentes — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  17. Arquitetura antes do código: como evitar sistemas incoerentes gerados
+  por agentes
+</h1>
+
+<p>
+  Três agentes trabalharam, em semanas diferentes, em três funcionalidades
+  diferentes do mesmo projeto. O primeiro escreveu SQL diretamente dentro do
+  handler da rota. O segundo criou um padrão de repositório completo, com
+  interfaces e injeção de dependência. O terceiro chamou o ORM diretamente de
+  dentro de um componente de servidor. Cada decisão, isoladamente, era
+  razoável e bem executada. Juntas, formaram um sistema com três formas
+  diferentes de acessar o banco de dados — e quando alguém precisou
+  adicionar uma camada de cache, teve que implementá-la três vezes, de três
+  jeitos distintos.
+</p>
+
+<p>
+  Nenhum agente cometeu um erro técnico isolado. O problema é que nenhum
+  deles recebeu, antes de começar, uma definição de qual era o padrão de
+  acesso a dados do sistema — cada um otimizou localmente a própria tarefa,
+  sem visibilidade do que os outros estavam construindo ao mesmo tempo.
+</p>
+
+<h2>Sem fronteiras, cada agente resolve o problema errado</h2>
+
+<blockquote>
+  <p>
+    Sem arquitetura mínima, cada agente otimiza localmente e prejudica o
+    sistema.
+  </p>
+</blockquote>
+
+<p>
+  Arquitetura, nesse sentido, não significa um diagrama elaborado com dezenas
+  de camadas e padrões de design. Significa o conjunto mínimo de decisões
+  sobre módulos, responsabilidades e fluxo de dados que precisa existir antes
+  da implementação começar — para que decisões locais, tomadas por agentes ou
+  pessoas diferentes, se encaixem num sistema coerente, e não numa colagem de
+  soluções isoladas.
+</p>
+
+<h2>Um mapa arquitetural mínimo</h2>
+
+<p>
+  Um mapa arquitetural útil não precisa ser complexo. Precisa responder três
+  perguntas para cada módulo do sistema: o que ele faz, do que ele depende, e
+  quem tem permissão de depender dele.
+</p>
+
+<pre><code>Módulo: checkout
+Responsabilidade: orquestrar o fluxo de finalização de compra.
+Depende de: catalog (leitura), payment (escrita), inventory (escrita).
+Pode ser acessado por: apenas a camada de apresentação (API/UI).
+
+Módulo: payment
+Responsabilidade: processar cobranças e registrar transações.
+Depende de: nenhum outro módulo de domínio.
+Pode ser acessado por: checkout, refund.
+Padrão de acesso a dados: repository (src/payment/repository.ts).</code></pre>
+
+<p>
+  Com esse mapa disponível, qualquer agente que receba uma tarefa em
+  <code>payment</code> sabe, sem precisar decidir sozinho, que o acesso a
+  dados segue o padrão de repositório — não porque leu o código de outro
+  módulo e tentou adivinhar, mas porque essa decisão está declarada antes da
+  tarefa começar.
+</p>
+
+<h2>Aplicando o mapa ao caso do acesso a dados</h2>
+
+<p>
+  Se esse mapa existisse antes das três tarefas do início do artigo, a
+  definição "todo acesso a dados passa pelo padrão de repositório,
+  documentado em <code>docs/architecture/data-access.md</code>" teria
+  orientado os três agentes para a mesma direção, eliminando a necessidade de
+  reconciliar três abordagens depois que o código já estava em produção.
+</p>
+
+<h2>O limite: arquitetura antecipada demais também tem custo</h2>
+
+<p>
+  Definir um mapa arquitetural detalhado para um protótipo que pode ser
+  descartado em duas semanas é esforço desperdiçado. A formalidade da
+  arquitetura deveria ser proporcional ao tempo de vida esperado do sistema e
+  ao custo de reverter uma decisão errada: uma prova de conceito descartável
+  tolera incoerência; um sistema que vai crescer por anos, com múltiplos
+  times e agentes contribuindo, não tolera.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um agente de IA, por padrão, otimiza a tarefa que recebeu — não o sistema
+  inteiro, que ele não enxerga por completo. Cabe à arquitetura, definida
+  antes da implementação, garantir que essas otimizações locais se somem a um
+  sistema coerente, em vez de se contradizerem silenciosamente até alguém
+  precisar reconciliar tudo depois.
+</p>
+
+<p>
+  <strong
+    >No seu projeto atual, existe um mapa de módulos e responsabilidades que
+    um agente novo poderia consultar antes de decidir sozinho como acessar o
+    banco de dados?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 17 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA
+    #PensamentoSistemico #DesignDeSoftware
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

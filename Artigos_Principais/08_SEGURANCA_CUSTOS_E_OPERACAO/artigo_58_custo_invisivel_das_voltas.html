@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Custo de IA inclui tokens, tempo humano, conflitos e reexecuções. Por que uma tarefa refeita várias vezes custa muito mais do que aparece na fatura de tokens."
+    />
+    <title>
+      58. O custo invisível das voltas desnecessárias dos agentes de IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Segurança, Custos e Operação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 7 — Da automação à operação responsável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>58. O custo invisível das voltas desnecessárias dos agentes de IA</h1>
+
+<p>
+  A tarefa "adicionar exportação de relatórios" foi refeita quatro vezes.
+  Na primeira tentativa, o agente exportou em CSV, porque ninguém tinha
+  especificado o formato. Rejeitado — precisava ser Excel. Na segunda, o
+  arquivo Excel não incluía os totais por categoria, porque isso nunca tinha
+  sido mencionado. Rejeitado de novo. Na terceira, os totais apareciam, mas
+  sem formatação de moeda. Só na quarta tentativa a tarefa foi aceita. O
+  custo de tokens das quatro execuções somadas era visível na fatura. O que
+  não aparecia ali era o tempo que três pessoas diferentes gastaram
+  revisando, rejeitando e reexplicando o que já deveria ter sido dito na
+  primeira vez.
+</p>
+
+<p>
+  Nenhuma das quatro execuções foi, isoladamente, cara. A soma delas — e o
+  tempo humano consumido entre uma e outra — foi o verdadeiro custo dessa
+  tarefa, e ele nunca apareceu em nenhum relatório de gasto com IA.
+</p>
+
+<h2>O custo real é maior do que o preço por token</h2>
+
+<blockquote>
+  <p>Custo de IA inclui tokens, tempo humano, conflitos e reexecuções.</p>
+</blockquote>
+
+<p>
+  Medir o custo de usar agentes de IA apenas pelo preço por token é como
+  medir o custo de um projeto apenas pelo salário de quem trabalhou nele,
+  ignorando o tempo perdido em retrabalho. Cada volta desnecessária — uma
+  tarefa refeita porque a especificação original era ambígua — soma tokens
+  gastos na execução, tempo humano gasto revisando e rejeitando, e o custo
+  de coordenação de reexplicar o que já deveria ter sido claro.
+</p>
+
+<h2>De onde vêm as voltas desnecessárias</h2>
+
+<p>
+  Analisando a tarefa de exportação de relatórios em retrospecto, cada
+  rejeição correspondia a uma ambiguidade que já tinha sido discutida em
+  artigos anteriores desta série: formato de saída não especificado (falta
+  de critério de aceite claro), regra de negócio não mencionada (Issue
+  incompleta), e requisito de formatação tratado como "óbvio" e por isso
+  nunca escrito (a mesma armadilha do artigo sobre agente de design).
+</p>
+
+<h2>Um diagnóstico rápido de retrabalho</h2>
+
+<pre><code>## Diagnóstico de reexecução — tarefa de exportação
+
+| Tentativa | Motivo da rejeição              | Deveria ter sido... |
+|-----------|----------------------------------|----------------------|
+| 1         | Formato errado (CSV vs Excel)    | Critério de aceite   |
+| 2         | Faltou totais por categoria      | Issue completa       |
+| 3         | Sem formatação de moeda          | Critério de aceite   |
+
+Custo total: 4 execuções + 3 ciclos de revisão humana
+Causa raiz: nenhuma ambiguidade nova — todas eram
+especificáveis desde o início.</code></pre>
+
+<p>
+  Esse tipo de diagnóstico, aplicado depois do fato, raramente aponta para
+  uma limitação do agente — aponta, quase sempre, para uma especificação que
+  poderia ter evitado as três primeiras tentativas inteiras.
+</p>
+
+<h2>O limite: nem toda volta é desnecessária</h2>
+
+<p>
+  Iteração faz parte do processo legítimo de desenvolvimento — uma primeira
+  tentativa que revela um requisito que ninguém tinha pensado antes não é
+  desperdício, é descoberta. O problema não é iterar; é iterar
+  repetidamente sobre a mesma ambiguidade que já deveria ter sido resolvida
+  na primeira especificação.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  O custo mais caro de trabalhar com agentes de IA raramente aparece na
+  fatura de tokens — aparece no tempo humano gasto revisando, rejeitando e
+  reexplicando tarefas que uma especificação melhor teria acertado de
+  primeira. Investir tempo em Issues e critérios de aceite claros, discutido
+  em outros pontos desta série, não é apenas boa prática de qualidade — é
+  também a forma mais direta de reduzir o custo real de usar agentes de IA.
+</p>
+
+<p>
+  <strong
+    >Quantas das últimas tarefas refeitas no seu projeto foram por
+    ambiguidade que já poderia ter sido especificada desde o início?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 58 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #CustoDeIA #Produtividade
+    #Especificacao
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Autonomia deve crescer conforme evidências de confiabilidade e reversibilidade. Uma escala de sugerir, executar, integrar e liberar para expandir autonomia com segurança."
+    />
+    <title>
+      67. Da assistência à autonomia controlada: até onde um agente de IA deve ir? — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Estratégia e Maturidade
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 8 — Da ferramenta à capacidade organizacional
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>67. Da assistência à autonomia controlada: até onde um agente de IA deve ir?</h1>
+
+<p>
+  Depois de um único merge bem-sucedido, revisado com cuidado, alguém
+  decidiu que o agente "já provou que era confiável" e concedeu, na mesma
+  semana, permissão para executar deploys diretamente em produção, sem
+  revisão intermediária. O salto pareceu razoável no calor do momento — um
+  resultado bom já tinha acontecido, então por que não avançar mais rápido?
+  Poucas semanas depois, uma mudança que parecia trivial teve um efeito
+  colateral em produção que nenhuma etapa intermediária capturou, porque
+  todas as etapas intermediárias tinham sido puladas junto com o salto de
+  confiança.
+</p>
+
+<p>
+  Um sucesso isolado não é evidência de confiabilidade sistemática. É
+  apenas um ponto de dados — e decidir expandir autonomia com base num único
+  ponto, pulando os níveis intermediários que existiam para validar esse
+  salto, é assumir um risco que ninguém mediu de verdade.
+</p>
+
+<h2>Autonomia se conquista em degraus, não em saltos</h2>
+
+<blockquote>
+  <p>
+    Autonomia deve crescer conforme evidências de confiabilidade e
+    reversibilidade.
+  </p>
+</blockquote>
+
+<p>
+  A expansão da autonomia de um agente deveria seguir uma progressão
+  observável, cada degrau desbloqueado por evidência acumulada de que o
+  degrau anterior funcionou de forma consistente — não por entusiasmo depois
+  de um único resultado positivo.
+</p>
+
+<h2>Quatro degraus de autonomia</h2>
+
+<ul>
+  <li>
+    <strong>Sugerir:</strong> o agente propõe uma ação; um humano decide se
+    ela acontece.
+  </li>
+  <li>
+    <strong>Executar sob revisão:</strong> o agente implementa a ação, mas
+    ela passa por revisão humana antes de qualquer efeito em produção.
+  </li>
+  <li>
+    <strong>Integrar com gate automatizado:</strong> a ação avança
+    automaticamente se passar em critérios objetivos pré-definidos, sem
+    revisão manual a cada vez.
+  </li>
+  <li>
+    <strong>Liberar de forma autônoma:</strong> o agente decide e executa sem
+    intervenção humana prévia, restrito a mudanças de baixo risco e
+    facilmente reversíveis.
+  </li>
+</ul>
+
+<p>
+  Cada degrau exige evidência acumulada — não um único sucesso — de que o
+  anterior funcionou de forma consistente, em volume suficiente para
+  confiar no padrão, antes de avançar.
+</p>
+
+<h2>Um critério de avanço entre degraus</h2>
+
+<pre><code>## Critério para avançar de "executar sob revisão" para
+## "integrar com gate automatizado"
+
+- [ ] Últimas 20 execuções revisadas manualmente sem
+      necessidade de correção
+- [ ] Nenhum incidente atribuído a este tipo de tarefa
+      nos últimos 3 meses
+- [ ] Critérios de aceite objetivos o suficiente para
+      um gate automatizado avaliar sem ambiguidade
+
+Se os três critérios forem atendidos, avançar o degrau
+PARA ESTE TIPO ESPECÍFICO DE TAREFA — não para todas as
+tarefas do agente indiscriminadamente.</code></pre>
+
+<p>
+  Note que o critério se aplica a um tipo específico de tarefa, não ao
+  agente como um todo — a confiabilidade demonstrada em corrigir bugs de
+  interface não transfere automaticamente para autonomia em migrações de
+  banco de dados, mesmo que seja o mesmo agente.
+</p>
+
+<h2>O limite: degraus demais tornam a progressão lenta demais</h2>
+
+<p>
+  Exigir semanas de evidência acumulada para cada avanço de degrau, mesmo em
+  tarefas de baixíssimo risco, pode tornar a evolução da autonomia
+  impraticavelmente lenta. O rigor do critério de avanço deveria ser
+  proporcional ao risco da categoria de tarefa — tarefas de alto risco
+  justificam evidência extensa; tarefas triviais podem avançar mais
+  rapidamente.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Autonomia concedida por entusiasmo depois de um único sucesso é autonomia
+  concedida sem evidência real. Expandir o que um agente pode fazer sozinho
+  deveria seguir a mesma lógica de qualquer expansão de confiança em
+  engenharia: degraus mensuráveis, evidência acumulada, e reversibilidade
+  garantida em cada nível antes de avançar para o próximo.
+</p>
+
+<p>
+  <strong
+    >A autonomia que um agente tem hoje no seu projeto foi conquistada
+    degrau por degrau, com evidência acumulada, ou concedida de uma vez, por
+    confiança antecipada?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 67 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #AutonomiaResponsavel #Governanca
+    #GestaoDeRisco
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

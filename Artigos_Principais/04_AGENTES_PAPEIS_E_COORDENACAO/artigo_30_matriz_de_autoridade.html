@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Autonomia segura exige separar observar, recomendar, decidir, executar e aprovar. Uma matriz de autoridade para arquitetura, implementação, segurança e revisão."
+    />
+    <title>
+      30. Matriz de autoridade: o que cada agente pode analisar, decidir e modificar — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Agentes, Papéis e Coordenação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 3 — Do agente isolado à equipe multiagente
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>30. Matriz de autoridade: o que cada agente pode analisar, decidir e modificar</h1>
+
+<p>
+  Durante uma varredura de rotina, um agente de segurança encontrou uma
+  dependência com uma vulnerabilidade conhecida e, sem esperar aprovação de
+  ninguém, atualizou a versão diretamente na branch principal. A intenção era
+  boa e a correção, tecnicamente válida. O problema é que ninguém tinha
+  definido se aquele agente tinha autoridade para executar mudanças
+  diretamente em produção ou apenas para identificá-las e recomendar a
+  correção a um humano. A atualização de dependência quebrou a
+  compatibilidade com outro pacote que dependia da versão antiga, e o time só
+  descobriu quando o serviço parou de responder.
+</p>
+
+<p>
+  O agente de segurança do artigo anterior desta série, o agente de
+  arquitetura, o revisor e o implementador — cada um discutido separadamente
+  nos artigos anteriores — compartilham o mesmo risco quando a autoridade de
+  cada papel não está explicitamente delimitada: qualquer um deles pode, por
+  iniciativa própria, ultrapassar o nível de ação que deveria ter.
+</p>
+
+<h2>Cinco níveis de ação, nem todos equivalentes</h2>
+
+<blockquote>
+  <p>
+    Autonomia segura exige separar observar, recomendar, decidir, executar e
+    aprovar.
+  </p>
+</blockquote>
+
+<p>
+  Autonomia não é uma variável binária — um agente não é simplesmente
+  "autônomo" ou "não autônomo". Existem graus de autoridade, e cada tipo de
+  agente deveria ter graus diferentes conforme o risco da ação envolvida.
+  Cinco níveis distintos cobrem a maior parte dos casos práticos:
+</p>
+
+<ul>
+  <li>
+    <strong>Observar:</strong> analisar e relatar, sem propor mudança.
+  </li>
+  <li>
+    <strong>Recomendar:</strong> propor uma direção específica, sujeita a
+    avaliação.
+  </li>
+  <li>
+    <strong>Decidir:</strong> escolher formalmente entre opções, assumindo a
+    responsabilidade da escolha.
+  </li>
+  <li>
+    <strong>Executar:</strong> implementar a mudança no sistema.
+  </li>
+  <li>
+    <strong>Aprovar:</strong> autorizar que a mudança avance para produção.
+  </li>
+</ul>
+
+<h2>Uma matriz de autoridade combinando os papéis já discutidos</h2>
+
+<section aria-labelledby="matriz" class="not-prose my-10">
+  <h2 id="matriz" class="mb-5 text-2xl font-semibold text-slate-900">
+    Matriz de autoridade por papel
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Papel</th>
+          <th class="px-4 py-3 font-semibold">Observar</th>
+          <th class="px-4 py-3 font-semibold">Recomendar</th>
+          <th class="px-4 py-3 font-semibold">Decidir</th>
+          <th class="px-4 py-3 font-semibold">Executar</th>
+          <th class="px-4 py-3 font-semibold">Aprovar</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Arquitetura</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Implementador</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-emerald-700">Sim (no escopo definido)</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Segurança</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-amber-700">Somente correções de baixo risco pré-aprovadas</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Revisor</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-emerald-700">Sim</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-slate-400">Não</td>
+          <td class="px-4 py-3 text-slate-400">Não (sinaliza, humano aprova)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Nessa matriz, o agente de segurança do incidente inicial teria autoridade
+  para observar a vulnerabilidade e recomendar a atualização — mas executar
+  a mudança diretamente em produção exigiria, no mínimo, que a correção
+  estivesse na lista de "baixo risco pré-aprovado", o que uma atualização de
+  dependência com potencial de quebra de compatibilidade claramente não
+  está.
+</p>
+
+<h2>O limite: matriz rígida demais também trava o time</h2>
+
+<p>
+  Exigir aprovação humana explícita para toda e qualquer ação, mesmo as de
+  risco insignificante, recria o mesmo gargalo que a autonomia de agentes
+  deveria aliviar. A matriz deveria calibrar autoridade pelo risco real: ações
+  de baixo impacto e fácil reversão podem justificar autonomia de execução
+  completa; ações caras de reverter ou com impacto amplo justificam manter a
+  aprovação humana como etapa obrigatória.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Os agentes especializados discutidos ao longo deste bloco — arquitetura,
+  design, segurança, testes, revisão, orquestração — só funcionam de forma
+  segura quando a autoridade de cada um está explicitamente delimitada.
+  Sem essa matriz, cada agente decide sozinho até onde vai sua própria
+  autonomia, e essa decisão raramente é a mesma que um humano teria tomado
+  por ele.
+</p>
+
+<p>
+  <strong
+    >Cada agente que atua no seu projeto hoje sabe, de forma explícita, se
+    pode apenas recomendar ou se tem autoridade para executar a mudança
+    sozinho?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 30 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Governanca #AutonomiaResponsavel
+    #SegurancaOperacional
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

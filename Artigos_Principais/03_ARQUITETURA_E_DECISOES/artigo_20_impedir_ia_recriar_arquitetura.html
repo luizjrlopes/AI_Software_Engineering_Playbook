@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Arquitetura precisa estar em fontes versionadas e verificáveis, não na memória da conversa. Como combinar mapa arquitetural, ADRs e gates automatizados."
+    />
+    <title>
+      20. Como impedir que a IA recrie a arquitetura a cada nova conversa — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>20. Como impedir que a IA recrie a arquitetura a cada nova conversa</h1>
+
+<p>
+  O projeto já tinha um ADR explicando por que o módulo de pagamento usa
+  exclusivamente o padrão de repositório para acessar dados, e um mapa
+  arquitetural documentando essa regra. Nenhum dos dois impediu que, numa
+  conversa nova, um agente propusesse chamar o ORM diretamente de dentro do
+  handler da rota de reembolso, porque nenhum dos dois documentos foi
+  carregado naquela conversa específica. A regra existia. Só não estava em
+  nenhum lugar que a execução daquele momento consultasse automaticamente.
+</p>
+
+<p>
+  O erro não foi documentar mal. Foi presumir que documentar é suficiente
+  quando nada garante que o documento é lido antes da tarefa começar.
+</p>
+
+<h2>Arquitetura não vive na memória da conversa</h2>
+
+<blockquote>
+  <p>
+    Arquitetura precisa estar em fontes versionadas e verificáveis, não na
+    memória da conversa.
+  </p>
+</blockquote>
+
+<p>
+  Um agente de IA não carrega, por padrão, o histórico de decisões
+  arquiteturais do projeto de uma conversa para outra. Se o ADR e o mapa
+  arquitetural existem, mas dependem de alguém lembrar de colá-los a cada
+  nova tarefa, a arquitetura está sujeita à mesma fragilidade discutida no
+  artigo sobre engenharia de contexto: ela só é respeitada quando alguém se
+  lembra de trazê-la para dentro da execução.
+</p>
+
+<h2>Três camadas que precisam trabalhar juntas</h2>
+
+<ul>
+  <li>
+    <strong>Mapa arquitetural:</strong> descreve módulos, responsabilidades e
+    dependências permitidas — o "o quê" da arquitetura.
+  </li>
+  <li>
+    <strong>ADRs:</strong> registram por que cada decisão foi tomada e sob
+    que condições deveria ser revisitada.
+  </li>
+  <li>
+    <strong>Gates automatizados:</strong> impedem, de forma mecânica, que uma
+    violação chegue ao repositório principal, independentemente de o agente
+    ter lido a documentação ou não.
+  </li>
+</ul>
+
+<p>
+  As duas primeiras camadas só funcionam se alguém — ou algum processo —
+  garantir que chegam à execução. A terceira camada é o que torna essa
+  garantia independente de memória: em vez de confiar que o agente vai
+  consultar o mapa, o sistema recusa automaticamente a mudança que viola a
+  regra.
+</p>
+
+<h2>Um gate que aplica a decisão do ADR</h2>
+
+<p>
+  Para o caso do módulo de pagamento, uma regra automatizada de dependência —
+  configurável em ferramentas de análise estática de arquitetura — bloqueia
+  exatamente o padrão que o ADR já tinha descartado:
+</p>
+
+<pre><code>// architecture-rules.config
+{
+  "regras": [
+    {
+      "de": "src/payment/**",
+      "nao_pode_importar": ["prisma-client", "orm-direct"],
+      "excecao": ["src/payment/repository.ts"],
+      "motivo": "ADR-004: acesso a dados de pagamento passa
+                 exclusivamente pelo repository."
+    }
+  ]
+}</code></pre>
+
+<p>
+  Com esse gate no pipeline de integração contínua, a tarefa que tentasse
+  importar o ORM diretamente falharia automaticamente, com uma mensagem
+  apontando para o ADR correspondente — independentemente de o agente
+  daquela conversa específica ter lido o documento ou não.
+</p>
+
+<h2>O limite: nem toda regra vale a pena automatizar</h2>
+
+<p>
+  Criar um gate automatizado para cada decisão arquitetural de menor impacto
+  consome tempo de engenharia que poderia ir para os pontos que realmente
+  importam. A automação compensa nas fronteiras mais críticas e mais
+  frequentemente violadas — geralmente as que já causaram um incidente ou uma
+  reversão cara. Decisões de baixo risco podem continuar dependendo de
+  revisão humana, sem gate dedicado.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Documentar uma decisão arquitetural é necessário, mas não suficiente. Sem
+  um mecanismo que force essa decisão a chegar a cada nova conversa — seja
+  por convenção de contexto obrigatório, seja por um gate automatizado que
+  bloqueia a violação — a arquitetura documentada e a arquitetura realmente
+  praticada tendem a divergir silenciosamente, uma conversa de cada vez.
+</p>
+
+<p>
+  <strong
+    >Se um agente novo abrisse uma conversa agora e tentasse violar uma
+    decisão arquitetural já tomada no seu projeto, algum mecanismo pegaria
+    isso antes do merge, ou dependeria de alguém lembrar de avisar?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 20 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA #QualityGates
+    #Governanca
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

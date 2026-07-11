@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Uma skill reúne instrução, ferramenta, conhecimento, entradas, saídas e critérios de sucesso. Como documentar uma capacidade reutilizável em vez de reescrever prompts."
+    />
+    <title>
+      29. Skills para agentes de IA: capacidades reutilizáveis além dos prompts — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Agentes, Papéis e Coordenação
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 3 — Do agente isolado à equipe multiagente
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>29. Skills para agentes de IA: capacidades reutilizáveis além dos prompts</h1>
+
+<p>
+  Toda vez que alguém precisava de uma auditoria de segurança numa API, a
+  tarefa começava do zero: uma pessoa escrevia um prompt longo explicando o
+  que verificar, outra pessoa, semanas depois, escrevia um prompt diferente
+  para a mesma finalidade, cobrindo alguns pontos e esquecendo outros. O
+  resultado da auditoria variava dependendo de quem tinha escrito o prompt
+  daquele dia — não porque as APIs fossem diferentes, mas porque o
+  procedimento de auditoria nunca tinha sido definido uma única vez, de forma
+  reutilizável.
+</p>
+
+<p>
+  O conhecimento de "como auditar uma API corretamente" existia, mas
+  distribuído em prompts individuais, cada um uma reconstrução parcial e
+  inconsistente do anterior.
+</p>
+
+<h2>Skill é procedimento reutilizável, não prompt bonito</h2>
+
+<blockquote>
+  <p>
+    Uma skill reúne instrução, ferramenta, conhecimento, entradas, saídas e
+    critérios de sucesso.
+  </p>
+</blockquote>
+
+<p>
+  Uma <em>skill</em>, no contexto de agentes de IA, é mais do que um prompt
+  bem escrito guardado num arquivo. É uma capacidade documentada de forma
+  completa o suficiente para ser executada de maneira consistente por
+  qualquer agente, em qualquer momento, sem depender de quem lembrou de
+  incluir qual detalhe naquele dia específico.
+</p>
+
+<h2>Os seis elementos de uma skill completa</h2>
+
+<ul>
+  <li>
+    <strong>Instrução:</strong> o procedimento passo a passo a ser seguido.
+  </li>
+  <li>
+    <strong>Ferramentas:</strong> o que a execução dessa skill pode acionar —
+    scanners, linters, chamadas de API.
+  </li>
+  <li>
+    <strong>Conhecimento:</strong> referências e critérios técnicos
+    necessários para executar com precisão.
+  </li>
+  <li>
+    <strong>Entradas:</strong> o que precisa ser fornecido para a skill
+    funcionar.
+  </li>
+  <li>
+    <strong>Saídas:</strong> o formato esperado do resultado.
+  </li>
+  <li>
+    <strong>Critérios de sucesso:</strong> como saber se a execução foi
+    completa e correta.
+  </li>
+</ul>
+
+<h2>A skill de auditoria de API, documentada uma única vez</h2>
+
+<pre><code>skill: auditoria_de_api_rest
+
+entradas:
+  - especificacao_openapi_ou_codigo_fonte
+  - lista_de_endpoints_criticos (opcional)
+
+instrucao:
+  1. Verificar autenticação obrigatória em todos os endpoints
+     que alteram estado.
+  2. Verificar limite de taxa (rate limiting) em endpoints
+     públicos.
+  3. Verificar validação de entrada em todos os parâmetros.
+  4. Verificar que mensagens de erro não vazam detalhes
+     internos (stack trace, versão de biblioteca).
+  5. Verificar logging de acesso sem dados sensíveis em texto
+     puro.
+
+saida:
+  - lista de achados no formato:
+    { endpoint, problema, severidade, recomendacao }
+
+criterio_de_sucesso:
+  - todos os endpoints da especificação foram avaliados
+  - cada achado tem severidade e recomendação preenchidas</code></pre>
+
+<p>
+  Com essa skill documentada uma única vez, qualquer agente que a execute —
+  hoje ou daqui a seis meses — produz uma auditoria com a mesma cobertura e o
+  mesmo formato, independentemente de quem disparou a tarefa.
+</p>
+
+<h2>O limite: nem todo procedimento vale a pena virar skill</h2>
+
+<p>
+  Documentar uma skill completa para uma tarefa executada uma única vez, sem
+  expectativa de repetição, é esforço desproporcional. A prática compensa
+  para procedimentos recorrentes — auditorias, revisões padronizadas,
+  processos de deploy — não para tarefas pontuais e não repetíveis.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um prompt bem escrito resolve uma execução. Uma skill documentada resolve a
+  execução, a próxima, e a seguinte, com a mesma cobertura e o mesmo padrão
+  de qualidade — sem depender da memória de quem escreveu o prompt daquele
+  dia específico.
+</p>
+
+<p>
+  <strong
+    >Existe algum procedimento que seu time repete com frequência usando
+    prompts levemente diferentes a cada vez, em vez de uma skill documentada
+    uma única vez?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 29 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Skills #Reuso #Automacao
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

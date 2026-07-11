@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ADRs impedem que decisões sejam reabertas sem novo contexto. Como registrar decisões arquiteturais de forma que agentes de IA e humanos as respeitem."
+    />
+    <title>
+      15. ADR na prática: como preservar decisões arquiteturais em projetos com IA — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Arquitetura e Decisões
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 2 — Da tarefa à arquitetura
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>
+  15. ADR na prática: como preservar decisões arquiteturais em projetos com
+  IA
+</h1>
+
+<p>
+  Três meses atrás, o time decidiu, depois de uma discussão longa, manter o
+  módulo de pedidos em PostgreSQL em vez de migrar para MongoDB, porque o
+  domínio exigia transações consistentes entre pedido, estoque e pagamento.
+  Essa conversa nunca foi escrita em lugar nenhum além de um comentário
+  perdido num pull request antigo. Numa nova conversa, um agente de IA,
+  analisando o código, sugere "modernizar" o armazenamento de pedidos para
+  MongoDB, citando flexibilidade de schema. Ninguém no time lembra
+  exatamente por que essa opção já tinha sido descartada, e a discussão
+  recomeça do zero, consumindo um dia inteiro para redescobrir uma conclusão
+  à qual já se tinha chegado.
+</p>
+
+<p>
+  O agente não estava errado em sugerir uma alternativa — está fazendo
+  exatamente o que qualquer engenheiro sem contexto histórico faria. O
+  problema é que a decisão anterior não deixou rastro em nenhum lugar que
+  ele pudesse consultar antes de propor a mesma ideia outra vez.
+</p>
+
+<h2>Decisão sem registro é decisão que será reaberta</h2>
+
+<blockquote>
+  <p>ADRs impedem que decisões sejam reabertas sem novo contexto.</p>
+</blockquote>
+
+<p>
+  Um <strong>ADR</strong> (<em>Architecture Decision Record</em>, ou registro
+  de decisão arquitetural) é um documento curto que guarda não apenas o que
+  foi decidido, mas por quê, quais alternativas foram consideradas e em que
+  condições a decisão deveria ser revisitada. Sem esse registro, cada
+  conversa nova — humana ou com um agente — corre o risco de reabrir debates
+  já encerrados, porque o raciocínio que sustentou a escolha original nunca
+  saiu da cabeça de quem participou dela.
+</p>
+
+<h2>O que um ADR precisa conter</h2>
+
+<ul>
+  <li>
+    <strong>Contexto:</strong> a situação e as restrições que motivaram a
+    decisão.
+  </li>
+  <li>
+    <strong>Alternativas consideradas:</strong> as opções avaliadas, mesmo as
+    que foram descartadas.
+  </li>
+  <li>
+    <strong>Decisão:</strong> a escolha feita, de forma direta.
+  </li>
+  <li>
+    <strong>Consequências:</strong> o que essa escolha implica, incluindo
+    limitações aceitas conscientemente.
+  </li>
+  <li>
+    <strong>Status:</strong> se a decisão ainda está em vigor, foi superada ou
+    está sob revisão.
+  </li>
+</ul>
+
+<h2>O ADR que deveria ter existido</h2>
+
+<pre><code># ADR 004 — Armazenamento do módulo de pedidos
+
+## Status
+Aceito
+
+## Contexto
+O módulo de pedidos precisa garantir consistência transacional
+entre pedido, estoque e pagamento. Uma falha parcial nessa
+cadeia não pode deixar o sistema em estado inconsistente.
+
+## Alternativas consideradas
+- MongoDB: maior flexibilidade de schema, mas suporte a
+  transações multi-documento menos maduro no ecossistema
+  já em uso pela equipe.
+- PostgreSQL: suporte nativo a transações ACID entre tabelas
+  relacionadas, alinhado ao restante da stack.
+
+## Decisão
+Manter o módulo de pedidos em PostgreSQL.
+
+## Consequências
+Mudanças de schema exigem migração formal (não é schema-less).
+Ganho: consistência transacional garantida sem lógica de
+compensação manual.
+
+## Quando revisitar
+Se o volume de escrita exigir particionamento horizontal que o
+PostgreSQL não suporte de forma nativa e economicamente viável.</code></pre>
+
+<p>
+  Com esse ADR versionado no repositório, a próxima vez que um agente — ou um
+  novo integrante do time — sugerir migrar para MongoDB, a resposta não exige
+  reabrir a discussão inteira: exige apenas verificar se as condições
+  descritas em "quando revisitar" mudaram.
+</p>
+
+<h2>O limite: nem toda escolha técnica merece um ADR</h2>
+
+<p>
+  Registrar um ADR para decidir o nome de uma variável ou a ordem de dois
+  parâmetros de função é burocracia sem retorno. A prática compensa para
+  decisões caras de reverter — escolha de banco de dados, protocolo de
+  comunicação entre serviços, estratégia de autenticação — não para escolhas
+  triviais e facilmente revertidas num único commit.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Uma decisão arquitetural que existe apenas na memória de quem participou da
+  conversa está a uma nova conversa de distância de ser contestada, revertida
+  ou refeita sem necessidade. Registrar o raciocínio, não apenas a conclusão,
+  é o que permite que qualquer agente — ou qualquer pessoa nova no time —
+  respeite uma decisão sem precisar redescobrir sozinho por que ela existe.
+</p>
+
+<p>
+  <strong
+    >Existe alguma decisão arquitetural importante no seu projeto atual que
+    só sobrevive na memória de quem estava na sala quando ela foi tomada?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 15 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #ArquiteturaDeSoftware #EngenhariaDeSoftware #AgentesDeIA #ADR
+    #GestaoDeConhecimento
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>

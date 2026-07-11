@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Mocks úteis representam contratos reais e possuem plano de substituição. Como construir dados simulados que não quebram a integração quando o backend fica pronto."
+    />
+    <title>
+      33. Mocks como contrato temporário entre frontend e backend — Série Engenharia de Software com Agentes de IA
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
+      >
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Execução e Desenvolvimento
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Arco 4 — Da geração de código à implementação sustentável
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>33. Mocks como contrato temporário entre frontend e backend</h1>
+
+<p>
+  Para não esperar o backend ficar pronto, um agente de frontend criou dados
+  simulados para a tela de pedidos: datas como objetos <code>Date</code> do
+  JavaScript, valores monetários como números de ponto flutuante, status como
+  texto livre em português. Quando o endpoint real finalmente ficou pronto,
+  nada batia: datas chegavam como strings ISO, valores vinham em centavos
+  como inteiro, status eram códigos em inglês. A integração, que deveria ser
+  trivial, virou uma reescrita significativa da camada de exibição — porque
+  o mock nunca tinha sido desenhado como uma representação do contrato real,
+  apenas como algo conveniente para preencher a tela naquele momento.
+</p>
+
+<p>
+  O mock cumpriu a função de destravar o desenvolvimento paralelo. Não
+  cumpriu a função de representar fielmente o que o frontend precisaria
+  consumir depois — e ninguém tinha um plano para essa transição.
+</p>
+
+<h2>Mock útil representa contrato, não conveniência</h2>
+
+<blockquote>
+  <p>
+    Mocks úteis representam contratos reais e possuem plano de substituição.
+  </p>
+</blockquote>
+
+<p>
+  Um mock existe para permitir que duas partes de um sistema avancem em
+  paralelo sem esperar uma pela outra — o mesmo problema discutido no artigo
+  sobre planejamento orientado por dependências. Mas essa vantagem só se
+  mantém quando o mock representa fielmente o contrato acordado, não uma
+  aproximação inventada por conveniência. Um mock que diverge do contrato
+  real não elimina a dependência entre frontend e backend — apenas adia a
+  colisão para o momento da integração.
+</p>
+
+<h2>Construindo o mock a partir do contrato, não da imaginação</h2>
+
+<pre><code>// contrato acordado (ver artigo 18 desta série)
+interface Order {
+  id: string;
+  total_amount_cents: number;
+  status: "pending" | "confirmed" | "cancelled";
+  created_at: string; // ISO 8601
+}
+
+// mock.ts — gerado a partir do MESMO contrato
+export const mockOrder: Order = {
+  id: "ord_123",
+  total_amount_cents: 15000,
+  status: "confirmed",
+  created_at: "2026-03-10T14:22:00Z",
+};</code></pre>
+
+<p>
+  Construído dessa forma, o mock não é uma invenção paralela — é uma
+  instância concreta do mesmo contrato que o backend vai implementar. Quando
+  o endpoint real ficar pronto, a camada de exibição já espera exatamente o
+  formato que vai receber.
+</p>
+
+<h2>O plano de substituição que faltava</h2>
+
+<p>
+  Além de representar o contrato corretamente, um mock útil precisa de um
+  plano explícito para deixar de existir:
+</p>
+
+<ul>
+  <li>
+    <strong>Onde ele vive:</strong> isolado num único ponto do código, fácil
+    de localizar e remover — não espalhado por múltiplos componentes.
+  </li>
+  <li>
+    <strong>Quando ele sai:</strong> uma condição clara, como "remover
+    assim que o endpoint <code>/api/orders</code> estiver disponível em
+    homologação".
+  </li>
+  <li>
+    <strong>Quem verifica a remoção:</strong> um item de checklist de pull
+    request, não a memória de quem criou o mock.
+  </li>
+</ul>
+
+<h2>O limite: mocks nem sempre precisam desse rigor</h2>
+
+<p>
+  Para um protótipo descartável, feito para validar uma ideia em uma
+  demonstração e sem intenção de virar produção, exigir que o mock siga um
+  contrato formal é esforço desnecessário. O rigor compensa quando o mock
+  alimenta desenvolvimento paralelo que vai, de fato, integrar com um sistema
+  real depois.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Um mock não é apenas um atalho para não esperar o backend. É um contrato
+  temporário — e, como qualquer contrato, só é confiável quando representa
+  fielmente o que vai substituí-lo e quando existe um plano claro para essa
+  substituição acontecer. Sem isso, o mock resolve o problema de curto prazo
+  e cria um problema maior de integração para depois.
+</p>
+
+<p>
+  <strong
+    >O mock que seu frontend usa hoje foi desenhado a partir do contrato
+    real com o backend, ou foi inventado por conveniência para preencher a
+    tela?</strong
+  >
+</p>
+
+<hr />
+
+<footer class="not-prose pt-2 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 33 de 70</strong> da série sobre engenharia de software
+    com agentes de IA.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Frontend #ContratosTecnicos
+    #DesenvolvimentoParalelo
+  </p>
+</footer>
+      </article>
+    </main>
+  </body>
+</html>
