@@ -2,11 +2,11 @@
 
 Playbook editorial sobre desenvolvimento de software com agentes de IA, arquitetura, qualidade, segurança, rastreabilidade e operação.
 
-## Entrada principal
+## Visualizações
 
-- [Página visual](index.html)
-- [Índice completo dos 70 artigos](Artigos_Principais/00_INDICE_GERAL.md)
-- [Mapa dos blocos e arcos](Artigos_Principais/01_MAPA_DOS_BLOCOS_E_ARCOS.md)
+- [Página visual]([index.html](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/))
+- [Índice completo dos 70 artigos]([Artigos_Principais/00_INDICE_GERAL.md](https://luizjrlopes.github.io/AI_Software_Engineering_Playbook/Artigos_Principais/index.html))
+
 
 ## Estrutura
 
