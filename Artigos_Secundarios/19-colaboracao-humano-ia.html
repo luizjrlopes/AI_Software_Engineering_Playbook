@@ -1,246 +1,338 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Colaboração governada entre humanos e agentes de IA com autoridade, handoff, gates e rastreabilidade."
     />
     <title>
-      Colaboração humano–agente: autoridade, handoff e rastreabilidade
+      19. Colaboração humano–agente: autoridade, handoff e rastreabilidade — Biblioteca Técnica Complementar | AI Software Engineering Playbook
     </title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Fira+Code&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: { sans: ["Inter"], mono: ["Fira Code"] },
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
             colors: {
-              brand: {
-                50: "#eef2ff",
-                100: "#e0e7ff",
-                600: "#4f46e5",
-                700: "#4338ca",
-                900: "#312e81",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: Inter, sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800">
-    <header class="sticky top-0 z-40 border-b bg-white/95">
-      <div class="mx-auto flex max-w-5xl justify-between px-5 py-4">
-        <a href="index.html" class="font-bold text-brand-700"
-          >AI_Software_Engineering_Playbook</a
-        >
-        <nav class="flex gap-4 text-sm">
-          <a href="#autoridade">Autoridade</a><a href="#handoff">Handoff</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-indigo-500 text-white"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <p class="font-mono text-sm text-indigo-100">
-            Artigo 19 · Revisado em julho de 2026
-          </p>
-          <h1 class="mt-4 text-4xl font-extrabold md:text-6xl">
-            Colaboração humano–agente
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl text-indigo-100">
-            Automação responsável define quem pode decidir, quem pode agir e
-            qual evidência acompanha cada transição.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <aside class="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-          Os fluxos deste artigo são padrões conceituais. Não representam uma
-          implantação ou resultado de equipe específica.
-        </aside>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">
-            Colaboração não é delegação irrestrita
-          </h2>
-          <p>
-            Agentes podem pesquisar, propor, editar e chamar ferramentas. Sem
-            limites explícitos, o ganho de autonomia aumenta risco de escopo,
-            segurança e responsabilidade.
-          </p>
-          <p>
-            <strong>Tese:</strong> um workflow maduro combina Context Pack,
-            autoridade mínima, gates e handoffs verificáveis.
-          </p>
-        </section>
-        <section
-          class="rounded-2xl bg-slate-900 p-8 text-white"
-          id="autoridade"
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <h2 class="text-3xl font-bold">Matriz de autoridade</h2>
-          <div class="mt-6 overflow-x-auto">
-            <table class="w-full min-w-[720px] text-left text-sm">
-              <thead>
-                <tr class="bg-white/10">
-                  <th class="p-4">Ação</th>
-                  <th class="p-4">Agente</th>
-                  <th class="p-4">Humano</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th class="p-4">Ler contexto autorizado</th>
-                  <td class="p-4">executa</td>
-                  <td class="p-4">define escopo</td>
-                </tr>
-                <tr class="bg-white/5">
-                  <th class="p-4">Propor plano</th>
-                  <td class="p-4">propõe</td>
-                  <td class="p-4">revisa quando alto impacto</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Editar localmente</th>
-                  <td class="p-4">executa no escopo</td>
-                  <td class="p-4">revisa diff</td>
-                </tr>
-                <tr class="bg-white/5">
-                  <th class="p-4">Mudar produção</th>
-                  <td class="p-4">prepara evidência</td>
-                  <td class="p-4">autoriza</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Operação destrutiva</th>
-                  <td class="p-4">não presume</td>
-                  <td class="p-4">confirma</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Context Pack reduz ambiguidade</h2>
-          <ul>
-            <li>objetivo e problema;</li>
-            <li>escopo permitido e proibido;</li>
-            <li>contratos e restrições;</li>
-            <li>estado atual e mudanças locais;</li>
-            <li>evidências disponíveis;</li>
-            <li>critérios de conclusão;</li>
-            <li>ações que exigem aprovação.</li>
-          </ul>
-        </section>
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-8"
-          id="handoff"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <h2 class="text-3xl font-bold">
-            Handoff é transferência de estado verificável
-          </h2>
-          <pre
-            class="mt-6 overflow-x-auto rounded-xl bg-slate-900 p-5 font-mono text-sm text-indigo-100"
-          ><code>objetivo
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 4 — Confiança, Ética e UX do Produto
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>19. Colaboração humano–agente: autoridade, handoff e rastreabilidade</h1>
+
+<div class="not-prose my-8 rounded-md border border-amber-200 border-l-4 border-l-amber-500 bg-amber-50 p-6 text-amber-950">
+  <h4 class="mb-2 font-sans text-base font-semibold uppercase tracking-wide text-amber-900">
+    Nota de transparência
+  </h4>
+  <p class="text-sm leading-relaxed">
+    Os fluxos deste artigo são padrões conceituais. Não representam uma
+    implantação ou resultado de equipe específica.
+  </p>
+</div>
+
+<p>
+  Agentes podem pesquisar, propor, editar e chamar ferramentas. Sem limites
+  explícitos, o ganho de autonomia aumenta risco de escopo, segurança e
+  responsabilidade.
+</p>
+
+<blockquote>
+  <p>
+    Um workflow maduro combina Context Pack, autoridade mínima, gates e
+    handoffs verificáveis.
+  </p>
+</blockquote>
+
+<h2>Matriz de autoridade</h2>
+
+<section aria-labelledby="matriz-autoridade-colab" class="not-prose my-10">
+  <h2 id="matriz-autoridade-colab" class="mb-5 text-2xl font-semibold text-slate-900">
+    Quem decide, quem executa
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Ação</th>
+          <th class="px-4 py-3 font-semibold">Agente</th>
+          <th class="px-4 py-3 font-semibold">Humano</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Ler contexto autorizado</td>
+          <td class="px-4 py-3 text-slate-700">executa</td>
+          <td class="px-4 py-3 text-slate-700">define escopo</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Propor plano</td>
+          <td class="px-4 py-3 text-slate-700">propõe</td>
+          <td class="px-4 py-3 text-slate-700">revisa quando alto impacto</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Editar localmente</td>
+          <td class="px-4 py-3 text-slate-700">executa no escopo</td>
+          <td class="px-4 py-3 text-slate-700">revisa diff</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Mudar produção</td>
+          <td class="px-4 py-3 text-slate-700">prepara evidência</td>
+          <td class="px-4 py-3 text-slate-700">autoriza</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Operação destrutiva</td>
+          <td class="px-4 py-3 text-slate-700">não presume</td>
+          <td class="px-4 py-3 text-slate-700">confirma</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>Context Pack reduz ambiguidade</h2>
+
+<ul>
+  <li>objetivo e problema;</li>
+  <li>escopo permitido e proibido;</li>
+  <li>contratos e restrições;</li>
+  <li>estado atual e mudanças locais;</li>
+  <li>evidências disponíveis;</li>
+  <li>critérios de conclusão;</li>
+  <li>ações que exigem aprovação.</li>
+</ul>
+
+<h2>Handoff é transferência de estado verificável</h2>
+
+<pre><code>objetivo
 → trabalho concluído
 → arquivos e decisões alterados
 → evidências e testes
 → riscos e limitações
 → pendências
 → próxima ação autorizada</code></pre>
-          <p>
-            Outro agente ou humano deve continuar sem reler todo o ambiente nem
-            depender da memória do chat.
-          </p>
-        </section>
-        <section class="copy rounded-2xl border border-rose-200 bg-rose-50 p-8">
-          <h2 class="text-3xl font-bold">
-            Gates protegem transições importantes
-          </h2>
-          <ul>
-            <li>gate de escopo antes de ampliar arquivos ou sistemas;</li>
-            <li>gate de evidência antes de declarar conclusão;</li>
-            <li>gate de segurança antes de acessar dados ou ferramentas;</li>
-            <li>gate de qualidade antes de merge ou release;</li>
-            <li>gate humano antes de efeitos irreversíveis ou alto impacto.</li>
-          </ul>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Rastreabilidade útil</h2>
-          <ul>
-            <li>issues registram objetivo e aceitação;</li>
-            <li>ADRs registram decisões e trade-offs;</li>
-            <li>commits registram mudanças pequenas;</li>
-            <li>checks registram evidências;</li>
-            <li>manifests registram versões;</li>
-            <li>runbooks registram resposta operacional.</li>
-          </ul>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Avalie o sistema de trabalho</h2>
-          <p>
-            Observe tempo até resultado validado, retrabalho, violações de
-            escopo, defeitos, bloqueios humanos necessários, incidentes e
-            qualidade do handoff. Volume de ações do agente não é métrica de
-            valor.
-          </p>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Conclusão</h2>
-          <p>
-            A colaboração melhora quando autonomia e responsabilidade são
-            desenhadas juntas. O último artigo sintetiza a jornada de engenharia
-            de produtos com IA.
-          </p>
-        </section>
-        <nav
-          class="grid gap-4 sm:grid-cols-2"
-          aria-label="Artigos relacionados"
-        >
-          <a
-            href="18-interfaces-conversacionais-honestas.html"
-            class="rounded-xl bg-brand-50 p-5"
-            >← Interfaces honestas</a
-          ><a
-            href="20-jornada-genai-produtos-digitais.html"
-            class="rounded-xl bg-brand-50 p-5 text-right"
-            >Jornada de AI Software Engineering →</a
-          >
-        </nav>
-      </div>
+
+<p>
+  Outro agente ou humano deve continuar sem reler todo o ambiente nem
+  depender da memória do chat.
+</p>
+
+<h2>Gates protegem transições importantes</h2>
+
+<ul>
+  <li>gate de escopo antes de ampliar arquivos ou sistemas;</li>
+  <li>gate de evidência antes de declarar conclusão;</li>
+  <li>gate de segurança antes de acessar dados ou ferramentas;</li>
+  <li>gate de qualidade antes de merge ou release;</li>
+  <li>
+    gate humano antes de efeitos irreversíveis ou alto impacto.
+  </li>
+</ul>
+
+<h2>Rastreabilidade útil</h2>
+
+<ul>
+  <li>issues registram objetivo e aceitação;</li>
+  <li>ADRs registram decisões e trade-offs;</li>
+  <li>commits registram mudanças pequenas;</li>
+  <li>checks registram evidências;</li>
+  <li>manifests registram versões;</li>
+  <li>runbooks registram resposta operacional.</li>
+</ul>
+
+<h2>Avalie o sistema de trabalho</h2>
+
+<p>
+  Observe tempo até resultado validado, retrabalho, violações de escopo,
+  defeitos, bloqueios humanos necessários, incidentes e qualidade do
+  handoff. Volume de ações do agente não é métrica de valor.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  A colaboração melhora quando autonomia e responsabilidade são desenhadas
+  juntas.
+</p>
+
+<p>
+  O último artigo desta biblioteca sintetiza a jornada de engenharia de
+  produtos com IA.
+</p>
+
+<p>
+  <strong
+    >No workflow atual entre você e seus agentes, existe uma matriz de
+    autoridade explícita, ou cada limite é decidido informalmente a cada
+    tarefa?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="18-interfaces-conversacionais-honestas.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Interfaces honestas</span>
+  </a>
+  <a
+    href="20-jornada-genai-produtos-digitais.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Jornada de AI Software Engineering</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 19 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #Handoff #Governanca #GenAI
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t bg-white py-8 text-center text-sm text-slate-500">
-      AI Software Engineering
-    </footer>
   </body>
 </html>

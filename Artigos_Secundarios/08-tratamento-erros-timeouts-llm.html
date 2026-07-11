@@ -1,405 +1,382 @@
 <!doctype html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Resiliência para chamadas de IA com deadlines, retries, circuit breakers, isolamento e degradação controlada."
     />
-    <title>Resiliência em chamadas de IA: timeouts, retries e degradação</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+      08. Resiliência em chamadas de IA: timeouts, retries e degradação — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["Fira Code", "monospace"],
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
             },
             colors: {
-              brand: {
-                50: "#fff7ed",
-                100: "#ffedd5",
-                500: "#f97316",
-                600: "#ea580c",
-                700: "#c2410c",
-                900: "#7c2d12",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased">
-    <header
-      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
     >
-      <div
-        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <a href="index.html" class="font-bold text-brand-700"
-          >AI_Software_Engineering_Playbook</a
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-        <nav
-          aria-label="Navegação do artigo"
-          class="flex gap-4 text-sm font-medium"
-        >
-          <a href="#budget" class="hover:text-brand-700">Budget</a
-          ><a href="#padroes" class="hover:text-brand-700">Padrões</a
-          ><a href="#testes" class="hover:text-brand-700">Testes</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-orange-500 text-white"
-      >
-        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div
-            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
-          >
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Confiabilidade</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Artigo conceitual</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Nível intermediário</span
-            >
-          </div>
-          <p class="mb-4 font-mono text-sm text-orange-100">
-            Artigo 08 · Revisado em julho de 2026
-          </p>
-          <h1
-            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
-          >
-            Resiliência em chamadas de IA
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-orange-100">
-            Falhas são esperadas. O sistema precisa limitar impacto, preservar
-            orçamento e degradar de forma compreensível.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Problema
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Retry sem estratégia transforma falha em avalanche
-          </h2>
-          <p>
-            Uma operação de IA pode depender de retrieval, modelo e ferramentas.
-            Cada etapa adiciona latência e pode falhar depois de já consumir
-            tempo ou dinheiro. Repetir tudo automaticamente pode duplicar
-            efeitos e aumentar a pressão sobre uma dependência degradada.
-          </p>
-          <p>
-            <strong>Tese:</strong> resiliência começa com um deadline fim a fim
-            e uma classificação explícita de falhas.
-          </p>
-        </section>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
 
-        <section
-          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
-          id="budget"
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-orange-300"
-          >
-            Deadline e budgets
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Distribua o tempo disponível entre as etapas
-          </h2>
-          <pre
-            class="mt-7 overflow-x-auto rounded-xl bg-black/30 p-5 font-mono text-sm leading-relaxed text-orange-100"
-          ><code>deadline do cliente
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 2 — Arquitetura e Desenvolvimento de Software para IA
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>08. Resiliência em chamadas de IA: timeouts, retries e degradação</h1>
+
+<p>
+  Uma operação de IA pode depender de retrieval, modelo e ferramentas. Cada
+  etapa adiciona latência e pode falhar depois de já consumir tempo ou
+  dinheiro. Repetir tudo automaticamente pode duplicar efeitos e aumentar a
+  pressão sobre uma dependência degradada.
+</p>
+
+<blockquote>
+  <p>
+    Resiliência começa com um deadline fim a fim e uma classificação
+    explícita de falhas.
+  </p>
+</blockquote>
+
+<h2>Distribua o tempo disponível entre as etapas</h2>
+
+<pre><code>deadline do cliente
   ├─ validação e autorização
   ├─ retrieval
   ├─ chamada de modelo
   ├─ ferramentas opcionais
   ├─ validação da saída
   └─ margem para serialização e resposta</code></pre>
-          <p class="mt-6 leading-relaxed text-slate-300">
-            Cada etapa recebe um timeout menor que o tempo restante. Quando o
-            cliente cancela ou o deadline termina, o cancelamento deve se
-            propagar para filas e dependências sempre que possível.
-          </p>
-        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Classificação
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">Nem toda falha merece retry</h2>
-          <div class="mt-7 overflow-x-auto">
-            <table
-              class="w-full min-w-[760px] border-collapse text-left text-sm"
-            >
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Falha</th>
-                  <th class="p-4">Retry?</th>
-                  <th class="p-4">Resposta</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <th class="p-4">Entrada inválida</th>
-                  <td class="p-4">Não</td>
-                  <td class="p-4">corrigir contrato</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Não autorizado</th>
-                  <td class="p-4">Não</td>
-                  <td class="p-4">negar sem revelar recurso</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Rate limit transitório</th>
-                  <td class="p-4">Talvez</td>
-                  <td class="p-4">respeitar indicação e budget</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Timeout de dependência</th>
-                  <td class="p-4">Talvez</td>
-                  <td class="p-4">retry limitado ou degradação</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Saída fora do schema</th>
-                  <td class="p-4">Limitado</td>
-                  <td class="p-4">reparar uma vez ou falhar seguro</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Efeito com resultado incerto</th>
-                  <td class="p-4">Não sem idempotência</td>
-                  <td class="p-4">consultar estado da operação</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+<p>
+  Cada etapa recebe um timeout menor que o tempo restante. Quando o cliente
+  cancela ou o deadline termina, o cancelamento deve se propagar para filas
+  e dependências sempre que possível.
+</p>
 
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
-          id="padroes"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
-          >
-            Padrões combinados
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Controle frequência, concorrência e propagação
-          </h2>
-          <ul>
-            <li>
-              <strong>Retry com backoff e jitter:</strong> poucas tentativas,
-              apenas para falhas transitórias e dentro do deadline.
-            </li>
-            <li>
-              <strong>Circuit breaker:</strong> interromper novas chamadas
-              quando a dependência demonstra falha persistente.
-            </li>
-            <li>
-              <strong>Bulkhead:</strong> separar pools ou limites por
-              funcionalidade para uma fila não consumir toda a capacidade.
-            </li>
-            <li>
-              <strong>Rate limit:</strong> proteger custo e capacidade por
-              usuário, tenant e operação.
-            </li>
-            <li>
-              <strong>Queue:</strong> desacoplar trabalhos longos, com expiração
-              e dead-letter controlada.
-            </li>
-            <li>
-              <strong>Idempotência:</strong> evitar duplicação de custo e
-              efeitos durante retries.
-            </li>
-            <li>
-              <strong>Fallback:</strong> entregar alternativa explicitamente
-              inferior, nunca fingir equivalência.
-            </li>
-          </ul>
-        </section>
+<h2>Nem toda falha merece retry</h2>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Degradação
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Fallback deve preservar verdade e segurança
-          </h2>
-          <p>Alternativas possíveis dependem do produto:</p>
-          <ul>
-            <li>retornar dados estruturados sem geração;</li>
-            <li>usar resultado previamente validado e ainda vigente;</li>
-            <li>reduzir escopo da tarefa;</li>
-            <li>encaminhar para processamento assíncrono;</li>
-            <li>solicitar revisão humana;</li>
-            <li>informar indisponibilidade e permitir nova tentativa.</li>
-          </ul>
-          <p>
-            Não use cache vencido para fatos críticos sem indicar sua validade.
-            Não troque silenciosamente por comportamento com garantia inferior.
-          </p>
-        </section>
+<section aria-labelledby="classificacao-falhas" class="not-prose my-10">
+  <h2 id="classificacao-falhas" class="mb-5 text-2xl font-semibold text-slate-900">
+    Classificação de falhas
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Falha</th>
+          <th class="px-4 py-3 font-semibold">Retry?</th>
+          <th class="px-4 py-3 font-semibold">Resposta</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Entrada inválida</td>
+          <td class="px-4 py-3 text-slate-700">Não</td>
+          <td class="px-4 py-3 text-slate-700">corrigir contrato</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Não autorizado</td>
+          <td class="px-4 py-3 text-slate-700">Não</td>
+          <td class="px-4 py-3 text-slate-700">negar sem revelar recurso</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Rate limit transitório</td>
+          <td class="px-4 py-3 text-slate-700">Talvez</td>
+          <td class="px-4 py-3 text-slate-700">respeitar indicação e budget</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Timeout de dependência</td>
+          <td class="px-4 py-3 text-slate-700">Talvez</td>
+          <td class="px-4 py-3 text-slate-700">retry limitado ou degradação</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Saída fora do schema</td>
+          <td class="px-4 py-3 text-slate-700">Limitado</td>
+          <td class="px-4 py-3 text-slate-700">reparar uma vez ou falhar seguro</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Efeito com resultado incerto</td>
+          <td class="px-4 py-3 text-slate-700">Não sem idempotência</td>
+          <td class="px-4 py-3 text-slate-700">consultar estado da operação</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-        <section
-          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
-          >
-            Armadilhas
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Resiliência mal aplicada piora o incidente
-          </h2>
-          <ul>
-            <li>retries em múltiplas camadas multiplicam chamadas;</li>
-            <li>timeout do cliente não cancela trabalho no servidor;</li>
-            <li>circuit breaker global derruba tenants saudáveis;</li>
-            <li>fallback viola autorização ou usa dados antigos;</li>
-            <li>fila sem expiração processa trabalho que perdeu valor;</li>
-            <li>dead-letter acumula dados sensíveis sem retenção definida;</li>
-            <li>
-              hedging duplica custo e deve ser reservado a casos medidos e
-              idempotentes.
-            </li>
-          </ul>
-        </section>
+<h2>Controle frequência, concorrência e propagação</h2>
 
-        <section
-          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="testes"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Testes de falha
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Teste o comportamento degradado antes do incidente
-          </h2>
-          <ol>
-            <li>simular latência por dependência;</li>
-            <li>forçar timeout antes e depois de um efeito;</li>
-            <li>retornar rate limit e indisponibilidade;</li>
-            <li>produzir saída inválida ou truncada;</li>
-            <li>cancelar a requisição do cliente;</li>
-            <li>esgotar o pool de uma funcionalidade;</li>
-            <li>abrir e fechar o circuit breaker;</li>
-            <li>verificar idempotência e ausência de duplicação;</li>
-            <li>confirmar mensagens e telemetria sem vazamento.</li>
-          </ol>
-        </section>
+<ul>
+  <li>
+    <strong>Retry com backoff e jitter:</strong> poucas tentativas, apenas
+    para falhas transitórias e dentro do deadline.
+  </li>
+  <li>
+    <strong>Circuit breaker:</strong> interromper novas chamadas quando a
+    dependência demonstra falha persistente.
+  </li>
+  <li>
+    <strong>Bulkhead:</strong> separar pools ou limites por funcionalidade
+    para uma fila não consumir toda a capacidade.
+  </li>
+  <li>
+    <strong>Rate limit:</strong> proteger custo e capacidade por usuário,
+    tenant e operação.
+  </li>
+  <li>
+    <strong>Queue:</strong> desacoplar trabalhos longos, com expiração e
+    dead-letter controlada.
+  </li>
+  <li>
+    <strong>Idempotência:</strong> evitar duplicação de custo e efeitos
+    durante retries.
+  </li>
+  <li>
+    <strong>Fallback:</strong> entregar alternativa explicitamente inferior,
+    nunca fingir equivalência.
+  </li>
+</ul>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Observabilidade
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Meça tentativas, não apenas requisições
-          </h2>
-          <p>
-            Registre deadline restante, duração por etapa, tentativas, estado do
-            circuito, fila, categoria de erro, fallback escolhido e unidades de
-            custo. Métricas agregadas devem permitir separar falha do provedor,
-            saturação interna, timeout do cliente e saída inválida.
-          </p>
-        </section>
+<h2>Fallback deve preservar verdade e segurança</h2>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Conclusão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Resiliência é limitar dano com comportamento previsível
-          </h2>
-          <p>
-            Deadlines, retries, isolamento e fallback formam um sistema.
-            Aplicados isoladamente, podem competir entre si. O desenho deve
-            proteger usuário, dependências e orçamento ao mesmo tempo.
-          </p>
-          <p>
-            O próximo artigo aborda arquiteturas orientadas a eventos para
-            trabalhos longos e desacoplados.
-          </p>
-        </section>
+<p>Alternativas possíveis dependem do produto:</p>
 
-        <nav
-          aria-label="Artigos relacionados"
-          class="grid gap-4 sm:grid-cols-2"
-        >
-          <a
-            href="07-design-apis-genai.html"
-            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Anterior</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Design de APIs para IA</strong
-            ></a
-          ><a
-            href="09-arquiteturas-event-driven-ia.html"
-            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Próximo</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Arquiteturas orientadas a eventos</strong
-            ></a
-          >
-        </nav>
-      </div>
+<ul>
+  <li>retornar dados estruturados sem geração;</li>
+  <li>usar resultado previamente validado e ainda vigente;</li>
+  <li>reduzir escopo da tarefa;</li>
+  <li>encaminhar para processamento assíncrono;</li>
+  <li>solicitar revisão humana;</li>
+  <li>informar indisponibilidade e permitir nova tentativa.</li>
+</ul>
+
+<p>
+  Não use cache vencido para fatos críticos sem indicar sua validade. Não
+  troque silenciosamente por comportamento com garantia inferior.
+</p>
+
+<h2>Resiliência mal aplicada piora o incidente</h2>
+
+<ul>
+  <li>retries em múltiplas camadas multiplicam chamadas;</li>
+  <li>timeout do cliente não cancela trabalho no servidor;</li>
+  <li>circuit breaker global derruba tenants saudáveis;</li>
+  <li>fallback viola autorização ou usa dados antigos;</li>
+  <li>fila sem expiração processa trabalho que perdeu valor;</li>
+  <li>dead-letter acumula dados sensíveis sem retenção definida;</li>
+  <li>
+    hedging duplica custo e deve ser reservado a casos medidos e
+    idempotentes.
+  </li>
+</ul>
+
+<h2>Teste o comportamento degradado antes do incidente</h2>
+
+<ol>
+  <li>simular latência por dependência;</li>
+  <li>forçar timeout antes e depois de um efeito;</li>
+  <li>retornar rate limit e indisponibilidade;</li>
+  <li>produzir saída inválida ou truncada;</li>
+  <li>cancelar a requisição do cliente;</li>
+  <li>esgotar o pool de uma funcionalidade;</li>
+  <li>abrir e fechar o circuit breaker;</li>
+  <li>verificar idempotência e ausência de duplicação;</li>
+  <li>confirmar mensagens e telemetria sem vazamento.</li>
+</ol>
+
+<h2>Meça tentativas, não apenas requisições</h2>
+
+<p>
+  Registre deadline restante, duração por etapa, tentativas, estado do
+  circuito, fila, categoria de erro, fallback escolhido e unidades de
+  custo. Métricas agregadas devem permitir separar falha do provedor,
+  saturação interna, timeout do cliente e saída inválida.
+</p>
+
+<h2>Resiliência é limitar dano com comportamento previsível</h2>
+
+<p>
+  Deadlines, retries, isolamento e fallback formam um sistema. Aplicados
+  isoladamente, podem competir entre si. O desenho deve proteger usuário,
+  dependências e orçamento ao mesmo tempo.
+</p>
+
+<p>
+  O próximo artigo aborda arquiteturas orientadas a eventos para trabalhos
+  longos e desacoplados.
+</p>
+
+<p>
+  <strong
+    >Se a dependência de IA do seu sistema ficasse indisponível agora, o
+    comportamento resultante já foi testado deliberadamente, ou seria
+    descoberto pela primeira vez durante o incidente?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="07-design-apis-genai.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Design de APIs para IA</span>
+  </a>
+  <a
+    href="09-arquiteturas-event-driven-ia.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Arquiteturas orientadas a eventos</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 08 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #Resiliencia #GenAI #EngenhariaDeSoftware #Arquitetura #SRE
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t border-slate-200 bg-white py-8">
-      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
-        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
-      </div>
-    </footer>
   </body>
 </html>

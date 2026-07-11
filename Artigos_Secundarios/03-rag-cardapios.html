@@ -1,216 +1,216 @@
 <!doctype html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Arquitetura conceitual de RAG para dados dinâmicos usando cardápios como cenário hipotético."
     />
-    <title>RAG para dados dinâmicos: arquitetura, avaliação e riscos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+      03. RAG para dados dinâmicos: arquitetura, avaliação e riscos — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["Fira Code", "monospace"],
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
             },
             colors: {
-              brand: {
-                50: "#ecfdf5",
-                100: "#d1fae5",
-                500: "#10b981",
-                600: "#059669",
-                700: "#047857",
-                900: "#064e3b",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased">
-    <header
-      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
     >
-      <div
-        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <a
-          href="index.html"
-          class="font-bold text-brand-700 hover:text-brand-900"
-          >AI_Software_Engineering_Playbook</a
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-        <nav
-          aria-label="Navegação do artigo"
-          class="flex gap-4 text-sm font-medium"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <a href="#arquitetura" class="hover:text-brand-700">Arquitetura</a>
-          <a href="#avaliacao" class="hover:text-brand-700">Avaliação</a>
-          <a href="#riscos" class="hover:text-brand-700">Riscos</a>
-        </nav>
-      </div>
-    </header>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 1 — Fundamentos e Estratégias de Customização
+        </span>
+      </header>
 
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-emerald-500 text-white"
-      >
-        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div
-            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
-          >
-            <span class="rounded-full bg-white/15 px-3 py-1">IA aplicada</span>
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Artigo conceitual</span
-            >
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Nível intermediário</span
-            >
-          </div>
-          <p class="mb-4 font-mono text-sm text-emerald-100">
-            Artigo 03 · Revisado em julho de 2026
-          </p>
-          <h1
-            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
-          >
-            RAG para dados dinâmicos
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-emerald-100">
-            Como projetar recuperação, geração, avaliação e controles de acesso
-            quando as respostas dependem de dados que mudam continuamente.
-          </p>
-        </div>
-      </section>
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>03. RAG para dados dinâmicos: arquitetura, avaliação e riscos</h1>
 
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <aside
-          class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
-        >
-          <h2 class="font-bold">Nota de transparência</h2>
-          <p class="mt-2 leading-relaxed">
-            O cenário de cardápios deste artigo é hipotético e serve para
-            explicar decisões de arquitetura. Ele não representa um sistema
-            publicado, vínculo com empresa ou resultado de produção.
-          </p>
-        </aside>
+<div class="not-prose my-8 rounded-md border border-amber-200 border-l-4 border-l-amber-500 bg-amber-50 p-6 text-amber-950">
+  <h4 class="mb-2 font-sans text-base font-semibold uppercase tracking-wide text-amber-900">
+    Nota de transparência
+  </h4>
+  <p class="text-sm leading-relaxed">
+    O cenário de cardápios deste artigo é hipotético e serve para explicar
+    decisões de arquitetura. Ele não representa um sistema publicado,
+    vínculo com empresa ou resultado de produção.
+  </p>
+</div>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Problema
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            O modelo não é a fonte de verdade
-          </h2>
-          <p>
-            Preços, disponibilidade, horários e políticas operacionais mudam.
-            Mesmo um modelo capaz de responder perguntas gerais não deve ser
-            tratado como fonte confiável desses fatos.
-          </p>
-          <p>
-            Retrieval-Augmented Generation, ou RAG, conecta a geração a fontes
-            externas recuperadas no momento da consulta. Isso pode aumentar
-            atualização e rastreabilidade, mas não elimina erros: um sistema RAG
-            pode recuperar o documento errado, ignorar permissões ou gerar uma
-            conclusão que não é sustentada pelo contexto.
-          </p>
-          <p>
-            <strong>Tese:</strong> RAG é um sistema de recuperação com uma
-            camada generativa, não apenas “embeddings + prompt”.
-          </p>
-        </section>
+<p>
+  Preços, disponibilidade, horários e políticas operacionais mudam. Mesmo um
+  modelo capaz de responder perguntas gerais não deve ser tratado como fonte
+  confiável desses fatos.
+</p>
 
-        <section
-          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
-          id="arquitetura"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-emerald-300"
-          >
-            Arquitetura de referência
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Do dado autorizado à resposta rastreável
-          </h2>
-          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <article class="rounded-xl bg-white/10 p-5">
-              <span class="font-mono text-xs text-emerald-300"
-                >01 · Ingestão</span
-              >
-              <h3 class="mt-2 font-bold">Preparar as fontes</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Validar origem, versão, proprietário, permissões e ciclo de
-                atualização.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <span class="font-mono text-xs text-emerald-300"
-                >02 · Indexação</span
-              >
-              <h3 class="mt-2 font-bold">Criar unidades recuperáveis</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Separar conteúdo e metadados sem romper o significado necessário
-                à resposta.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <span class="font-mono text-xs text-emerald-300"
-                >03 · Recuperação</span
-              >
-              <h3 class="mt-2 font-bold">Buscar e filtrar</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Aplicar autorização, filtros estruturados, busca e reranking
-                quando justificado.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <span class="font-mono text-xs text-emerald-300"
-                >04 · Geração</span
-              >
-              <h3 class="mt-2 font-bold">Responder com limites</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Gerar somente a partir do contexto permitido, citar fontes e
-                admitir insuficiência.
-              </p>
-            </article>
-          </div>
-          <pre
-            class="mt-8 overflow-x-auto rounded-xl bg-black/30 p-5 font-mono text-sm leading-relaxed text-emerald-100"
-          ><code>consulta
+<p>
+  Retrieval-Augmented Generation, ou RAG, conecta a geração a fontes
+  externas recuperadas no momento da consulta. Isso pode aumentar
+  atualização e rastreabilidade, mas não elimina erros: um sistema RAG pode
+  recuperar o documento errado, ignorar permissões ou gerar uma conclusão
+  que não é sustentada pelo contexto.
+</p>
+
+<blockquote>
+  <p>
+    RAG é um sistema de recuperação com uma camada generativa, não apenas
+    "embeddings + prompt".
+  </p>
+</blockquote>
+
+<h2>Do dado autorizado à resposta rastreável</h2>
+
+<ul>
+  <li>
+    <strong>01 · Ingestão — preparar as fontes:</strong> validar origem,
+    versão, proprietário, permissões e ciclo de atualização.
+  </li>
+  <li>
+    <strong>02 · Indexação — criar unidades recuperáveis:</strong> separar
+    conteúdo e metadados sem romper o significado necessário à resposta.
+  </li>
+  <li>
+    <strong>03 · Recuperação — buscar e filtrar:</strong> aplicar
+    autorização, filtros estruturados, busca e reranking quando justificado.
+  </li>
+  <li>
+    <strong>04 · Geração — responder com limites:</strong> gerar somente a
+    partir do contexto permitido, citar fontes e admitir insuficiência.
+  </li>
+</ul>
+
+<pre><code>consulta
   → autenticação e escopo
   → filtros estruturados
   → recuperação de candidatos
@@ -218,265 +218,214 @@
   → contexto com citações
   → geração ou recusa
   → telemetria e feedback</code></pre>
-        </section>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Cenário hipotético
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            “Quais opções vegetarianas estão disponíveis agora?”
-          </h2>
-          <p>A consulta parece simples, mas combina requisitos distintos:</p>
-          <ul>
-            <li>
-              <strong>semântica:</strong> interpretar “vegetariana” e
-              preferências relacionadas;
-            </li>
-            <li>
-              <strong>estruturada:</strong> filtrar região, estabelecimento,
-              horário e disponibilidade;
-            </li>
-            <li>
-              <strong>temporal:</strong> rejeitar dados vencidos ou
-              desatualizados;
-            </li>
-            <li>
-              <strong>segurança:</strong> impedir acesso a dados de outro tenant
-              ou contexto;
-            </li>
-            <li>
-              <strong>rastreabilidade:</strong> indicar quais registros
-              sustentam a resposta.
-            </li>
-          </ul>
-          <p>
-            Uma solução puramente vetorial pode retornar itens semanticamente
-            semelhantes, porém fora da região ou indisponíveis. Busca semântica
-            e filtros transacionais cumprem papéis diferentes.
-          </p>
-        </section>
+<h2>Exemplo hipotético: "Quais opções vegetarianas estão disponíveis agora?"</h2>
 
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
-          >
-            Decisões de engenharia
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            O que precisa ser decidido explicitamente
-          </h2>
-          <ul>
-            <li>
-              <strong>Fonte canônica:</strong> qual sistema decide preço,
-              disponibilidade e permissão?
-            </li>
-            <li>
-              <strong>Atualização:</strong> indexação em lote, orientada a
-              eventos ou híbrida?
-            </li>
-            <li>
-              <strong>Chunking:</strong> qual unidade preserva significado sem
-              trazer ruído excessivo?
-            </li>
-            <li>
-              <strong>Busca:</strong> semântica, lexical, híbrida ou combinação
-              com filtros estruturados?
-            </li>
-            <li>
-              <strong>Reranking:</strong> o ganho de relevância compensa
-              latência e custo adicionais?
-            </li>
-            <li>
-              <strong>Abstenção:</strong> quando o sistema deve dizer que não
-              possui base suficiente?
-            </li>
-            <li>
-              <strong>Citação:</strong> como ligar cada afirmação aos dados
-              recuperados?
-            </li>
-            <li>
-              <strong>Exclusão:</strong> como remover documentos, vetores e
-              caches quando a fonte muda?
-            </li>
-          </ul>
-        </section>
+<p>A consulta parece simples, mas combina requisitos distintos:</p>
 
-        <section
-          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="avaliacao"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Avaliação
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Meça recuperação e geração separadamente
-          </h2>
-          <p>
-            Avaliar apenas a resposta final esconde a causa do erro. Um conjunto
-            de testes deve conter consultas, contexto esperado, fontes
-            autorizadas e critérios de resposta.
-          </p>
-          <div class="mt-7 overflow-x-auto">
-            <table
-              class="w-full min-w-[720px] border-collapse text-left text-sm"
-            >
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Camada</th>
-                  <th class="p-4">Pergunta</th>
-                  <th class="p-4">Sinais úteis</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <th class="p-4">Recuperação</th>
-                  <td class="p-4">Os itens relevantes apareceram?</td>
-                  <td class="p-4">
-                    recall@k, precision@k, ranking e cobertura
-                  </td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Contexto</th>
-                  <td class="p-4">
-                    O contexto é autorizado, atual e suficiente?
-                  </td>
-                  <td class="p-4">permissão, frescor, duplicação e tamanho</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Geração</th>
-                  <td class="p-4">A resposta é sustentada pelo contexto?</td>
-                  <td class="p-4">
-                    correção, groundedness, citações e abstenção
-                  </td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Sistema</th>
-                  <td class="p-4">
-                    O serviço atende ao requisito operacional?
-                  </td>
-                  <td class="p-4">
-                    latência, custo, falhas, cache e disponibilidade
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>
-            Métricas automáticas ajudam, mas amostras críticas devem receber
-            revisão humana e testes adversariais.
-          </p>
-        </section>
+<ul>
+  <li>
+    <strong>semântica:</strong> interpretar "vegetariana" e preferências
+    relacionadas;
+  </li>
+  <li>
+    <strong>estruturada:</strong> filtrar região, estabelecimento, horário e
+    disponibilidade;
+  </li>
+  <li>
+    <strong>temporal:</strong> rejeitar dados vencidos ou desatualizados;
+  </li>
+  <li>
+    <strong>segurança:</strong> impedir acesso a dados de outro tenant ou
+    contexto;
+  </li>
+  <li>
+    <strong>rastreabilidade:</strong> indicar quais registros sustentam a
+    resposta.
+  </li>
+</ul>
 
-        <section
-          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
-          id="riscos"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
-          >
-            Segurança e falhas
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            RAG adiciona novos modos de falha
-          </h2>
-          <ul>
-            <li>
-              <strong>Prompt injection em documentos:</strong> conteúdo
-              recuperado tenta instruir o modelo ou exfiltrar dados.
-            </li>
-            <li>
-              <strong>Vazamento entre usuários:</strong> filtros de autorização
-              são aplicados tarde ou apenas no prompt.
-            </li>
-            <li>
-              <strong>Dados obsoletos:</strong> o índice diverge da fonte
-              canônica.
-            </li>
-            <li>
-              <strong>Recuperação irrelevante:</strong> a resposta parece
-              plausível, mas usa contexto inadequado.
-            </li>
-            <li>
-              <strong>Citação decorativa:</strong> a fonte existe, porém não
-              sustenta a afirmação produzida.
-            </li>
-            <li>
-              <strong>Ausência de remoção:</strong> documentos excluídos
-              continuam presentes em vetores ou caches.
-            </li>
-          </ul>
-          <p>
-            Autorização deve ocorrer antes da geração e, quando possível, antes
-            ou durante a recuperação. O texto recuperado deve ser tratado como
-            dado não confiável, não como instrução de sistema.
-          </p>
-        </section>
+<p>
+  Uma solução puramente vetorial pode retornar itens semanticamente
+  semelhantes, porém fora da região ou indisponíveis. Busca semântica e
+  filtros transacionais cumprem papéis diferentes.
+</p>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Conclusão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            RAG confiável é engenharia de dados, busca e produto
-          </h2>
-          <p>
-            A qualidade não depende apenas do modelo. Ela nasce da fonte
-            correta, das permissões, da atualização, da recuperação, da
-            avaliação e da capacidade de recusar quando falta evidência.
-          </p>
-          <p>
-            Próximo passo deste acervo: conectar esta arquitetura conceitual a
-            um projeto RAG reproduzível, com dataset de avaliação, testes de
-            autorização e telemetria. Até lá, este conteúdo permanece
-            deliberadamente classificado como conceitual.
-          </p>
-        </section>
+<h2>O que precisa ser decidido explicitamente</h2>
 
-        <nav
-          aria-label="Artigos relacionados"
-          class="grid gap-4 sm:grid-cols-2"
-        >
-          <a
-            href="02-prompt-engineering-pace.html"
-            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
-          >
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Anterior</span
-            >
-            <strong class="mt-2 block text-lg text-brand-900"
-              >Prompt Engineering com PACE</strong
-            >
-          </a>
-          <a
-            href="04-finetuning-vs-prompt-vs-rag.html"
-            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
-          >
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Próximo</span
-            >
-            <strong class="mt-2 block text-lg text-brand-900"
-              >Prompt, RAG ou Fine-tuning?</strong
-            >
-          </a>
-        </nav>
-      </div>
+<ul>
+  <li>
+    <strong>Fonte canônica:</strong> qual sistema decide preço,
+    disponibilidade e permissão?
+  </li>
+  <li>
+    <strong>Atualização:</strong> indexação em lote, orientada a eventos ou
+    híbrida?
+  </li>
+  <li>
+    <strong>Chunking:</strong> qual unidade preserva significado sem trazer
+    ruído excessivo?
+  </li>
+  <li>
+    <strong>Busca:</strong> semântica, lexical, híbrida ou combinação com
+    filtros estruturados?
+  </li>
+  <li>
+    <strong>Reranking:</strong> o ganho de relevância compensa latência e
+    custo adicionais?
+  </li>
+  <li>
+    <strong>Abstenção:</strong> quando o sistema deve dizer que não possui
+    base suficiente?
+  </li>
+  <li>
+    <strong>Citação:</strong> como ligar cada afirmação aos dados
+    recuperados?
+  </li>
+  <li>
+    <strong>Exclusão:</strong> como remover documentos, vetores e caches
+    quando a fonte muda?
+  </li>
+</ul>
+
+<h2>Meça recuperação e geração separadamente</h2>
+
+<p>
+  Avaliar apenas a resposta final esconde a causa do erro. Um conjunto de
+  testes deve conter consultas, contexto esperado, fontes autorizadas e
+  critérios de resposta.
+</p>
+
+<section aria-labelledby="avaliacao-rag" class="not-prose my-10">
+  <h2 id="avaliacao-rag" class="mb-5 text-2xl font-semibold text-slate-900">
+    Camadas de avaliação
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Camada</th>
+          <th class="px-4 py-3 font-semibold">Pergunta</th>
+          <th class="px-4 py-3 font-semibold">Sinais úteis</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Recuperação</td>
+          <td class="px-4 py-3 text-slate-700">Os itens relevantes apareceram?</td>
+          <td class="px-4 py-3 text-slate-700">recall@k, precision@k, ranking e cobertura</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Contexto</td>
+          <td class="px-4 py-3 text-slate-700">O contexto é autorizado, atual e suficiente?</td>
+          <td class="px-4 py-3 text-slate-700">permissão, frescor, duplicação e tamanho</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Geração</td>
+          <td class="px-4 py-3 text-slate-700">A resposta é sustentada pelo contexto?</td>
+          <td class="px-4 py-3 text-slate-700">correção, groundedness, citações e abstenção</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Sistema</td>
+          <td class="px-4 py-3 text-slate-700">O serviço atende ao requisito operacional?</td>
+          <td class="px-4 py-3 text-slate-700">latência, custo, falhas, cache e disponibilidade</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p>
+  Métricas automáticas ajudam, mas amostras críticas devem receber revisão
+  humana e testes adversariais.
+</p>
+
+<h2>RAG adiciona novos modos de falha</h2>
+
+<ul>
+  <li>
+    <strong>Prompt injection em documentos:</strong> conteúdo recuperado
+    tenta instruir o modelo ou exfiltrar dados.
+  </li>
+  <li>
+    <strong>Vazamento entre usuários:</strong> filtros de autorização são
+    aplicados tarde ou apenas no prompt.
+  </li>
+  <li>
+    <strong>Dados obsoletos:</strong> o índice diverge da fonte canônica.
+  </li>
+  <li>
+    <strong>Recuperação irrelevante:</strong> a resposta parece plausível,
+    mas usa contexto inadequado.
+  </li>
+  <li>
+    <strong>Citação decorativa:</strong> a fonte existe, porém não sustenta
+    a afirmação produzida.
+  </li>
+  <li>
+    <strong>Ausência de remoção:</strong> documentos excluídos continuam
+    presentes em vetores ou caches.
+  </li>
+</ul>
+
+<p>
+  Autorização deve ocorrer antes da geração e, quando possível, antes ou
+  durante a recuperação. O texto recuperado deve ser tratado como dado não
+  confiável, não como instrução de sistema.
+</p>
+
+<h2>RAG confiável é engenharia de dados, busca e produto</h2>
+
+<p>
+  A qualidade não depende apenas do modelo. Ela nasce da fonte correta, das
+  permissões, da atualização, da recuperação, da avaliação e da capacidade
+  de recusar quando falta evidência.
+</p>
+
+<p>
+  Próximo passo deste acervo: conectar esta arquitetura conceitual a um
+  projeto RAG reproduzível, com dataset de avaliação, testes de autorização
+  e telemetria. Até lá, este conteúdo permanece deliberadamente classificado
+  como conceitual.
+</p>
+
+<p>
+  <strong
+    >No seu sistema de recuperação atual, você consegue separar, com dados,
+    se um erro veio da busca ou da geração — ou o diagnóstico ainda depende
+    de intuição?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="02-prompt-engineering-pace.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Prompt engineering com PACE</span>
+  </a>
+  <a
+    href="04-finetuning-vs-prompt-vs-rag.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Prompt, RAG ou fine-tuning?</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 03 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #RAG #GenAI #EngenhariaDeSoftware #Arquitetura #Avaliacao
+  </p>
+</footer>
+      </article>
     </main>
-
-    <footer class="border-t border-slate-200 bg-white py-8">
-      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
-        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
-      </div>
-    </footer>
   </body>
 </html>

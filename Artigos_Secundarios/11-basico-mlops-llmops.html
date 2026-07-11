@@ -1,422 +1,374 @@
 <!doctype html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="LLMOps como ciclo de entrega, avaliação, implantação, observabilidade e governança de aplicações de IA."
     />
-    <title>LLMOps como ciclo operacional de aplicações de IA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+      11. LLMOps como ciclo operacional de aplicações de IA — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["Fira Code", "monospace"],
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
             },
             colors: {
-              brand: {
-                50: "#f0fdf4",
-                100: "#dcfce7",
-                500: "#22c55e",
-                600: "#16a34a",
-                700: "#15803d",
-                900: "#14532d",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased">
-    <header
-      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
     >
-      <div
-        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <a href="index.html" class="font-bold text-brand-700"
-          >AI_Software_Engineering_Playbook</a
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-        <nav
-          aria-label="Navegação do artigo"
-          class="flex gap-4 text-sm font-medium"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <a href="#ciclo">Ciclo</a><a href="#release">Release</a
-          ><a href="#incidente">Incidentes</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-green-500 text-white"
-      >
-        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div
-            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
-          >
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Cloud e operação</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Artigo conceitual</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Nível intermediário</span
-            >
-          </div>
-          <p class="mb-4 font-mono text-sm text-green-100">
-            Artigo 11 · Revisado em julho de 2026
-          </p>
-          <h1
-            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
-          >
-            LLMOps como ciclo operacional
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-green-100">
-            Aplicações de IA precisam de releases reproduzíveis, avaliações
-            contínuas e caminhos seguros de mudança e rollback.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Problema
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            O comportamento muda em mais lugares que o código
-          </h2>
-          <p>
-            Prompt, modelo, dados, retrieval, ferramentas e configurações podem
-            alterar qualidade, custo ou segurança. Um pipeline que publica
-            apenas código não controla a unidade real de comportamento.
-          </p>
-          <p>
-            <strong>Tese:</strong> LLMOps é o ciclo que conecta configuração
-            reproduzível, avaliação, implantação controlada e aprendizado
-            operacional.
-          </p>
-        </section>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 3 — LLMOps, Observabilidade e Custos
+        </span>
+      </header>
 
-        <section
-          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
-          id="ciclo"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-green-300"
-          >
-            Ciclo de vida
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Da hipótese à melhoria controlada
-          </h2>
-          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">1. Especificar</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                requisitos, riscos, contratos e métricas
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">2. Construir</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                código, prompts, dados e ferramentas
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">3. Avaliar</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                qualidade, segurança, custo e latência
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">4. Liberar</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                manifesto, aprovação e rollout progressivo
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">5. Observar</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                traces, SLOs, feedback e incidentes
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">6. Aprender</h3>
-              <p class="mt-2 text-sm text-slate-300">
-                triagem, dataset e decisão versionada
-              </p>
-            </article>
-          </div>
-        </section>
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>11. LLMOps como ciclo operacional de aplicações de IA</h1>
 
-        <section
-          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="release"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Release
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Promova uma configuração testada, não arquivos isolados
-          </h2>
-          <p>
-            O release manifest liga código, prompt, modelo, corpus, índice,
-            ferramentas, flags e relatório de avaliação. A promoção entre
-            ambientes deve preservar essa identidade e trocar apenas valores
-            ambientais autorizados.
-          </p>
-          <ol>
-            <li>criar candidato imutável;</li>
-            <li>executar contratos e regressão;</li>
-            <li>avaliar segurança, custo e desempenho;</li>
-            <li>registrar limitações e aprovação;</li>
-            <li>liberar por feature flag ou canário;</li>
-            <li>comparar sinais com a linha de base;</li>
-            <li>promover ou restaurar o manifesto anterior.</li>
-          </ol>
-        </section>
+<p>
+  Prompt, modelo, dados, retrieval, ferramentas e configurações podem
+  alterar qualidade, custo ou segurança. Um pipeline que publica apenas
+  código não controla a unidade real de comportamento.
+</p>
 
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
-          >
-            Ambientes
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Separe validação técnica de exposição de dados
-          </h2>
-          <div class="mt-7 overflow-x-auto">
-            <table
-              class="w-full min-w-[720px] border-collapse text-left text-sm"
-            >
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Ambiente</th>
-                  <th class="p-4">Objetivo</th>
-                  <th class="p-4">Dados</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <th class="p-4">Local</th>
-                  <td class="p-4">desenvolvimento e contratos</td>
-                  <td class="p-4">sintéticos ou minimizados</td>
-                </tr>
-                <tr class="bg-white/60">
-                  <th class="p-4">CI</th>
-                  <td class="p-4">regressão reproduzível</td>
-                  <td class="p-4">dataset versionado e protegido</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Staging</th>
-                  <td class="p-4">integração e operação</td>
-                  <td class="p-4">
-                    representativos sem copiar produção indiscriminadamente
-                  </td>
-                </tr>
-                <tr class="bg-white/60">
-                  <th class="p-4">Produção</th>
-                  <td class="p-4">valor real sob controles</td>
-                  <td class="p-4">mínimos, autorizados e com retenção</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+<blockquote>
+  <p>
+    LLMOps é o ciclo que conecta configuração reproduzível, avaliação,
+    implantação controlada e aprendizado operacional.
+  </p>
+</blockquote>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Avaliação contínua
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Offline e online respondem perguntas diferentes
-          </h2>
-          <ul>
-            <li>
-              <strong>Offline:</strong> compara versões em dataset controlado e
-              detecta regressões antes da release.
-            </li>
-            <li>
-              <strong>Online:</strong> observa comportamento, jornada, custo e
-              falhas no tráfego real.
-            </li>
-            <li>
-              <strong>Canário:</strong> limita exposição e compara sinais sob a
-              mesma janela operacional.
-            </li>
-            <li>
-              <strong>Revisão humana:</strong> calibra critérios, trata casos
-              críticos e produz novos exemplos.
-            </li>
-          </ul>
-          <p>
-            Feedback do usuário não deve virar automaticamente dado de
-            treinamento. Ele precisa de triagem, consentimento, segurança e
-            curadoria.
-          </p>
-        </section>
+<h2>Da hipótese à melhoria controlada</h2>
 
-        <section
-          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
-          >
-            Governança
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Automação precisa de gates proporcionais ao risco
-          </h2>
-          <ul>
-            <li>mudanças de baixo risco podem seguir gates automáticos;</li>
-            <li>
-              ferramentas com efeitos exigem testes e autorização adicionais;
-            </li>
-            <li>
-              datasets e políticas sensíveis precisam de responsáveis claros;
-            </li>
-            <li>exceções possuem prazo, motivo e proprietário;</li>
-            <li>segredos ficam fora de artefatos e logs;</li>
-            <li>aprovações e rollbacks permanecem auditáveis.</li>
-          </ul>
-        </section>
+<ol>
+  <li>
+    <strong>Especificar:</strong> requisitos, riscos, contratos e métricas.
+  </li>
+  <li>
+    <strong>Construir:</strong> código, prompts, dados e ferramentas.
+  </li>
+  <li>
+    <strong>Avaliar:</strong> qualidade, segurança, custo e latência.
+  </li>
+  <li>
+    <strong>Liberar:</strong> manifesto, aprovação e rollout progressivo.
+  </li>
+  <li>
+    <strong>Observar:</strong> traces, SLOs, feedback e incidentes.
+  </li>
+  <li>
+    <strong>Aprender:</strong> triagem, dataset e decisão versionada.
+  </li>
+</ol>
 
-        <section
-          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="incidente"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Incidentes
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Diagnostique por componente e versão
-          </h2>
-          <ol>
-            <li>
-              conter: desligar flag, limitar ferramenta ou restaurar release;
-            </li>
-            <li>identificar configurações e tráfego afetados;</li>
-            <li>
-              separar falha de código, prompt, retrieval, modelo, ferramenta ou
-              dado;
-            </li>
-            <li>preservar evidência sem ampliar exposição;</li>
-            <li>corrigir e adicionar caso à regressão;</li>
-            <li>validar a correção em ambiente controlado;</li>
-            <li>documentar causa, impacto e prevenção.</li>
-          </ol>
-        </section>
+<h2>Promova uma configuração testada, não arquivos isolados</h2>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Sinais operacionais
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Qualidade precisa conviver com confiabilidade
-          </h2>
-          <p>
-            Acompanhe SLOs de disponibilidade e latência junto de validade de
-            schema, recusa, recuperação, groundedness, chamadas de ferramentas,
-            custo e feedback. Métricas devem ser segmentáveis por funcionalidade
-            e versão sem expor conteúdo desnecessário.
-          </p>
-        </section>
+<p>
+  O release manifest liga código, prompt, modelo, corpus, índice,
+  ferramentas, flags e relatório de avaliação. A promoção entre ambientes
+  deve preservar essa identidade e trocar apenas valores ambientais
+  autorizados.
+</p>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Conclusão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            LLMOps torna mudança rápida compatível com controle
-          </h2>
-          <p>
-            O objetivo não é criar burocracia, mas tornar cada release
-            identificável, comparável e reversível. Sem essa base, melhoria e
-            regressão se confundem.
-          </p>
-          <p>
-            O próximo artigo aprofunda como monitorar a qualidade das respostas
-            em produção.
-          </p>
-        </section>
+<ol>
+  <li>criar candidato imutável;</li>
+  <li>executar contratos e regressão;</li>
+  <li>avaliar segurança, custo e desempenho;</li>
+  <li>registrar limitações e aprovação;</li>
+  <li>liberar por feature flag ou canário;</li>
+  <li>comparar sinais com a linha de base;</li>
+  <li>promover ou restaurar o manifesto anterior.</li>
+</ol>
 
-        <nav
-          aria-label="Artigos relacionados"
-          class="grid gap-4 sm:grid-cols-2"
-        >
-          <a
-            href="10-testes-automatizados-sistemas-ia.html"
-            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Anterior</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Testes de sistemas de IA</strong
-            ></a
-          ><a
-            href="12-monitorando-qualidade-respostas.html"
-            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Próximo</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Monitoramento de qualidade</strong
-            ></a
-          >
-        </nav>
-      </div>
+<h2>Separe validação técnica de exposição de dados</h2>
+
+<section aria-labelledby="ambientes-llmops" class="not-prose my-10">
+  <h2 id="ambientes-llmops" class="mb-5 text-2xl font-semibold text-slate-900">
+    Ambientes e propósito
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Ambiente</th>
+          <th class="px-4 py-3 font-semibold">Objetivo</th>
+          <th class="px-4 py-3 font-semibold">Dados</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Local</td>
+          <td class="px-4 py-3 text-slate-700">desenvolvimento e contratos</td>
+          <td class="px-4 py-3 text-slate-700">sintéticos ou minimizados</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">CI</td>
+          <td class="px-4 py-3 text-slate-700">regressão reproduzível</td>
+          <td class="px-4 py-3 text-slate-700">dataset versionado e protegido</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Staging</td>
+          <td class="px-4 py-3 text-slate-700">integração e operação</td>
+          <td class="px-4 py-3 text-slate-700">representativos sem copiar produção indiscriminadamente</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Produção</td>
+          <td class="px-4 py-3 text-slate-700">valor real sob controles</td>
+          <td class="px-4 py-3 text-slate-700">mínimos, autorizados e com retenção</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>Offline e online respondem perguntas diferentes</h2>
+
+<ul>
+  <li>
+    <strong>Offline:</strong> compara versões em dataset controlado e
+    detecta regressões antes da release.
+  </li>
+  <li>
+    <strong>Online:</strong> observa comportamento, jornada, custo e falhas
+    no tráfego real.
+  </li>
+  <li>
+    <strong>Canário:</strong> limita exposição e compara sinais sob a mesma
+    janela operacional.
+  </li>
+  <li>
+    <strong>Revisão humana:</strong> calibra critérios, trata casos críticos
+    e produz novos exemplos.
+  </li>
+</ul>
+
+<p>
+  Feedback do usuário não deve virar automaticamente dado de treinamento.
+  Ele precisa de triagem, consentimento, segurança e curadoria.
+</p>
+
+<h2>Automação precisa de gates proporcionais ao risco</h2>
+
+<ul>
+  <li>mudanças de baixo risco podem seguir gates automáticos;</li>
+  <li>
+    ferramentas com efeitos exigem testes e autorização adicionais;
+  </li>
+  <li>
+    datasets e políticas sensíveis precisam de responsáveis claros;
+  </li>
+  <li>exceções possuem prazo, motivo e proprietário;</li>
+  <li>segredos ficam fora de artefatos e logs;</li>
+  <li>aprovações e rollbacks permanecem auditáveis.</li>
+</ul>
+
+<h2>Diagnostique por componente e versão</h2>
+
+<ol>
+  <li>
+    conter: desligar flag, limitar ferramenta ou restaurar release;
+  </li>
+  <li>identificar configurações e tráfego afetados;</li>
+  <li>
+    separar falha de código, prompt, retrieval, modelo, ferramenta ou dado;
+  </li>
+  <li>preservar evidência sem ampliar exposição;</li>
+  <li>corrigir e adicionar caso à regressão;</li>
+  <li>validar a correção em ambiente controlado;</li>
+  <li>documentar causa, impacto e prevenção.</li>
+</ol>
+
+<h2>Qualidade precisa conviver com confiabilidade</h2>
+
+<p>
+  Acompanhe SLOs de disponibilidade e latência junto de validade de schema,
+  recusa, recuperação, groundedness, chamadas de ferramentas, custo e
+  feedback. Métricas devem ser segmentáveis por funcionalidade e versão sem
+  expor conteúdo desnecessário.
+</p>
+
+<h2>LLMOps torna mudança rápida compatível com controle</h2>
+
+<p>
+  O objetivo não é criar burocracia, mas tornar cada release identificável,
+  comparável e reversível. Sem essa base, melhoria e regressão se
+  confundem.
+</p>
+
+<p>
+  O próximo artigo aprofunda como monitorar a qualidade das respostas em
+  produção.
+</p>
+
+<p>
+  <strong
+    >Se uma mudança de prompt ou modelo degradasse a qualidade hoje, o seu
+    ciclo operacional identificaria isso antes ou depois de afetar todos os
+    usuários?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="10-testes-automatizados-sistemas-ia.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Testes de sistemas de IA</span>
+  </a>
+  <a
+    href="12-monitorando-qualidade-respostas.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Monitoramento de qualidade</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 11 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #LLMOps #MLOps #GenAI #DevOps #EngenhariaDeSoftware
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t border-slate-200 bg-white py-8">
-      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
-        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
-      </div>
-    </footer>
   </body>
 </html>

@@ -1,2 +1,504 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Índice dos 20 artigos técnicos complementares do AI Software Engineering Playbook."><title>Artigos secundários | AI Software Engineering Playbook</title><style>:root{--bg:#07111f;--panel:#101d30;--line:#2b3d57;--text:#edf3fb;--muted:#a9b9cc;--accent:#22d3ee}*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#07111f,#101b32);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6}a{color:inherit}.wrap{width:min(940px,calc(100% - 32px));margin:auto}header{padding:48px 0 28px}.crumbs{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:.9rem}.crumbs a:hover{color:var(--accent)}h1{font-size:clamp(2rem,6vw,3.7rem);line-height:1.05;margin:24px 0 12px}.lead{color:var(--muted);max-width:720px}.list{display:grid;gap:12px;padding:0;margin:24px 0 48px;list-style:none}.list a{display:flex;gap:16px;align-items:baseline;text-decoration:none;background:var(--panel);border:1px solid var(--line);padding:16px 18px;border-radius:12px}.list a:hover,.list a:focus-visible{border-color:var(--accent);transform:translateY(-1px)}.num{color:var(--accent);font:700 .82rem ui-monospace,monospace;min-width:2.2rem}.nav{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:24px 0 40px}.nav a{color:var(--muted)}.nav a:hover{color:var(--accent)}@media(max-width:520px){.nav{flex-direction:column}.list a{align-items:flex-start}}</style></head><body><header class="wrap"><nav class="crumbs" aria-label="Navegação estrutural"><a href="../index.html">Início</a><span aria-hidden="true">/</span><span aria-current="page">Artigos secundários</span></nav><h1>Biblioteca técnica complementar</h1><p class="lead">20 artigos sobre GenAI aplicada, RAG, APIs, resiliência, testes, LLMOps, observabilidade, custos e confiança.</p></header><main class="wrap"><ol class="list"><li><a href="01-do-modelo-ao-produto.html"><span class="num">01</span><span>Do Modelo Ao Produto</span></a></li><li><a href="02-prompt-engineering-pace.html"><span class="num">02</span><span>Prompt Engineering Pace</span></a></li><li><a href="03-rag-cardapios.html"><span class="num">03</span><span>Rag Cardapios</span></a></li><li><a href="04-finetuning-vs-prompt-vs-rag.html"><span class="num">04</span><span>Finetuning Vs Prompt Vs Rag</span></a></li><li><a href="05-llms-como-copilotos-para-devs.html"><span class="num">05</span><span>Llms Como Copilotos Para Devs</span></a></li><li><a href="06-versionamento-prompts-dados-modelos.html"><span class="num">06</span><span>Versionamento Prompts Dados Modelos</span></a></li><li><a href="07-design-apis-genai.html"><span class="num">07</span><span>Design Apis Genai</span></a></li><li><a href="08-tratamento-erros-timeouts-llm.html"><span class="num">08</span><span>Tratamento Erros Timeouts Llm</span></a></li><li><a href="09-arquiteturas-event-driven-ia.html"><span class="num">09</span><span>Arquiteturas Event Driven IA</span></a></li><li><a href="10-testes-automatizados-sistemas-ia.html"><span class="num">10</span><span>Testes Automatizados Sistemas IA</span></a></li><li><a href="11-basico-mlops-llmops.html"><span class="num">11</span><span>Basico Mlops Llmops</span></a></li><li><a href="12-monitorando-qualidade-respostas.html"><span class="num">12</span><span>Monitorando Qualidade Respostas</span></a></li><li><a href="13-logging-metricas-genai.html"><span class="num">13</span><span>Logging Metricas Genai</span></a></li><li><a href="14-custos-ia-chamadas-modelo.html"><span class="num">14</span><span>Custos IA Chamadas Modelo</span></a></li><li><a href="15-ab-testing-features-ia.html"><span class="num">15</span><span>Ab Testing Features IA</span></a></li><li><a href="16-alucinacoes-llm-mitigacao.html"><span class="num">16</span><span>Alucinacoes Llm Mitigacao</span></a></li><li><a href="17-bias-modelos-ia.html"><span class="num">17</span><span>Bias Modelos IA</span></a></li><li><a href="18-interfaces-conversacionais-honestas.html"><span class="num">18</span><span>Interfaces Conversacionais Honestas</span></a></li><li><a href="19-colaboracao-humano-ia.html"><span class="num">19</span><span>Colaboracao Humano IA</span></a></li><li><a href="20-jornada-genai-produtos-digitais.html"><span class="num">20</span><span>Jornada Genai Produtos Digitais</span></a></li></ol><nav class="nav" aria-label="Navegação entre coleções"><a href="../index.html">← Início</a><a href="../Artigos_Principais/index.html">Artigos principais →</a></nav></main></body></html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Índice da Biblioteca Técnica Complementar do AI Software Engineering Playbook: 20 artigos sobre GenAI aplicada, RAG, APIs, resiliência, testes, LLMOps, observabilidade, custos e confiança."
+    />
+    <title>
+      Índice — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
+            colors: {
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Esconde artigos que não correspondem ao filtro de busca */
+      [data-article].is-hidden {
+        display: none;
+      }
+      /* Esconde um módulo inteiro quando nenhum artigo dele sobra visível */
+      [data-block].is-empty {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-linkedin-bg font-sans text-slate-800 antialiased">
+    <main class="mx-auto max-w-5xl px-4 pb-20 pt-4 md:pt-10">
+      <!-- Capa -->
+      <header
+        class="mb-8 overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-700 px-6 py-14 text-center text-white shadow-sm md:py-20"
+      >
+        <svg
+          aria-hidden="true"
+          class="mx-auto mb-5 h-14 w-14 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+        <p
+          class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
+        >
+          Índice da biblioteca complementar
+        </p>
+        <h1 class="mx-auto max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
+          Biblioteca Técnica Complementar
+        </h1>
+        <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
+          20 artigos sobre GenAI aplicada, RAG, APIs, resiliência, testes,
+          LLMOps, observabilidade, custos e confiança — aprofundamento
+          técnico complementar ao plano editorial principal.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-2">
+          <span
+            class="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200"
+          >
+            20 de 20 publicados
+          </span>
+        </div>
+      </header>
+
+      <!-- Busca -->
+      <div class="mb-8">
+        <label for="busca" class="sr-only">Buscar artigo por título</label>
+        <div class="relative">
+          <svg
+            aria-hidden="true"
+            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-4.35-4.35m1.35-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+          <input
+            id="busca"
+            type="search"
+            placeholder="Buscar por título ou número do artigo..."
+            class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-linkedin-blue focus:outline-none focus:ring-2 focus:ring-linkedin-blue/20"
+          />
+        </div>
+        <p id="contador" class="mt-2 text-xs text-slate-500">
+          20 artigos encontrados
+        </p>
+      </div>
+
+      <!-- Módulos -->
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Módulo 1 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Módulo 1</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              Fundamentos e Estratégias de Customização
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="01-do-modelo-ao-produto.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">01</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Do modelo ao produto: o que torna uma aplicação de IA
+                  confiável</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="02-prompt-engineering-pace.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">02</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Prompt engineering como especificação testável</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="03-rag-cardapios.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">03</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >RAG para dados dinâmicos: arquitetura, avaliação e
+                  riscos</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="04-finetuning-vs-prompt-vs-rag.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">04</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Prompt, RAG ou fine-tuning? Um guia de decisão</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Módulo 2 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Módulo 2</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              Arquitetura e Desenvolvimento de Software para IA
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="05-llms-como-copilotos-para-devs.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">05</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >IA como copiloto de desenvolvimento: contexto, limites e
+                  validação</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="06-versionamento-prompts-dados-modelos.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">06</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Versionamento de sistemas de IA: da resposta à
+                  evidência</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="07-design-apis-genai.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">07</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Design de APIs para IA: contratos para sistemas
+                  probabilísticos</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="08-tratamento-erros-timeouts-llm.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">08</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Resiliência em chamadas de IA: timeouts, retries e
+                  degradação</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="09-arquiteturas-event-driven-ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">09</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Arquiteturas orientadas a eventos para IA</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Módulo 3 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Módulo 3</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              LLMOps, Observabilidade e Custos
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="10-testes-automatizados-sistemas-ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">10</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Testes de sistemas de IA: contratos, avaliações e
+                  regressões</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="11-basico-mlops-llmops.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">11</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >LLMOps como ciclo operacional de aplicações de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="12-monitorando-qualidade-respostas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">12</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Monitoramento de qualidade em aplicações de IA</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="13-logging-metricas-genai.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">13</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Telemetria para aplicações de IA: logs, métricas e
+                  traces</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="14-custos-ia-chamadas-modelo.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">14</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >FinOps para aplicações de IA: custo por tarefa e valor</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Módulo 4 -->
+        <section
+          data-block
+          class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6"
+        >
+          <div class="mb-4">
+            <span
+              class="text-xs font-semibold uppercase tracking-wide text-linkedin-blue"
+              >Módulo 4</span
+            >
+            <h2 class="mt-1 text-lg font-bold text-slate-900">
+              Confiança, Ética e UX do Produto
+            </h2>
+          </div>
+          <ul class="space-y-1">
+            <li data-article>
+              <a
+                href="15-ab-testing-features-ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">15</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Experimentação em funcionalidades de IA: além do teste
+                  A/B</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="16-alucinacoes-llm-mitigacao.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">16</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Respostas não sustentadas: prevenção, detecção e
+                  contenção</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="17-bias-modelos-ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">17</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Fairness em sistemas de IA: medir, decidir e governar</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="18-interfaces-conversacionais-honestas.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">18</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Interfaces de IA honestas: transparência, controle e
+                  recuperação</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="19-colaboracao-humano-ia.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">19</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >Colaboração humano–agente: autoridade, handoff e
+                  rastreabilidade</span
+                >
+              </a>
+            </li>
+            <li data-article>
+              <a
+                href="20-jornada-genai-produtos-digitais.html"
+                class="group flex gap-3 rounded-md px-2 py-2 text-sm hover:bg-slate-50"
+              >
+                <span class="font-mono text-slate-400">20</span>
+                <span class="text-slate-700 group-hover:text-linkedin-blue"
+                  >A jornada de AI Software Engineering: da hipótese à
+                  operação</span
+                >
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <p id="sem-resultado" class="mt-8 hidden text-center text-sm text-slate-500">
+        Nenhum artigo encontrado para essa busca.
+      </p>
+
+      <nav
+        aria-label="Navegação entre coleções"
+        class="mt-10 flex flex-col justify-between gap-3 border-t border-slate-200 pt-6 text-sm sm:flex-row"
+      >
+        <a href="../index.html" class="font-semibold text-linkedin-blue hover:underline"
+          >← Início do repositório</a
+        >
+        <a
+          href="../Artigos_Principais/index.html"
+          class="font-semibold text-linkedin-blue hover:underline"
+          >Artigos principais →</a
+        >
+      </nav>
+
+      <footer class="mt-8 text-center text-xs text-slate-400">
+        Biblioteca Técnica Complementar — AI Software Engineering Playbook —
+        20 artigos
+      </footer>
+    </main>
+
+    <script>
+      const input = document.getElementById("busca");
+      const contador = document.getElementById("contador");
+      const semResultado = document.getElementById("sem-resultado");
+      const artigos = Array.from(document.querySelectorAll("[data-article]"));
+      const blocos = Array.from(document.querySelectorAll("[data-block]"));
+
+      function normalizar(texto) {
+        return texto
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "");
+      }
+
+      input.addEventListener("input", () => {
+        const termo = normalizar(input.value.trim());
+        let visiveis = 0;
+
+        artigos.forEach((li) => {
+          const texto = normalizar(li.textContent);
+          const corresponde = termo === "" || texto.includes(termo);
+          li.classList.toggle("is-hidden", !corresponde);
+          if (corresponde) visiveis++;
+        });
+
+        blocos.forEach((bloco) => {
+          const algumVisivel = bloco.querySelector(
+            "[data-article]:not(.is-hidden)"
+          );
+          bloco.classList.toggle("is-empty", !algumVisivel);
+        });
+
+        contador.textContent =
+          visiveis === 1
+            ? "1 artigo encontrado"
+            : visiveis + " artigos encontrados";
+        semResultado.classList.toggle("hidden", visiveis !== 0);
+      });
+    </script>
+  </body>
+</html>

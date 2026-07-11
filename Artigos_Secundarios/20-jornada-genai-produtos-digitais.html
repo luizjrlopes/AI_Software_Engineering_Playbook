@@ -1,237 +1,319 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Síntese da jornada de AI Software Engineering, da hipótese ao sistema operável e governado."
     />
-    <title>A jornada de AI Software Engineering: da hipótese à operação</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+      20. A jornada de AI Software Engineering: da hipótese à operação — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Fira+Code&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: { sans: ["Inter"], mono: ["Fira Code"] },
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
             colors: {
-              brand: {
-                50: "#eff6ff",
-                100: "#dbeafe",
-                600: "#2563eb",
-                700: "#1d4ed8",
-                900: "#1e3a8a",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: Inter, sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800">
-    <header class="sticky top-0 z-40 border-b bg-white/95">
-      <div class="mx-auto flex max-w-5xl justify-between px-5 py-4">
-        <a href="index.html" class="font-bold text-brand-700"
-          >AI_Software_Engineering_Playbook</a
-        >
-        <nav class="flex gap-4 text-sm">
-          <a href="#jornada">Jornada</a><a href="#evidencias">Evidências</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-blue-500 text-white"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <p class="font-mono text-sm text-blue-100">
-            Artigo 20 · Revisado em julho de 2026
-          </p>
-          <h1 class="mt-4 text-4xl font-extrabold md:text-6xl">
-            A jornada de AI Software Engineering
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl text-blue-100">
-            Da hipótese ao sistema avaliado, seguro, observável, sustentável e
-            conectado a evidências reais.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">
-            IA aplicada é uma disciplina de sistema
-          </h2>
-          <p>
-            Os artigos desta série percorrem uma mudança de perspectiva: sair da
-            demonstração centrada no modelo e chegar a um produto centrado em
-            requisitos, dados, contratos, pessoas e operação.
-          </p>
-          <p>
-            <strong>Tese:</strong> maturidade não é acumular técnicas; é
-            construir a menor arquitetura que atende ao risco e comprovar que
-            ela funciona.
-          </p>
-        </section>
-        <section class="rounded-2xl bg-slate-900 p-8 text-white" id="jornada">
-          <h2 class="text-3xl font-bold">Oito movimentos da jornada</h2>
-          <ol class="mt-6 list-decimal space-y-3 pl-5 text-slate-300">
-            <li>definir problema, usuário e critério de sucesso;</li>
-            <li>estabelecer contratos, escopo e linha de base;</li>
-            <li>escolher entre prompt, RAG, ferramentas ou adaptação;</li>
-            <li>projetar APIs, eventos, estado e resiliência;</li>
-            <li>testar invariantes, qualidade e segurança;</li>
-            <li>versionar a configuração e liberar progressivamente;</li>
-            <li>observar qualidade, custo e impacto;</li>
-            <li>aprender com evidências, incidentes e feedback.</li>
-          </ol>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Capacidades que trabalham juntas</h2>
-          <div class="mt-6 overflow-x-auto">
-            <table class="w-full min-w-[720px] text-left text-sm">
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Capacidade</th>
-                  <th class="p-4">Pergunta central</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th class="p-4">Produto</th>
-                  <td class="p-4">qual problema merece IA?</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Arquitetura</th>
-                  <td class="p-4">onde ficam contratos e estado?</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Dados</th>
-                  <td class="p-4">qual fonte é autorizada e atual?</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Qualidade</th>
-                  <td class="p-4">qual evidência permite aprovar?</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Segurança</th>
-                  <td class="p-4">
-                    qual dano e autoridade precisam de limite?
-                  </td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Operação</th>
-                  <td class="p-4">como detectar, conter e aprender?</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-8"
-          id="evidencias"
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <h2 class="text-3xl font-bold">
-            A próxima etapa é transformar conceitos em prova
-          </h2>
-          <p>
-            Este acervo foi deliberadamente classificado como conceitual onde
-            ainda não existe projeto verificável. A evolução exige:
-          </p>
-          <ul>
-            <li>
-              projeto principal de agentes com autoridade, handoff e gates;
-            </li>
-            <li>
-              projeto RAG com ingestion, autorização e dataset de avaliação;
-            </li>
-            <li>
-              projeto de automação com ferramentas, idempotência e
-              observabilidade;
-            </li>
-            <li>ADRs, testes, threat model, runbooks e demos;</li>
-            <li>
-              estudos de caso que registrem limitações e resultados reais.
-            </li>
-          </ul>
-        </section>
-        <section
-          class="copy rounded-2xl border border-amber-200 bg-amber-50 p-8"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <h2 class="text-3xl font-bold">
-            Critério para publicar um estudo de caso
-          </h2>
-          <ul>
-            <li>problema e contexto verificáveis;</li>
-            <li>responsabilidade do autor claramente definida;</li>
-            <li>arquitetura e decisões documentadas;</li>
-            <li>evidências acessíveis ou sanitizadas;</li>
-            <li>resultados sem métricas inventadas;</li>
-            <li>limitações e próximos passos explícitos.</li>
-          </ul>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Roteiro de aprofundamento</h2>
-          <p>
-            O acervo continuará com conteúdos específicos sobre Context Packs,
-            escopo e autoridade de agentes, handoff, ADRs e gates, prompt
-            injection, Azure, estudos de caso e integração entre LinkedIn,
-            GitHub e portfólio.
-          </p>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Conclusão</h2>
-          <p>
-            AI Software Engineering conecta capacidade probabilística a sistemas
-            com comportamento observável e responsabilidade definida. A série
-            termina como sequência numerada, mas o repositório permanece como
-            base editorial viva.
-          </p>
-        </section>
-        <nav
-          class="grid gap-4 sm:grid-cols-2"
-          aria-label="Artigos relacionados"
-        >
-          <a
-            href="19-colaboracao-humano-ia.html"
-            class="rounded-xl bg-brand-50 p-5"
-            >← Colaboração humano–agente</a
-          ><a href="index.html" class="rounded-xl bg-brand-50 p-5 text-right"
-            >Voltar ao índice →</a
-          >
-        </nav>
-      </div>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 4 — Confiança, Ética e UX do Produto
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>20. A jornada de AI Software Engineering: da hipótese à operação</h1>
+
+<p>
+  Os artigos desta biblioteca percorrem uma mudança de perspectiva: sair da
+  demonstração centrada no modelo e chegar a um produto centrado em
+  requisitos, dados, contratos, pessoas e operação.
+</p>
+
+<blockquote>
+  <p>
+    Maturidade não é acumular técnicas; é construir a menor arquitetura que
+    atende ao risco e comprovar que ela funciona.
+  </p>
+</blockquote>
+
+<h2>Oito movimentos da jornada</h2>
+
+<ol>
+  <li>definir problema, usuário e critério de sucesso;</li>
+  <li>estabelecer contratos, escopo e linha de base;</li>
+  <li>escolher entre prompt, RAG, ferramentas ou adaptação;</li>
+  <li>projetar APIs, eventos, estado e resiliência;</li>
+  <li>testar invariantes, qualidade e segurança;</li>
+  <li>versionar a configuração e liberar progressivamente;</li>
+  <li>observar qualidade, custo e impacto;</li>
+  <li>aprender com evidências, incidentes e feedback.</li>
+</ol>
+
+<h2>Capacidades que trabalham juntas</h2>
+
+<section aria-labelledby="capacidades-jornada" class="not-prose my-10">
+  <h2 id="capacidades-jornada" class="mb-5 text-2xl font-semibold text-slate-900">
+    Capacidade e pergunta central
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Capacidade</th>
+          <th class="px-4 py-3 font-semibold">Pergunta central</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Produto</td>
+          <td class="px-4 py-3 text-slate-700">qual problema merece IA?</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Arquitetura</td>
+          <td class="px-4 py-3 text-slate-700">onde ficam contratos e estado?</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Dados</td>
+          <td class="px-4 py-3 text-slate-700">qual fonte é autorizada e atual?</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Qualidade</td>
+          <td class="px-4 py-3 text-slate-700">qual evidência permite aprovar?</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Segurança</td>
+          <td class="px-4 py-3 text-slate-700">qual dano e autoridade precisam de limite?</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Operação</td>
+          <td class="px-4 py-3 text-slate-700">como detectar, conter e aprender?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>A próxima etapa é transformar conceitos em prova</h2>
+
+<p>
+  Este acervo foi deliberadamente classificado como conceitual onde ainda
+  não existe projeto verificável. A evolução exige:
+</p>
+
+<ul>
+  <li>
+    projeto principal de agentes com autoridade, handoff e gates;
+  </li>
+  <li>
+    projeto RAG com ingestion, autorização e dataset de avaliação;
+  </li>
+  <li>
+    projeto de automação com ferramentas, idempotência e observabilidade;
+  </li>
+  <li>ADRs, testes, threat model, runbooks e demos;</li>
+  <li>
+    estudos de caso que registrem limitações e resultados reais.
+  </li>
+</ul>
+
+<h2>Critério para publicar um estudo de caso</h2>
+
+<ul>
+  <li>problema e contexto verificáveis;</li>
+  <li>responsabilidade do autor claramente definida;</li>
+  <li>arquitetura e decisões documentadas;</li>
+  <li>evidências acessíveis ou sanitizadas;</li>
+  <li>resultados sem métricas inventadas;</li>
+  <li>limitações e próximos passos explícitos.</li>
+</ul>
+
+<h2>Roteiro de aprofundamento</h2>
+
+<p>
+  O acervo continuará com conteúdos específicos sobre Context Packs,
+  escopo e autoridade de agentes, handoff, ADRs e gates, prompt injection,
+  estudos de caso e integração entre LinkedIn, GitHub e portfólio.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  AI Software Engineering conecta capacidade probabilística a sistemas com
+  comportamento observável e responsabilidade definida. Esta biblioteca
+  termina como sequência numerada, mas o repositório permanece como base
+  editorial viva.
+</p>
+
+<p>
+  <strong
+    >Dos oito movimentos desta jornada, qual deles o seu sistema de IA
+    atual ainda trata como opcional, em vez de parte da arquitetura?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="19-colaboracao-humano-ia.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Colaboração humano–agente</span>
+  </a>
+  <a
+    href="index.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Voltar</span>
+    <span class="mt-1 block font-semibold text-slate-800">Índice da biblioteca complementar</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 20 de 20</strong> — último artigo da Biblioteca Técnica
+    Complementar do AI Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AISoftwareEngineering #GenAI #EngenhariaDeSoftware #MLOps #Arquitetura
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t bg-white py-8 text-center text-sm text-slate-500">
-      AI Software Engineering
-    </footer>
   </body>
 </html>

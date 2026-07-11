@@ -1,501 +1,454 @@
 <!doctype html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Guia de decisão entre prompt engineering, RAG e fine-tuning para aplicações com IA generativa."
     />
-    <title>Prompt, RAG ou Fine-tuning? Um guia de decisão</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+      04. Prompt, RAG ou fine-tuning? Um guia de decisão — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+    </title>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["Fira Code", "monospace"],
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
             },
             colors: {
-              brand: {
-                50: "#eef2ff",
-                100: "#e0e7ff",
-                500: "#6366f1",
-                600: "#4f46e5",
-                700: "#4338ca",
-                900: "#312e81",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .prose-copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .prose-copy ul,
-      .prose-copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .prose-copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .prose-copy ul {
-        list-style: disc;
-      }
-      .prose-copy ol {
-        list-style: decimal;
-      }
-      .code {
-        font-family: "Fira Code", monospace;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased">
-    <header
-      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
     >
-      <div
-        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <a
-          href="index.html"
-          class="font-bold text-brand-700 hover:text-brand-900"
-          >AI_Software_Engineering_Playbook</a
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-        <nav
-          aria-label="Navegação do artigo"
-          class="flex gap-4 text-sm font-medium"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <a href="#decisao" class="hover:text-brand-700">Decisão</a>
-          <a href="#matriz" class="hover:text-brand-700">Matriz</a>
-          <a href="#exemplo" class="hover:text-brand-700">Exemplo</a>
-        </nav>
-      </div>
-    </header>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 1 — Fundamentos e Estratégias de Customização
+        </span>
+      </header>
 
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-indigo-500 text-white"
-      >
-        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div
-            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
-          >
-            <span class="rounded-full bg-white/15 px-3 py-1">IA aplicada</span>
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Artigo conceitual</span
-            >
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Nível intermediário</span
-            >
-          </div>
-          <p class="mb-4 font-mono text-sm text-indigo-100">
-            Artigo 04 · Revisado em julho de 2026
-          </p>
-          <h1
-            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
-          >
-            Prompt, RAG ou Fine-tuning?
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-indigo-100">
-            A escolha não começa pela técnica. Começa pelo que precisa mudar: a
-            instrução, o conhecimento disponível ou o comportamento do modelo.
-          </p>
-        </div>
-      </section>
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>04. Prompt, RAG ou fine-tuning? Um guia de decisão</h1>
 
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <aside
-          class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
-        >
-          <h2 class="font-bold">Nota de transparência</h2>
-          <p class="mt-2 leading-relaxed">
-            Os cenários deste artigo são exemplos hipotéticos para explicar
-            decisões arquiteturais. Eles não representam resultados de produção
-            nem métricas de um projeto específico.
-          </p>
-        </aside>
+<div class="not-prose my-8 rounded-md border border-amber-200 border-l-4 border-l-amber-500 bg-amber-50 p-6 text-amber-950">
+  <h4 class="mb-2 font-sans text-base font-semibold uppercase tracking-wide text-amber-900">
+    Nota de transparência
+  </h4>
+  <p class="text-sm leading-relaxed">
+    Os cenários deste artigo são exemplos hipotéticos para explicar decisões
+    arquiteturais. Eles não representam resultados de produção nem métricas
+    de um projeto específico.
+  </p>
+</div>
 
-        <section
-          class="prose-copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="problema"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-600"
-          >
-            O problema
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Três técnicas resolvem três classes de mudança
-          </h2>
-          <p>
-            É comum tratar prompt engineering, RAG e fine-tuning como
-            concorrentes. Na prática, eles atuam em camadas diferentes e podem
-            ser combinados. Escolher pela popularidade da técnica tende a
-            produzir sistemas caros, difíceis de avaliar e frágeis em produção.
-          </p>
-          <p>
-            A pergunta útil é: <strong>o que exatamente precisa mudar?</strong>
-          </p>
-          <ul>
-            <li>
-              <strong>Instrução:</strong> como a tarefa deve ser executada e
-              qual formato deve ser seguido.
-            </li>
-            <li>
-              <strong>Conhecimento:</strong> quais fatos, documentos ou dados
-              atuais são necessários.
-            </li>
-            <li>
-              <strong>Comportamento:</strong> qual padrão recorrente o modelo
-              deve aprender de muitos exemplos.
-            </li>
-          </ul>
-        </section>
+<p>
+  É comum tratar prompt engineering, RAG e fine-tuning como concorrentes. Na
+  prática, eles atuam em camadas diferentes e podem ser combinados. Escolher
+  pela popularidade da técnica tende a produzir sistemas caros, difíceis de
+  avaliar e frágeis em produção.
+</p>
 
-        <section class="grid gap-5 md:grid-cols-3" id="decisao">
-          <article
-            class="rounded-2xl border-t-4 border-sky-500 bg-white p-6 shadow-sm"
-          >
-            <p
-              class="font-mono text-xs font-bold uppercase tracking-wider text-sky-700"
-            >
-              Mudar a instrução
-            </p>
-            <h2 class="mt-3 text-2xl font-bold">Prompt engineering</h2>
-            <p class="mt-4 leading-relaxed text-slate-600">
-              Use quando o modelo já possui capacidade suficiente e precisa de
-              objetivo, contexto, exemplos, restrições ou formato de saída mais
-              claros.
-            </p>
-            <h3 class="mt-5 font-bold">Bom ponto de partida</h3>
-            <ul
-              class="mt-2 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-600"
-            >
-              <li>prototipação e descoberta;</li>
-              <li>extração e classificação simples;</li>
-              <li>respostas estruturadas;</li>
-              <li>mudanças frequentes nas regras.</li>
-            </ul>
-          </article>
+<p>A pergunta útil é: <strong>o que exatamente precisa mudar?</strong></p>
 
-          <article
-            class="rounded-2xl border-t-4 border-emerald-500 bg-white p-6 shadow-sm"
-          >
-            <p
-              class="font-mono text-xs font-bold uppercase tracking-wider text-emerald-700"
-            >
-              Mudar o conhecimento
-            </p>
-            <h2 class="mt-3 text-2xl font-bold">RAG</h2>
-            <p class="mt-4 leading-relaxed text-slate-600">
-              Use quando a resposta depende de fontes privadas, extensas,
-              rastreáveis ou atualizadas com mais frequência do que um ciclo de
-              treinamento.
-            </p>
-            <h3 class="mt-5 font-bold">Bom ponto de partida</h3>
-            <ul
-              class="mt-2 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-600"
-            >
-              <li>documentação interna;</li>
-              <li>catálogos e políticas dinâmicas;</li>
-              <li>assistentes com citações;</li>
-              <li>pesquisa em bases autorizadas.</li>
-            </ul>
-          </article>
+<ul>
+  <li>
+    <strong>Instrução:</strong> como a tarefa deve ser executada e qual
+    formato deve ser seguido.
+  </li>
+  <li>
+    <strong>Conhecimento:</strong> quais fatos, documentos ou dados atuais
+    são necessários.
+  </li>
+  <li>
+    <strong>Comportamento:</strong> qual padrão recorrente o modelo deve
+    aprender de muitos exemplos.
+  </li>
+</ul>
 
-          <article
-            class="rounded-2xl border-t-4 border-violet-500 bg-white p-6 shadow-sm"
-          >
-            <p
-              class="font-mono text-xs font-bold uppercase tracking-wider text-violet-700"
-            >
-              Mudar o comportamento
-            </p>
-            <h2 class="mt-3 text-2xl font-bold">Fine-tuning</h2>
-            <p class="mt-4 leading-relaxed text-slate-600">
-              Considere quando existe um padrão estável, um conjunto de exemplos
-              de alta qualidade e uma avaliação capaz de demonstrar ganho sobre
-              uma linha de base.
-            </p>
-            <h3 class="mt-5 font-bold">Pode fazer sentido</h3>
-            <ul
-              class="mt-2 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-600"
-            >
-              <li>estilo ou formato recorrente;</li>
-              <li>tarefas especializadas repetitivas;</li>
-              <li>redução de prompts muito longos;</li>
-              <li>comportamento validado por dataset.</li>
-            </ul>
-          </article>
-        </section>
+<section aria-labelledby="tres-tecnicas" class="not-prose my-10">
+  <h2 id="tres-tecnicas" class="mb-5 text-2xl font-semibold text-slate-900">
+    Três técnicas, três tipos de mudança
+  </h2>
+  <div class="grid gap-5 md:grid-cols-3">
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+      <h3 class="mb-2 text-lg font-semibold text-slate-900">
+        Mudar a instrução: prompt engineering
+      </h3>
+      <p class="mb-3 text-sm leading-relaxed text-slate-700">
+        Use quando o modelo já possui capacidade suficiente e precisa de
+        objetivo, contexto, exemplos, restrições ou formato de saída mais
+        claros.
+      </p>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Bom ponto de partida
+      </p>
+      <ul class="text-sm text-slate-700">
+        <li>prototipação e descoberta;</li>
+        <li>extração e classificação simples;</li>
+        <li>respostas estruturadas;</li>
+        <li>mudanças frequentes nas regras.</li>
+      </ul>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+      <h3 class="mb-2 text-lg font-semibold text-slate-900">
+        Mudar o conhecimento: RAG
+      </h3>
+      <p class="mb-3 text-sm leading-relaxed text-slate-700">
+        Use quando a resposta depende de fontes privadas, extensas,
+        rastreáveis ou atualizadas com mais frequência do que um ciclo de
+        treinamento.
+      </p>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Bom ponto de partida
+      </p>
+      <ul class="text-sm text-slate-700">
+        <li>documentação interna;</li>
+        <li>catálogos e políticas dinâmicas;</li>
+        <li>assistentes com citações;</li>
+        <li>pesquisa em bases autorizadas.</li>
+      </ul>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+      <h3 class="mb-2 text-lg font-semibold text-slate-900">
+        Mudar o comportamento: fine-tuning
+      </h3>
+      <p class="mb-3 text-sm leading-relaxed text-slate-700">
+        Considere quando existe um padrão estável, um conjunto de exemplos de
+        alta qualidade e uma avaliação capaz de demonstrar ganho sobre uma
+        linha de base.
+      </p>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Pode fazer sentido
+      </p>
+      <ul class="text-sm text-slate-700">
+        <li>estilo ou formato recorrente;</li>
+        <li>tarefas especializadas repetitivas;</li>
+        <li>redução de prompts muito longos;</li>
+        <li>comportamento validado por dataset.</li>
+      </ul>
+    </div>
+  </div>
+</section>
 
-        <section
-          class="prose-copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="matriz"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-600"
-          >
-            Matriz de decisão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Compare pelo requisito, não pelo hype
-          </h2>
-          <div class="mt-7 overflow-x-auto">
-            <table
-              class="w-full min-w-[760px] border-collapse text-left text-sm"
-            >
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Critério</th>
-                  <th class="p-4">Prompt</th>
-                  <th class="p-4">RAG</th>
-                  <th class="p-4">Fine-tuning</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <th class="p-4">Alteração principal</th>
-                  <td class="p-4">Instrução e contexto</td>
-                  <td class="p-4">Conhecimento consultado</td>
-                  <td class="p-4">Comportamento aprendido</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Dados necessários</th>
-                  <td class="p-4">Poucos exemplos</td>
-                  <td class="p-4">Base consultável</td>
-                  <td class="p-4">Dataset curado</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Atualização</th>
-                  <td class="p-4">Editar instrução</td>
-                  <td class="p-4">Atualizar índice/fontes</td>
-                  <td class="p-4">Novo ciclo de treino</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Rastreabilidade factual</th>
-                  <td class="p-4">Limitada</td>
-                  <td class="p-4">Alta, se houver citações</td>
-                  <td class="p-4">Não é garantida</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Complexidade operacional</th>
-                  <td class="p-4">Baixa</td>
-                  <td class="p-4">Média/alta</td>
-                  <td class="p-4">Alta</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Risco típico</th>
-                  <td class="p-4">Prompt frágil ou longo</td>
-                  <td class="p-4">Recuperação irrelevante</td>
-                  <td class="p-4">Dataset ruim ou overfitting</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="text-sm text-slate-500">
-            Os níveis são relativos. Latência, custo e qualidade devem ser
-            medidos no ambiente real, pois variam conforme modelo, arquitetura,
-            volume e provedor.
-          </p>
-        </section>
+<h2>Compare pelo requisito, não pelo hype</h2>
 
-        <section
-          class="prose-copy rounded-2xl bg-slate-900 p-7 text-slate-200 shadow-sm md:p-10"
-          id="fluxo"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-indigo-300"
-          >
-            Fluxo recomendado
-          </p>
-          <h2 class="mt-3 text-3xl font-bold text-white">
-            Comece simples e aumente a complexidade com evidência
-          </h2>
-          <ol>
-            <li>
-              <strong class="text-white">Defina a avaliação.</strong> Registre
-              exemplos, critérios e linha de base antes de otimizar.
-            </li>
-            <li>
-              <strong class="text-white"
-                >Teste prompt e saída estruturada.</strong
-              >
-              Verifique se instruções melhores resolvem o problema.
-            </li>
-            <li>
-              <strong class="text-white">Adicione ferramentas ou RAG.</strong>
-              Faça isso quando faltar conhecimento atual, privado ou
-              verificável.
-            </li>
-            <li>
-              <strong class="text-white">Meça a recuperação.</strong> Separe
-              falhas de busca das falhas de geração.
-            </li>
-            <li>
-              <strong class="text-white">Considere fine-tuning.</strong> Exija
-              dataset curado e ganho mensurável sobre a melhor linha de base.
-            </li>
-            <li>
-              <strong class="text-white"
-                >Combine técnicas somente quando necessário.</strong
-              >
-              Cada camada adiciona custo operacional e novos modos de falha.
-            </li>
-          </ol>
-        </section>
+<section aria-labelledby="matriz-decisao" class="not-prose my-10">
+  <h2 id="matriz-decisao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Matriz de decisão
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Critério</th>
+          <th class="px-4 py-3 font-semibold">Prompt</th>
+          <th class="px-4 py-3 font-semibold">RAG</th>
+          <th class="px-4 py-3 font-semibold">Fine-tuning</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Alteração principal</td>
+          <td class="px-4 py-3 text-slate-700">Instrução e contexto</td>
+          <td class="px-4 py-3 text-slate-700">Conhecimento consultado</td>
+          <td class="px-4 py-3 text-slate-700">Comportamento aprendido</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Dados necessários</td>
+          <td class="px-4 py-3 text-slate-700">Poucos exemplos</td>
+          <td class="px-4 py-3 text-slate-700">Base consultável</td>
+          <td class="px-4 py-3 text-slate-700">Dataset curado</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Atualização</td>
+          <td class="px-4 py-3 text-slate-700">Editar instrução</td>
+          <td class="px-4 py-3 text-slate-700">Atualizar índice/fontes</td>
+          <td class="px-4 py-3 text-slate-700">Novo ciclo de treino</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Rastreabilidade factual</td>
+          <td class="px-4 py-3 text-slate-700">Limitada</td>
+          <td class="px-4 py-3 text-slate-700">Alta, se houver citações</td>
+          <td class="px-4 py-3 text-slate-700">Não é garantida</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Complexidade operacional</td>
+          <td class="px-4 py-3 text-slate-700">Baixa</td>
+          <td class="px-4 py-3 text-slate-700">Média/alta</td>
+          <td class="px-4 py-3 text-slate-700">Alta</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Risco típico</td>
+          <td class="px-4 py-3 text-slate-700">Prompt frágil ou longo</td>
+          <td class="px-4 py-3 text-slate-700">Recuperação irrelevante</td>
+          <td class="px-4 py-3 text-slate-700">Dataset ruim ou overfitting</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-        <section
-          class="prose-copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="exemplo"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-600"
-          >
-            Exemplo hipotético
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Assistente para políticas internas
-          </h2>
-          <p>
-            Imagine um assistente que responde dúvidas de colaboradores sobre
-            políticas da empresa. O requisito ajuda a separar as técnicas:
-          </p>
-          <ul>
-            <li>
-              <strong>Prompt:</strong> define tom, escopo, formato e quando o
-              assistente deve recusar.
-            </li>
-            <li>
-              <strong>RAG:</strong> recupera a versão autorizada das políticas e
-              fornece trechos para citação.
-            </li>
-            <li>
-              <strong>Fine-tuning:</strong> só entra se muitos exemplos
-              demonstrarem um padrão comportamental estável que prompt e RAG não
-              atingem com qualidade suficiente.
-            </li>
-          </ul>
-          <p>
-            Nesse cenário, fine-tuning não substitui a fonte atualizada. Treinar
-            um estilo de resposta e recuperar fatos são responsabilidades
-            diferentes.
-          </p>
-        </section>
+<p class="text-sm text-slate-500">
+  Os níveis são relativos. Latência, custo e qualidade devem ser medidos no
+  ambiente real, pois variam conforme modelo, arquitetura, volume e
+  provedor.
+</p>
 
-        <section
-          class="prose-copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
-          id="riscos"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
-          >
-            Riscos
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            O que cada opção não resolve sozinha
-          </h2>
-          <ul>
-            <li>
-              <strong>Prompt não garante fatos corretos.</strong> Instruir o
-              modelo a não alucinar não cria uma fonte confiável.
-            </li>
-            <li>
-              <strong>RAG não garante boa resposta.</strong> Documentos
-              irrelevantes, permissões erradas e chunking ruim degradam o
-              sistema.
-            </li>
-            <li>
-              <strong>Fine-tuning não é banco de dados.</strong> Ele não é a
-              opção adequada para fatos voláteis que precisam de atualização e
-              citação.
-            </li>
-            <li>
-              <strong>Nenhuma técnica substitui avaliação.</strong> Sem dataset
-              de teste e critérios, não há como saber se houve melhoria.
-            </li>
-            <li>
-              <strong>Combinar tudo não é maturidade.</strong> Arquitetura
-              madura é a menor solução que atende aos requisitos observáveis.
-            </li>
-          </ul>
-        </section>
+<h2>Comece simples e aumente a complexidade com evidência</h2>
 
-        <section
-          class="prose-copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="conclusao"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-600"
-          >
-            Conclusão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">A técnica segue o diagnóstico</h2>
-          <p>
-            Use prompt engineering para melhorar instruções, RAG para fornecer
-            conhecimento recuperável e fine-tuning para ensinar padrões de
-            comportamento sustentados por exemplos. Em muitos sistemas, a
-            solução correta combina prompt e RAG; fine-tuning deve entrar quando
-            a avaliação justificar sua complexidade.
-          </p>
-          <p>
-            A pergunta para discussão é: no seu sistema atual, o problema está
-            na instrução, no conhecimento, no comportamento — ou na ausência de
-            uma avaliação confiável?
-          </p>
-        </section>
+<ol>
+  <li>
+    <strong>Defina a avaliação.</strong> Registre exemplos, critérios e
+    linha de base antes de otimizar.
+  </li>
+  <li>
+    <strong>Teste prompt e saída estruturada.</strong> Verifique se
+    instruções melhores resolvem o problema.
+  </li>
+  <li>
+    <strong>Adicione ferramentas ou RAG.</strong> Faça isso quando faltar
+    conhecimento atual, privado ou verificável.
+  </li>
+  <li>
+    <strong>Meça a recuperação.</strong> Separe falhas de busca das falhas
+    de geração.
+  </li>
+  <li>
+    <strong>Considere fine-tuning.</strong> Exija dataset curado e ganho
+    mensurável sobre a melhor linha de base.
+  </li>
+  <li>
+    <strong>Combine técnicas somente quando necessário.</strong> Cada camada
+    adiciona custo operacional e novos modos de falha.
+  </li>
+</ol>
 
-        <nav
-          aria-label="Artigos relacionados"
-          class="grid gap-4 sm:grid-cols-2"
-        >
-          <a
-            href="03-rag-cardapios.html"
-            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
-          >
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-brand-600"
-              >Anterior</span
-            >
-            <strong class="mt-2 block text-lg text-brand-900"
-              >RAG em cardápios</strong
-            >
-          </a>
-          <a
-            href="05-llms-como-copilotos-para-devs.html"
-            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
-          >
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-brand-600"
-              >Próximo</span
-            >
-            <strong class="mt-2 block text-lg text-brand-900"
-              >LLMs como copilotos para devs</strong
-            >
-          </a>
-        </nav>
-      </div>
+<h2>Exemplo hipotético: assistente para políticas internas</h2>
+
+<p>
+  Imagine um assistente que responde dúvidas de colaboradores sobre
+  políticas da empresa. O requisito ajuda a separar as técnicas:
+</p>
+
+<ul>
+  <li>
+    <strong>Prompt:</strong> define tom, escopo, formato e quando o
+    assistente deve recusar.
+  </li>
+  <li>
+    <strong>RAG:</strong> recupera a versão autorizada das políticas e
+    fornece trechos para citação.
+  </li>
+  <li>
+    <strong>Fine-tuning:</strong> só entra se muitos exemplos demonstrarem
+    um padrão comportamental estável que prompt e RAG não atingem com
+    qualidade suficiente.
+  </li>
+</ul>
+
+<p>
+  Nesse cenário, fine-tuning não substitui a fonte atualizada. Treinar um
+  estilo de resposta e recuperar fatos são responsabilidades diferentes.
+</p>
+
+<h2>O que cada opção não resolve sozinha</h2>
+
+<ul>
+  <li>
+    <strong>Prompt não garante fatos corretos.</strong> Instruir o modelo a
+    não alucinar não cria uma fonte confiável.
+  </li>
+  <li>
+    <strong>RAG não garante boa resposta.</strong> Documentos irrelevantes,
+    permissões erradas e chunking ruim degradam o sistema.
+  </li>
+  <li>
+    <strong>Fine-tuning não é banco de dados.</strong> Ele não é a opção
+    adequada para fatos voláteis que precisam de atualização e citação.
+  </li>
+  <li>
+    <strong>Nenhuma técnica substitui avaliação.</strong> Sem dataset de
+    teste e critérios, não há como saber se houve melhoria.
+  </li>
+  <li>
+    <strong>Combinar tudo não é maturidade.</strong> Arquitetura madura é a
+    menor solução que atende aos requisitos observáveis.
+  </li>
+</ul>
+
+<h2>A técnica segue o diagnóstico</h2>
+
+<p>
+  Use prompt engineering para melhorar instruções, RAG para fornecer
+  conhecimento recuperável e fine-tuning para ensinar padrões de
+  comportamento sustentados por exemplos. Em muitos sistemas, a solução
+  correta combina prompt e RAG; fine-tuning deve entrar quando a avaliação
+  justificar sua complexidade.
+</p>
+
+<p>
+  <strong
+    >No seu sistema atual, o problema está na instrução, no conhecimento, no
+    comportamento — ou na ausência de uma avaliação confiável?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="03-rag-cardapios.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">RAG para dados dinâmicos</span>
+  </a>
+  <a
+    href="05-llms-como-copilotos-para-devs.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">LLMs como copilotos para devs</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 04 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #GenAI #FineTuning #RAG #PromptEngineering #TomadaDeDecisao
+  </p>
+</footer>
+      </article>
     </main>
-
-    <footer class="border-t border-slate-200 bg-white py-8">
-      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
-        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
-      </div>
-    </footer>
   </body>
 </html>

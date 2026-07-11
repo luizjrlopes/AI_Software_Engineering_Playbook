@@ -1,245 +1,311 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Princípios de transparência, controle, incerteza e recuperação para interfaces conversacionais com IA."
     />
     <title>
-      Interfaces de IA honestas: transparência, controle e recuperação
+      18. Interfaces de IA honestas: transparência, controle e recuperação — Biblioteca Técnica Complementar | AI Software Engineering Playbook
     </title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Fira+Code&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: { sans: ["Inter"], mono: ["Fira Code"] },
+            fontFamily: {
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
+            },
             colors: {
-              brand: {
-                50: "#ecfeff",
-                100: "#cffafe",
-                600: "#0891b2",
-                700: "#0e7490",
-                900: "#164e63",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: Inter, sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800">
-    <header class="sticky top-0 z-40 border-b bg-white/95">
-      <div class="mx-auto flex max-w-5xl justify-between px-5 py-4">
-        <a href="index.html" class="font-bold text-brand-700"
-          >AI_Software_Engineering_Playbook</a
-        >
-        <nav class="flex gap-4 text-sm">
-          <a href="#principios">Princípios</a><a href="#falhas">Falhas</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500 text-white"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
+    >
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <div class="mx-auto max-w-5xl px-5 py-20">
-          <p class="font-mono text-sm text-cyan-100">
-            Artigo 18 · Revisado em julho de 2026
-          </p>
-          <h1 class="mt-4 text-4xl font-extrabold md:text-6xl">
-            Interfaces de IA honestas
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl text-cyan-100">
-            Uma experiência confiável comunica capacidade, evidência, incerteza,
-            efeitos e caminhos de recuperação.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">
-            Fluência não deve parecer autoridade
-          </h2>
-          <p>
-            Uma interface conversacional pode esconder origem, limitações e
-            consequências atrás de uma resposta natural. O usuário precisa saber
-            quando interage com IA e o que acontecerá com suas ações e dados.
-          </p>
-          <p>
-            <strong>Tese:</strong> honestidade é uma propriedade do fluxo
-            inteiro, não um aviso isolado.
-          </p>
-        </section>
-        <section
-          class="rounded-2xl bg-slate-900 p-8 text-white"
-          id="principios"
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <h2 class="text-3xl font-bold">Seis princípios</h2>
-          <div class="mt-7 grid gap-4 md:grid-cols-2">
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Identidade</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                deixar claro que há IA e qual serviço responde
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Capacidade</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                explicar escopo e limites em linguagem útil
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Evidência</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                mostrar fontes e validade quando relevante
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Controle</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                prévia, confirmação, edição e cancelamento
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Recuperação</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                corrigir, desfazer ou buscar ajuda
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <strong>Privacidade</strong>
-              <p class="mt-2 text-sm text-slate-300">
-                informar uso e retenção de dados
-              </p>
-            </article>
-          </div>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Comunique incerteza como ação</h2>
-          <div class="mt-6 overflow-x-auto">
-            <table class="w-full min-w-[680px] text-left text-sm">
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Situação</th>
-                  <th class="p-4">Resposta útil</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th class="p-4">Falta contexto</th>
-                  <td class="p-4">pedir dado específico</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Fontes conflitantes</th>
-                  <td class="p-4">
-                    mostrar conflito e não decidir silenciosamente
-                  </td>
-                </tr>
-                <tr>
-                  <th class="p-4">Sem evidência</th>
-                  <td class="p-4">abster e indicar próximo passo</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Ação importante</th>
-                  <td class="p-4">apresentar prévia e pedir confirmação</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <section class="copy rounded-2xl border border-sky-200 bg-sky-50 p-8">
-          <h2 class="text-3xl font-bold">
-            Citações precisam sustentar a afirmação
-          </h2>
-          <ul>
-            <li>apontar para fonte acessível ao usuário;</li>
-            <li>indicar data ou versão quando temporal;</li>
-            <li>ligar fonte à frase relevante;</li>
-            <li>não usar referência decorativa;</li>
-            <li>informar quando a resposta inclui inferência.</li>
-          </ul>
-        </section>
-        <section
-          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-8"
-          id="falhas"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <h2 class="text-3xl font-bold">Projete a experiência de falha</h2>
-          <ul>
-            <li>não apagar entrada após erro;</li>
-            <li>
-              diferenciar indisponibilidade, falta de permissão e falta de
-              evidência;
-            </li>
-            <li>permitir retry seguro ou processamento assíncrono;</li>
-            <li>mostrar se uma ação foi ou não executada;</li>
-            <li>oferecer escalonamento humano quando apropriado;</li>
-            <li>registrar feedback sem exigir exposição de dados.</li>
-          </ul>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Avalie confiança observável</h2>
-          <p>
-            Teste compreensão do usuário, conclusão correta, recuperação de
-            erro, uso de fontes, confirmação de efeitos e taxa de escalonamento.
-            Engajamento isolado não demonstra honestidade.
-          </p>
-        </section>
-        <section class="copy rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="text-3xl font-bold">Conclusão</h2>
-          <p>
-            Interfaces honestas não diminuem a IA; tornam sua utilidade
-            compatível com seus limites. O próximo artigo amplia esse desenho
-            para colaboração entre humanos e agentes.
-          </p>
-        </section>
-        <nav
-          class="grid gap-4 sm:grid-cols-2"
-          aria-label="Artigos relacionados"
-        >
-          <a href="17-bias-modelos-ia.html" class="rounded-xl bg-brand-50 p-5"
-            >← Fairness em IA</a
-          ><a
-            href="19-colaboracao-humano-ia.html"
-            class="rounded-xl bg-brand-50 p-5 text-right"
-            >Colaboração humano–agente →</a
-          >
-        </nav>
-      </div>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 4 — Confiança, Ética e UX do Produto
+        </span>
+      </header>
+
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>18. Interfaces de IA honestas: transparência, controle e recuperação</h1>
+
+<p>
+  Uma interface conversacional pode esconder origem, limitações e
+  consequências atrás de uma resposta natural. O usuário precisa saber
+  quando interage com IA e o que acontecerá com suas ações e dados.
+</p>
+
+<blockquote>
+  <p>
+    Honestidade é uma propriedade do fluxo inteiro, não um aviso isolado.
+  </p>
+</blockquote>
+
+<h2>Seis princípios</h2>
+
+<ul>
+  <li>
+    <strong>Identidade:</strong> deixar claro que há IA e qual serviço
+    responde.
+  </li>
+  <li>
+    <strong>Capacidade:</strong> explicar escopo e limites em linguagem
+    útil.
+  </li>
+  <li>
+    <strong>Evidência:</strong> mostrar fontes e validade quando relevante.
+  </li>
+  <li>
+    <strong>Controle:</strong> prévia, confirmação, edição e cancelamento.
+  </li>
+  <li><strong>Recuperação:</strong> corrigir, desfazer ou buscar ajuda.</li>
+  <li><strong>Privacidade:</strong> informar uso e retenção de dados.</li>
+</ul>
+
+<h2>Comunique incerteza como ação</h2>
+
+<section aria-labelledby="incerteza-acao" class="not-prose my-10">
+  <h2 id="incerteza-acao" class="mb-5 text-2xl font-semibold text-slate-900">
+    Situação e resposta útil
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Situação</th>
+          <th class="px-4 py-3 font-semibold">Resposta útil</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Falta contexto</td>
+          <td class="px-4 py-3 text-slate-700">pedir dado específico</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Fontes conflitantes</td>
+          <td class="px-4 py-3 text-slate-700">mostrar conflito e não decidir silenciosamente</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Sem evidência</td>
+          <td class="px-4 py-3 text-slate-700">abster e indicar próximo passo</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Ação importante</td>
+          <td class="px-4 py-3 text-slate-700">apresentar prévia e pedir confirmação</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>Citações precisam sustentar a afirmação</h2>
+
+<ul>
+  <li>apontar para fonte acessível ao usuário;</li>
+  <li>indicar data ou versão quando temporal;</li>
+  <li>ligar fonte à frase relevante;</li>
+  <li>não usar referência decorativa;</li>
+  <li>informar quando a resposta inclui inferência.</li>
+</ul>
+
+<h2>Projete a experiência de falha</h2>
+
+<ul>
+  <li>não apagar entrada após erro;</li>
+  <li>
+    diferenciar indisponibilidade, falta de permissão e falta de evidência;
+  </li>
+  <li>permitir retry seguro ou processamento assíncrono;</li>
+  <li>mostrar se uma ação foi ou não executada;</li>
+  <li>oferecer escalonamento humano quando apropriado;</li>
+  <li>registrar feedback sem exigir exposição de dados.</li>
+</ul>
+
+<h2>Avalie confiança observável</h2>
+
+<p>
+  Teste compreensão do usuário, conclusão correta, recuperação de erro, uso
+  de fontes, confirmação de efeitos e taxa de escalonamento. Engajamento
+  isolado não demonstra honestidade.
+</p>
+
+<h2>Conclusão</h2>
+
+<p>
+  Interfaces honestas não diminuem a IA; tornam sua utilidade compatível
+  com seus limites.
+</p>
+
+<p>
+  O próximo artigo amplia esse desenho para colaboração entre humanos e
+  agentes.
+</p>
+
+<p>
+  <strong
+    >A interface do seu produto de IA hoje mostra ao usuário quando ele
+    pode confirmar, corrigir ou desfazer uma ação, ou só apresenta a
+    resposta como definitiva?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="17-bias-modelos-ia.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Fairness em sistemas de IA</span>
+  </a>
+  <a
+    href="19-colaboracao-humano-ia.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Colaboração humano–agente</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 18 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #UXDesign #GenAI #ConfiancaEmIA #ExperienciaDoUsuario #InterfacesConversacionais
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t bg-white py-8 text-center text-sm text-slate-500">
-      AI Software Engineering
-    </footer>
   </body>
 </html>

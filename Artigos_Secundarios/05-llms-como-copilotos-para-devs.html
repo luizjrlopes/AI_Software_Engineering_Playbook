@@ -1,438 +1,406 @@
 <!doctype html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Workflow governado para desenvolvimento de software assistido por IA com contexto, escopo, testes e revisão humana."
     />
     <title>
-      IA como copiloto de desenvolvimento: contexto, limites e validação
+      05. IA como copiloto de desenvolvimento: contexto, limites e validação — Biblioteca Técnica Complementar | AI Software Engineering Playbook
     </title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS com plugin Typography. Não duplicar esta inclusão. -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              mono: ["Fira Code", "monospace"],
+              sans: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+              mono: ["JetBrains Mono", "Consolas", "monospace"],
             },
             colors: {
-              brand: {
-                50: "#eef2ff",
-                100: "#e0e7ff",
-                500: "#6366f1",
-                600: "#4f46e5",
-                700: "#4338ca",
-                900: "#312e81",
+              linkedin: {
+                bg: "#f3f2ef",
+                blue: "#0a66c2",
               },
             },
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  fontFamily: theme("fontFamily.serif").join(", "),
+                  color: "#1a1a1a",
+                  maxWidth: "none",
+                  h1: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "700",
+                    letterSpacing: "-0.02em",
+                    lineHeight: "1.2",
+                  },
+                  h2: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                    marginTop: "2em",
+                    marginBottom: "1em",
+                  },
+                  h3: {
+                    fontFamily: theme("fontFamily.sans").join(", "),
+                    color: "#000000e6",
+                    fontWeight: "600",
+                  },
+                  p: {
+                    marginBottom: "1.5em",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.75",
+                  },
+                  strong: { color: "inherit", fontWeight: "600" },
+                  a: {
+                    color: theme("colors.linkedin.blue"),
+                    textDecoration: "none",
+                  },
+                  "a:hover": { textDecoration: "underline" },
+                  blockquote: {
+                    borderLeftColor: theme("colors.linkedin.blue"),
+                    backgroundColor: theme("colors.slate.50"),
+                    padding: "1.5rem 2rem",
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    color: theme("colors.slate.700"),
+                    fontStyle: "italic",
+                    borderLeftWidth: "4px",
+                    quotes: "none",
+                  },
+                  "blockquote p:first-of-type::before": { content: "none" },
+                  "blockquote p:last-of-type::after": { content: "none" },
+                  code: {
+                    color: theme("colors.slate.800"),
+                    backgroundColor: theme("colors.slate.100"),
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    fontWeight: "500",
+                  },
+                  "code::before": { content: "none" },
+                  "code::after": { content: "none" },
+                  pre: {
+                    backgroundColor: theme("colors.slate.900"),
+                    color: theme("colors.slate.50"),
+                    fontFamily: theme("fontFamily.mono").join(", "),
+                    borderRadius: "0.375rem",
+                    padding: "1.25rem",
+                    overflowX: "auto",
+                    fontSize: "0.9rem",
+                  },
+                  ul: { paddingLeft: "1.5em" },
+                  "ul > li::marker": { color: theme("colors.slate.400") },
+                },
+              },
+            }),
           },
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .copy p {
-        margin-top: 1rem;
-        line-height: 1.8;
-      }
-      .copy ul,
-      .copy ol {
-        margin: 1rem 0 0 1.25rem;
-      }
-      .copy li {
-        margin-top: 0.55rem;
-        line-height: 1.7;
-      }
-      .copy ul {
-        list-style: disc;
-      }
-      .copy ol {
-        list-style: decimal;
-      }
-    </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased">
-    <header
-      class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+  <body
+    class="min-h-screen bg-linkedin-bg pt-4 font-sans text-slate-800 antialiased md:pt-10 md:pb-20"
+  >
+    <main
+      class="mx-auto max-w-3xl overflow-hidden border border-slate-200 bg-white shadow-sm md:my-10 md:rounded-lg"
     >
-      <div
-        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      <header
+        class="flex h-64 w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-6 text-center text-white md:h-80"
       >
-        <a
-          href="index.html"
-          class="font-bold text-brand-700 hover:text-brand-900"
-          >AI_Software_Engineering_Playbook</a
+        <svg
+          aria-hidden="true"
+          class="mb-4 h-16 w-16 text-slate-300 opacity-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-        <nav
-          aria-label="Navegação do artigo"
-          class="flex gap-4 text-sm font-medium"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"
+          ></path>
+        </svg>
+
+        <span
+          class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300"
         >
-          <a href="#contexto" class="hover:text-brand-700">Contexto</a
-          ><a href="#workflow" class="hover:text-brand-700">Workflow</a
-          ><a href="#avaliacao" class="hover:text-brand-700">Avaliação</a>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <section
-        class="bg-gradient-to-br from-brand-900 via-brand-700 to-indigo-500 text-white"
-      >
-        <div class="mx-auto max-w-5xl px-5 py-20 md:py-28">
-          <div
-            class="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wider"
-          >
-            <span class="rounded-full bg-white/15 px-3 py-1"
-              >Engenharia com IA</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Artigo conceitual</span
-            ><span class="rounded-full bg-white/15 px-3 py-1"
-              >Nível intermediário</span
-            >
-          </div>
-          <p class="mb-4 font-mono text-sm text-indigo-100">
-            Artigo 05 · Revisado em julho de 2026
-          </p>
-          <h1
-            class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl"
-          >
-            IA como copiloto de desenvolvimento
-          </h1>
-          <p class="mt-6 max-w-3xl text-xl leading-relaxed text-indigo-100">
-            Velocidade útil nasce de contexto selecionado, autoridade limitada,
-            mudanças pequenas e validação independente.
-          </p>
-        </div>
-      </section>
-      <div class="mx-auto max-w-5xl space-y-10 px-5 py-14">
-        <aside
-          class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
-        >
-          <h2 class="font-bold">Nota de transparência</h2>
-          <p class="mt-2 leading-relaxed">
-            Os workflows deste artigo são padrões operacionais. Não representam
-            métricas de produtividade, testes controlados ou resultados
-            atribuídos a uma equipe específica.
-          </p>
-        </aside>
+          Biblioteca Técnica Complementar
+        </span>
+        <span class="text-xs font-medium text-slate-400">
+          Módulo 2 — Arquitetura e Desenvolvimento de Software para IA
+        </span>
+      </header>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Problema
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Gerar código rápido não significa entregar software melhor
-          </h2>
-          <p>
-            Assistentes de IA podem acelerar exploração, explicação, testes e
-            mudanças mecânicas. Também podem produzir APIs inexistentes, ignorar
-            convenções locais, ampliar escopo e introduzir vulnerabilidades com
-            aparência convincente.
-          </p>
-          <p>
-            O ganho não vem de aceitar mais código. Vem de reduzir trabalho de
-            baixo risco sem transferir decisão, responsabilidade e revisão para
-            o modelo.
-          </p>
-          <p>
-            <strong>Tese:</strong> copiloto eficaz opera dentro de um workflow
-            de engenharia explícito.
-          </p>
-        </section>
+      <article class="prose prose-lg prose-slate px-5 py-8 md:px-16 md:py-12">
+<h1>05. IA como copiloto de desenvolvimento: contexto, limites e validação</h1>
 
-        <section
-          class="rounded-2xl bg-slate-900 p-7 text-slate-100 shadow-sm md:p-10"
-          id="contexto"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-indigo-300"
-          >
-            Context Pack
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Forneça o menor contexto que permite decidir corretamente
-          </h2>
-          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Objetivo</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Problema, resultado observável e motivo da mudança.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Escopo</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Arquivos permitidos, componentes proibidos e limite da tarefa.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Contratos</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Interfaces, schemas, invariantes e comportamento compatível.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Restrições</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Segurança, desempenho, dependências e compatibilidade.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Evidência</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Testes existentes, logs sanitizados e exemplos reproduzíveis.
-              </p>
-            </article>
-            <article class="rounded-xl bg-white/10 p-5">
-              <h3 class="font-bold">Pronto</h3>
-              <p class="mt-2 text-sm leading-relaxed text-slate-300">
-                Critérios de aceitação e comandos de validação.
-              </p>
-            </article>
-          </div>
-          <p class="mt-6 leading-relaxed text-slate-300">
-            Mais contexto não é automaticamente melhor. Arquivos irrelevantes
-            aumentam ruído, custo e risco de misturar regras conflitantes.
-          </p>
-        </section>
+<div class="not-prose my-8 rounded-md border border-amber-200 border-l-4 border-l-amber-500 bg-amber-50 p-6 text-amber-950">
+  <h4 class="mb-2 font-sans text-base font-semibold uppercase tracking-wide text-amber-900">
+    Nota de transparência
+  </h4>
+  <p class="text-sm leading-relaxed">
+    Os workflows deste artigo são padrões operacionais. Não representam
+    métricas de produtividade, testes controlados ou resultados atribuídos a
+    uma equipe específica.
+  </p>
+</div>
 
-        <section
-          class="copy rounded-2xl border border-sky-200 bg-sky-50 p-7 md:p-10"
-          id="workflow"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-sky-700"
-          >
-            Workflow governado
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Da tarefa ao merge em sete passos
-          </h2>
-          <ol>
-            <li>
-              <strong>Orientar-se.</strong> Ler índice, instruções locais,
-              estado do Git e arquivos diretamente envolvidos.
-            </li>
-            <li>
-              <strong>Planejar.</strong> Explicitar hipótese, impacto, arquivos
-              e validações antes de editar.
-            </li>
-            <li>
-              <strong>Investigar.</strong> Localizar contratos, chamadas, testes
-              e padrões existentes com busca direcionada.
-            </li>
-            <li>
-              <strong>Alterar pouco.</strong> Produzir um diff pequeno,
-              reversível e compatível com o escopo.
-            </li>
-            <li>
-              <strong>Validar independentemente.</strong> Executar testes,
-              análise estática, build e revisão do diff.
-            </li>
-            <li>
-              <strong>Revisar riscos.</strong> Verificar segurança, dados,
-              concorrência, compatibilidade e falhas.
-            </li>
-            <li>
-              <strong>Registrar.</strong> Documentar decisões replicáveis,
-              pendências e evidências.
-            </li>
-          </ol>
-        </section>
+<p>
+  Assistentes de IA podem acelerar exploração, explicação, testes e
+  mudanças mecânicas. Também podem produzir APIs inexistentes, ignorar
+  convenções locais, ampliar escopo e introduzir vulnerabilidades com
+  aparência convincente.
+</p>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Autoridade
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            A IA pode propor; o sistema deve limitar efeitos
-          </h2>
-          <div class="mt-7 overflow-x-auto">
-            <table
-              class="w-full min-w-[740px] border-collapse text-left text-sm"
-            >
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-4">Ação</th>
-                  <th class="p-4">Postura recomendada</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <th class="p-4">Busca e leitura</th>
-                  <td class="p-4">permitir no menor escopo necessário</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Edição local</th>
-                  <td class="p-4">permitir dentro do escopo e revisar diff</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Dependência nova</th>
-                  <td class="p-4">exigir justificativa, risco e validação</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Migração ou mudança pública</th>
-                  <td class="p-4">planejar compatibilidade e rollback</td>
-                </tr>
-                <tr>
-                  <th class="p-4">Segredo, produção ou dado real</th>
-                  <td class="p-4">
-                    não expor; usar controles e autorização explícita
-                  </td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <th class="p-4">Operação destrutiva</th>
-                  <td class="p-4">
-                    confirmação humana e verificação de destino
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+<p>
+  O ganho não vem de aceitar mais código. Vem de reduzir trabalho de baixo
+  risco sem transferir decisão, responsabilidade e revisão para o modelo.
+</p>
 
-        <section
-          class="copy rounded-2xl border border-rose-200 bg-rose-50 p-7 md:p-10"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-rose-700"
-          >
-            Modos de falha
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            O código plausível merece desconfiança estruturada
-          </h2>
-          <ul>
-            <li>
-              <strong>API inventada:</strong> confirmar assinatura na
-              dependência ou documentação da versão usada.
-            </li>
-            <li>
-              <strong>Escopo crescente:</strong> interromper quando arquivos não
-              previstos passam a ser necessários.
-            </li>
-            <li>
-              <strong>Teste que valida a implementação errada:</strong> derivar
-              casos do contrato e não do código produzido.
-            </li>
-            <li>
-              <strong>Correção local com regressão global:</strong> executar
-              suíte proporcional ao impacto.
-            </li>
-            <li>
-              <strong>Vulnerabilidade copiada:</strong> revisar entrada, saída,
-              autorização, segredos e dependências.
-            </li>
-            <li>
-              <strong>Comentário convincente e falso:</strong> conferir
-              comportamento no código e em execução.
-            </li>
-            <li>
-              <strong>Alteração do usuário sobrescrita:</strong> verificar
-              worktree e preservar mudanças não relacionadas.
-            </li>
-          </ul>
-        </section>
+<blockquote>
+  <p>Copiloto eficaz opera dentro de um workflow de engenharia explícito.</p>
+</blockquote>
 
-        <section
-          class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10"
-          id="avaliacao"
-        >
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Avaliação
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Meça o fluxo completo, não linhas geradas
-          </h2>
-          <p>Uma avaliação útil pode observar:</p>
-          <ul>
-            <li>
-              tempo até uma mudança validada, incluindo revisão e correções;
-            </li>
-            <li>taxa de aceitação após testes, não antes deles;</li>
-            <li>defeitos encontrados em revisão e após integração;</li>
-            <li>
-              retrabalho causado por contexto insuficiente ou escopo errado;
-            </li>
-            <li>cobertura dos critérios de aceitação;</li>
-            <li>incidentes de segurança ou exposição de dados;</li>
-            <li>qualidade da documentação e rastreabilidade da decisão.</li>
-          </ul>
-          <p>
-            Resultados variam por tarefa, equipe, base de código e ferramenta.
-            Não existe percentual universal de produtividade aplicável a
-            qualquer contexto.
-          </p>
-        </section>
+<h2>Forneça o menor contexto que permite decidir corretamente</h2>
 
-        <section class="copy rounded-2xl bg-white p-7 shadow-sm md:p-10">
-          <p
-            class="font-mono text-sm font-semibold uppercase tracking-wider text-brand-700"
-          >
-            Conclusão
-          </p>
-          <h2 class="mt-3 text-3xl font-bold">
-            Copiloto bom aumenta capacidade sem dissolver responsabilidade
-          </h2>
-          <p>
-            IA pode reduzir busca, boilerplate e trabalho mecânico. A engenharia
-            continua responsável pelo contrato, arquitetura, segurança, testes e
-            resultado entregue.
-          </p>
-          <p>
-            O próximo artigo trata da rastreabilidade necessária para versionar
-            prompts, dados, modelos, avaliações e configurações como uma unidade
-            reproduzível.
-          </p>
-        </section>
+<ul>
+  <li>
+    <strong>Objetivo:</strong> problema, resultado observável e motivo da
+    mudança.
+  </li>
+  <li>
+    <strong>Escopo:</strong> arquivos permitidos, componentes proibidos e
+    limite da tarefa.
+  </li>
+  <li>
+    <strong>Contratos:</strong> interfaces, schemas, invariantes e
+    comportamento compatível.
+  </li>
+  <li>
+    <strong>Restrições:</strong> segurança, desempenho, dependências e
+    compatibilidade.
+  </li>
+  <li>
+    <strong>Evidência:</strong> testes existentes, logs sanitizados e
+    exemplos reproduzíveis.
+  </li>
+  <li>
+    <strong>Pronto:</strong> critérios de aceitação e comandos de validação.
+  </li>
+</ul>
 
-        <nav
-          aria-label="Artigos relacionados"
-          class="grid gap-4 sm:grid-cols-2"
-        >
-          <a
-            href="04-finetuning-vs-prompt-vs-rag.html"
-            class="rounded-2xl bg-brand-50 p-6 transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Anterior</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Prompt, RAG ou Fine-tuning?</strong
-            ></a
-          ><a
-            href="06-versionamento-prompts-dados-modelos.html"
-            class="rounded-2xl bg-brand-50 p-6 text-right transition hover:bg-brand-100"
-            ><span
-              class="text-xs font-bold uppercase tracking-wider text-brand-700"
-              >Próximo</span
-            ><strong class="mt-2 block text-lg text-brand-900"
-              >Versionamento de sistemas de IA</strong
-            ></a
-          >
-        </nav>
-      </div>
+<p>
+  Mais contexto não é automaticamente melhor. Arquivos irrelevantes aumentam
+  ruído, custo e risco de misturar regras conflitantes.
+</p>
+
+<h2>Da tarefa ao merge em sete passos</h2>
+
+<ol>
+  <li>
+    <strong>Orientar-se.</strong> Ler índice, instruções locais, estado do
+    Git e arquivos diretamente envolvidos.
+  </li>
+  <li>
+    <strong>Planejar.</strong> Explicitar hipótese, impacto, arquivos e
+    validações antes de editar.
+  </li>
+  <li>
+    <strong>Investigar.</strong> Localizar contratos, chamadas, testes e
+    padrões existentes com busca direcionada.
+  </li>
+  <li>
+    <strong>Alterar pouco.</strong> Produzir um diff pequeno, reversível e
+    compatível com o escopo.
+  </li>
+  <li>
+    <strong>Validar independentemente.</strong> Executar testes, análise
+    estática, build e revisão do diff.
+  </li>
+  <li>
+    <strong>Revisar riscos.</strong> Verificar segurança, dados,
+    concorrência, compatibilidade e falhas.
+  </li>
+  <li>
+    <strong>Registrar.</strong> Documentar decisões replicáveis, pendências
+    e evidências.
+  </li>
+</ol>
+
+<h2>A IA pode propor; o sistema deve limitar efeitos</h2>
+
+<section aria-labelledby="autoridade-copiloto" class="not-prose my-10">
+  <h2 id="autoridade-copiloto" class="mb-5 text-2xl font-semibold text-slate-900">
+    Postura recomendada por tipo de ação
+  </h2>
+  <div class="overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-100 text-slate-700">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Ação</th>
+          <th class="px-4 py-3 font-semibold">Postura recomendada</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Busca e leitura</td>
+          <td class="px-4 py-3 text-slate-700">permitir no menor escopo necessário</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Edição local</td>
+          <td class="px-4 py-3 text-slate-700">permitir dentro do escopo e revisar diff</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Dependência nova</td>
+          <td class="px-4 py-3 text-slate-700">exigir justificativa, risco e validação</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Migração ou mudança pública</td>
+          <td class="px-4 py-3 text-slate-700">planejar compatibilidade e rollback</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Segredo, produção ou dado real</td>
+          <td class="px-4 py-3 text-slate-700">não expor; usar controles e autorização explícita</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-900">Operação destrutiva</td>
+          <td class="px-4 py-3 text-slate-700">confirmação humana e verificação de destino</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<h2>O código plausível merece desconfiança estruturada</h2>
+
+<ul>
+  <li>
+    <strong>API inventada:</strong> confirmar assinatura na dependência ou
+    documentação da versão usada.
+  </li>
+  <li>
+    <strong>Escopo crescente:</strong> interromper quando arquivos não
+    previstos passam a ser necessários.
+  </li>
+  <li>
+    <strong>Teste que valida a implementação errada:</strong> derivar casos
+    do contrato e não do código produzido.
+  </li>
+  <li>
+    <strong>Correção local com regressão global:</strong> executar suíte
+    proporcional ao impacto.
+  </li>
+  <li>
+    <strong>Vulnerabilidade copiada:</strong> revisar entrada, saída,
+    autorização, segredos e dependências.
+  </li>
+  <li>
+    <strong>Comentário convincente e falso:</strong> conferir comportamento
+    no código e em execução.
+  </li>
+  <li>
+    <strong>Alteração do usuário sobrescrita:</strong> verificar worktree e
+    preservar mudanças não relacionadas.
+  </li>
+</ul>
+
+<h2>Meça o fluxo completo, não linhas geradas</h2>
+
+<p>Uma avaliação útil pode observar:</p>
+
+<ul>
+  <li>
+    tempo até uma mudança validada, incluindo revisão e correções;
+  </li>
+  <li>taxa de aceitação após testes, não antes deles;</li>
+  <li>defeitos encontrados em revisão e após integração;</li>
+  <li>
+    retrabalho causado por contexto insuficiente ou escopo errado;
+  </li>
+  <li>cobertura dos critérios de aceitação;</li>
+  <li>incidentes de segurança ou exposição de dados;</li>
+  <li>qualidade da documentação e rastreabilidade da decisão.</li>
+</ul>
+
+<p>
+  Resultados variam por tarefa, equipe, base de código e ferramenta. Não
+  existe percentual universal de produtividade aplicável a qualquer
+  contexto.
+</p>
+
+<h2>Copiloto bom aumenta capacidade sem dissolver responsabilidade</h2>
+
+<p>
+  IA pode reduzir busca, boilerplate e trabalho mecânico. A engenharia
+  continua responsável pelo contrato, arquitetura, segurança, testes e
+  resultado entregue.
+</p>
+
+<p>
+  O próximo artigo trata da rastreabilidade necessária para versionar
+  prompts, dados, modelos, avaliações e configurações como uma unidade
+  reproduzível.
+</p>
+
+<p>
+  <strong
+    >No seu workflow atual com assistentes de IA, existe alguma etapa das
+    sete acima que ainda não tem um responsável humano claro?</strong
+  >
+</p>
+
+<hr />
+
+<nav aria-label="Navegação entre artigos" class="not-prose mt-10 grid gap-4 text-sm sm:grid-cols-2">
+  <a
+    href="04-finetuning-vs-prompt-vs-rag.html"
+    class="rounded-lg border border-slate-200 p-4 transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Anterior</span>
+    <span class="mt-1 block font-semibold text-slate-800">Prompt, RAG ou fine-tuning?</span>
+  </a>
+  <a
+    href="06-versionamento-prompts-dados-modelos.html"
+    class="rounded-lg border border-slate-200 p-4 text-right transition hover:border-linkedin-blue"
+  >
+    <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Próximo</span>
+    <span class="mt-1 block font-semibold text-slate-800">Versionamento de sistemas de IA</span>
+  </a>
+</nav>
+
+<footer class="not-prose pt-6 text-sm text-slate-600">
+  <p class="mb-3">
+    <strong>Artigo 05 de 20</strong> — Biblioteca Técnica Complementar do AI
+    Software Engineering Playbook.
+  </p>
+  <p class="leading-7 font-semibold text-linkedin-blue">
+    #AgentesDeIA #EngenhariaDeSoftware #ContextPack #CodeReview #GenAI
+  </p>
+</footer>
+      </article>
     </main>
-    <footer class="border-t border-slate-200 bg-white py-8">
-      <div class="mx-auto max-w-5xl px-5 text-center text-sm text-slate-500">
-        AI Software Engineering — Artigos, Arquiteturas e Estudos de Caso
-      </div>
-    </footer>
   </body>
 </html>
