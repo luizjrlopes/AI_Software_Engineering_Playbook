@@ -8,7 +8,8 @@
       content="Índice da Biblioteca Técnica Complementar do AI Software Engineering Playbook: 20 artigos sobre GenAI aplicada, RAG, APIs, resiliência, testes, LLMOps, observabilidade, custos e confiança."
     />
     <title>
-      Índice — Biblioteca Técnica Complementar | AI Software Engineering Playbook
+      Índice — Biblioteca Técnica Complementar | AI Software Engineering
+      Playbook
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -57,7 +58,9 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-linkedin-bg font-sans text-slate-800 antialiased">
+  <body
+    class="min-h-screen bg-linkedin-bg font-sans text-slate-800 antialiased"
+  >
     <main class="mx-auto max-w-5xl px-4 pb-20 pt-4 md:pt-10">
       <!-- Capa -->
       <header
@@ -82,21 +85,18 @@
         >
           Índice da biblioteca complementar
         </p>
-        <h1 class="mx-auto max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
+        <h1
+          class="mx-auto max-w-3xl text-3xl font-bold leading-tight md:text-4xl"
+        >
           Biblioteca Técnica Complementar
         </h1>
-        <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
+        <p
+          class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base"
+        >
           20 artigos sobre GenAI aplicada, RAG, APIs, resiliência, testes,
-          LLMOps, observabilidade, custos e confiança — aprofundamento
-          técnico complementar ao plano editorial principal.
+          LLMOps, observabilidade, custos e confiança — aprofundamento técnico
+          complementar ao plano editorial principal.
         </p>
-        <div class="mt-6 flex items-center justify-center gap-2">
-          <span
-            class="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200"
-          >
-            20 de 20 publicados
-          </span>
-        </div>
       </header>
 
       <!-- Busca -->
@@ -437,7 +437,10 @@
         </section>
       </div>
 
-      <p id="sem-resultado" class="mt-8 hidden text-center text-sm text-slate-500">
+      <p
+        id="sem-resultado"
+        class="mt-8 hidden text-center text-sm text-slate-500"
+      >
         Nenhum artigo encontrado para essa busca.
       </p>
 
@@ -445,7 +448,9 @@
         aria-label="Navegação entre coleções"
         class="mt-10 flex flex-col justify-between gap-3 border-t border-slate-200 pt-6 text-sm sm:flex-row"
       >
-        <a href="../index.html" class="font-semibold text-linkedin-blue hover:underline"
+        <a
+          href="../index.html"
+          class="font-semibold text-linkedin-blue hover:underline"
           >← Início do repositório</a
         >
         <a
@@ -456,8 +461,8 @@
       </nav>
 
       <footer class="mt-8 text-center text-xs text-slate-400">
-        Biblioteca Técnica Complementar — AI Software Engineering Playbook —
-        20 artigos
+        Biblioteca Técnica Complementar — AI Software Engineering Playbook — 20
+        artigos
       </footer>
     </main>
 
@@ -469,10 +474,7 @@
       const blocos = Array.from(document.querySelectorAll("[data-block]"));
 
       function normalizar(texto) {
-        return texto
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[̀-ͯ]/g, "");
+        return texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
       }
 
       input.addEventListener("input", () => {
@@ -488,7 +490,7 @@
 
         blocos.forEach((bloco) => {
           const algumVisivel = bloco.querySelector(
-            "[data-article]:not(.is-hidden)"
+            "[data-article]:not(.is-hidden)",
           );
           bloco.classList.toggle("is-empty", !algumVisivel);
         });
