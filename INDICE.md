@@ -9,11 +9,10 @@
 | [Artigos_Principais/01_MAPA_DOS_BLOCOS_E_ARCOS.md](Artigos_Principais/01_MAPA_DOS_BLOCOS_E_ARCOS.md) | Organização editorial por blocos e arcos |
 | [Artigos_Principais/README.md](Artigos_Principais/README.md) | Orientação da coleção principal |
 | [Artigos_Secundarios/](Artigos_Secundarios/) | Biblioteca técnica complementar |
-| [legado/](legado/) | Documentação histórica |
 
 ## Regra de navegação
 
-Use `Artigos_Principais/` para o plano editorial e publicação. Consulte `Artigos_Secundarios/` apenas para aprofundamento e reaproveitamento. Use `legado/` somente para rastreabilidade histórica.
+Use `Artigos_Principais/` para o plano editorial e publicação. Consulte `Artigos_Secundarios/` para aprofundamento e reaproveitamento.
 
 ## Voltar
 

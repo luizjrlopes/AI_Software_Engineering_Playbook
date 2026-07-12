@@ -14,7 +14,6 @@ Playbook editorial sobre desenvolvimento de software com agentes de IA, arquitet
 AI_Software_Engineering_Playbook/
 ├── Artigos_Principais/    # plano editorial governante: 70 artigos
 ├── Artigos_Secundarios/   # biblioteca técnica complementar: 20 artigos HTML
-├── legado/                # planos e documentos históricos
 ├── index.html             # entrada pública visual
 ├── INDICE.md              # navegação documental curta
 └── README.md
@@ -46,10 +45,6 @@ Esses materiais podem:
 - fornecer aprofundamentos técnicos;
 - ser incorporados gradualmente à coleção principal;
 - originar posts, diagramas e estudos aplicados.
-
-## Legado
-
-`legado/` contém planos, checklists, guias e documentos da estrutura anterior. Esse conteúdo permanece disponível para rastreabilidade, mas não governa mais o catálogo público.
 
 ## Regra editorial
 
